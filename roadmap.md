@@ -1,6 +1,6 @@
 # NeuroSpectro roadmap
 - [x] 1. Design system + identity (logo/brand board) + Home
-- [ ] 2. Questionnaire + database + progress
+- [x] 2. Questionnaire (48 items, 8 dims, metadata) + local session save — DB sync pending Cloud (with step 5)
 - [ ] 3. Partial result + paywall
 - [ ] 4. Checkout Pix/card + webhook (provider undecided)
 - [ ] 5. Auth + magic link
