@@ -61,7 +61,7 @@ function Avaliacao() {
         </ul>
 
         <div className="mx-auto mt-7 max-w-md rounded-3xl border border-primary/20 bg-primary/5 p-5 text-left">
-          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-primary">Ao liberar o acesso completo</p>
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-primary">Depois do acesso principal</p>
           <div className="mt-4 space-y-4">
             <div className="flex gap-3">
               <FileText className="mt-0.5 h-5 w-5 shrink-0 text-primary" />
@@ -73,8 +73,8 @@ function Avaliacao() {
             <div className="flex gap-3">
               <Users className="mt-0.5 h-5 w-5 shrink-0 text-primary" />
               <div>
-                <p className="font-semibold text-ink">Comunidade NeuroSpectro</p>
-                <p className="mt-1 text-sm text-muted-foreground">Troca de experiências, informação e apoio com outras pessoas que também estão explorando seus próprios perfis.</p>
+                <p className="font-semibold text-ink">Círculo NeuroSpectro</p>
+                <p className="mt-1 text-sm text-muted-foreground">Uma comunidade opcional com conteúdos exclusivos, troca de experiências e conversas sobre neurodiversidade.</p>
               </div>
             </div>
           </div>
