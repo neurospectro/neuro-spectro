@@ -17,6 +17,7 @@ type AccessRow = {
   starts_at: string;
   expires_at: string | null;
   produto_id: string;
+  produtos?: { slug: string } | null;
 };
 
 type OrderRow = {
@@ -59,7 +60,7 @@ function Dashboard() {
 
     const [resultQuery, accessQuery, orderQuery] = await Promise.all([
       supabase.from("resultados").select("id,created_at,total_raw,max_raw,scores").order("created_at", { ascending: false }),
-      supabase.from("acessos").select("id,status,starts_at,expires_at,produto_id").order("created_at", { ascending: false }),
+      supabase.from("acessos").select("id,status,starts_at,expires_at,produto_id,produtos(slug)").order("created_at", { ascending: false }),
       supabase.from("pedidos").select("id,status,amount_cents,installments,created_at").order("created_at", { ascending: false }),
     ]);
 
@@ -81,8 +82,8 @@ function Dashboard() {
   }
 
   const latest = results[0];
-  const hasReport = accesses.some((a) => a.status === "active" && a.produto_id);
-  const hasCommunity = accesses.some((a) => a.status === "active" && a.produto_id);
+  const hasReport = accesses.some((a) => a.status === "active" && a.produtos?.slug === "relatorio-completo");
+  const hasCommunity = accesses.some((a) => a.status === "active" && a.produtos?.slug === "comunidade-apoio");
 
   return (
     <main className="min-h-screen bg-background px-5 py-8 font-sans">
