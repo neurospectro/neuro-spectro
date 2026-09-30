@@ -176,7 +176,7 @@ export function getVisibleQuestions(): Question[] {
   const byDim = DIMENSIONS.map((d) => visible.filter((q) => q.dimension === d.id));
   const out: Question[] = [];
   const max = Math.max(...byDim.map((l) => l.length));
-  for (let r = 0; r < max; r++) for (const l of byDim) if (l[r]) out.push(l[r]);
+  for (let r = 0; r < max; r++) for (const l of byDim) { const it = l[r]; if (it) out.push(it); }
   return out;
 }
 
@@ -189,7 +189,7 @@ export function scoreByDimension(answers: Record<string, number>) {
   return DIMENSIONS.map((d) => {
     const qs = QUESTIONS.filter((q) => q.dimension === d.id);
     const answered = qs.filter((q) => answers[q.question_id] !== undefined);
-    const raw = answered.reduce((s, q) => s + scoreItem(q, answers[q.question_id]), 0);
+    const raw = answered.reduce((s, q) => s + scoreItem(q, answers[q.question_id] ?? 0), 0);
     return { dimension: d, raw, max: qs.length * 3, answered: answered.length, total: qs.length };
   });
 }
