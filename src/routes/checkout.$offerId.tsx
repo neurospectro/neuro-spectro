@@ -43,14 +43,14 @@ function Checkout() {
               <CreditCard className="h-8 w-8 text-primary" />
             </div>
             <p className="mt-2 text-sm text-muted-foreground">
-              Total: {formatBRL(offer.totalCents)} · acesso: {offer.accessDays} dias
+              Total: {formatBRL(offer.totalCents)} · acesso: {offer.lifetimeAccess ? "por tempo indeterminado" : `${offer.accessDays} dias`}
             </p>
           </div>
 
           <div className="mt-6 space-y-3">
             {[
               "Acesso liberado após confirmação do pagamento",
-              `${offer.accessDays} dias de acesso, controlados por data de expiração no servidor`,
+              offer.lifetimeAccess ? "Acesso por tempo indeterminado após confirmação do pagamento" : `${offer.accessDays} dias de acesso, controlados por data de expiração no servidor`,
               offer.autoRenew ? "Renovação automática configurada" : "Sem renovação automática nesta oferta",
             ].map((item) => (
               <div key={item} className="flex gap-3 text-sm text-muted-foreground">
