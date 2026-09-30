@@ -20,7 +20,7 @@ export const Route = createFileRoute("/avaliacao")({
 });
 
 const KEY = `ns-session-${ASSESSMENT.assessment_id}-${ASSESSMENT.version}`;
-type Session = { answers: Record<string, number>; index: number; startedAt: string; finishedAt?: string };
+type Session = { answers: Record<string, number>; index: number; startedAt: string; finishedAt?: string | undefined };
 
 function Avaliacao() {
   const questions = useMemo(() => getVisibleQuestions(), []);
@@ -106,7 +106,7 @@ function Avaliacao() {
 
   if (session.finishedAt) return <Done session={session} onReview={() => setSession({ ...session, finishedAt: undefined, index: 0 })} />;
 
-  const q = questions[session.index];
+  const q = questions[session.index]!;
   const answered = Object.keys(session.answers).length;
   const current = session.answers[q.question_id];
   const dim = DIMENSIONS.find((d) => d.id === q.dimension)!;
