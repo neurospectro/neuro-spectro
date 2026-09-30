@@ -119,7 +119,14 @@ Deno.serve(async (req) => {
   }).eq("id", pedido.id);
 
   if (payment?.id) {
-    await admin.from("pagamentos").upsert({
+    const { data: existingPayment } = await admin
+      .from("pagamentos")
+      .select("id")
+      .eq("provider", "mercadopago")
+      .eq("provider_payment_id", payment.id)
+      .maybeSingle();
+
+    const paymentPayload = {
       pedido_id: pedido.id,
       provider: "mercadopago",
       provider_payment_id: payment.id,
@@ -128,7 +135,13 @@ Deno.serve(async (req) => {
       installment_number: payment?.payment_method?.installments ?? null,
       raw_status_detail: statusDetail,
       paid_at: paid ? new Date().toISOString() : null,
-    }, { onConflict: "provider,provider_payment_id" });
+    };
+
+    if (existingPayment) {
+      await admin.from("pagamentos").update(paymentPayload).eq("id", existingPayment.id);
+    } else {
+      await admin.from("pagamentos").insert(paymentPayload);
+    }
   }
 
   if (paid && pedido.user_id) {
@@ -139,14 +152,28 @@ Deno.serve(async (req) => {
       const startsAt = new Date();
       const expiresAt = accessDays ? new Date(startsAt.getTime() + accessDays * 86400000).toISOString() : null;
 
-      await admin.from("acessos").upsert({
+      const { data: existingAccess } = await admin
+        .from("acessos")
+        .select("id")
+        .eq("user_id", pedido.user_id)
+        .eq("produto_id", productId)
+        .eq("pedido_id", pedido.id)
+        .maybeSingle();
+
+      const accessPayload = {
         user_id: pedido.user_id,
         produto_id: productId,
         pedido_id: pedido.id,
         starts_at: startsAt.toISOString(),
         expires_at: expiresAt,
         status: "active",
-      }, { onConflict: "user_id,produto_id,pedido_id" });
+      };
+
+      if (existingAccess) {
+        await admin.from("acessos").update(accessPayload).eq("id", existingAccess.id);
+      } else {
+        await admin.from("acessos").insert(accessPayload);
+      }
     }
   }
 
