@@ -88,7 +88,7 @@ function Index() {
                 <p className="text-xs font-semibold uppercase tracking-[0.25em] text-primary">Uma opção para continuar depois da avaliação</p>
                 <h2 className="mt-3 font-display text-2xl font-semibold text-ink md:text-3xl">Você não precisa explorar tudo isso sozinho.</h2>
                 <p className="mt-3 text-muted-foreground">
-                  Depois de concluir seu acesso principal, você poderá adicionar o Comunidade de Apoio - NeuroSpectro: um espaço de troca de experiências, conteúdo exclusivo e apoio sobre neurodiversidade.
+                  Depois de concluir seu acesso principal, você poderá adicionar a Comunidade de Apoio: um espaço de troca de experiências, conteúdo exclusivo e apoio sobre neurodiversidade.
                 </p>
               </div>
               <div className="flex shrink-0 items-center gap-3 rounded-2xl bg-card px-5 py-4">
