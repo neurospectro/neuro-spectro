@@ -113,11 +113,28 @@ function Avaliacao() {
   const isLast = session.index === questions.length - 1;
   const allDone = answered === questions.length;
 
-  const go = (i: number) => setSession({ ...session, index: Math.max(0, Math.min(questions.length - 1, i)) });
+  const go = (i: number) =>
+    setSession((s) =>
+      s ? { ...s, index: Math.max(0, Math.min(questions.length - 1, i)) } : s,
+    );
+
   const choose = (v: number) => {
-    const answers = { ...session.answers, [q.question_id]: v };
-    setSession({ ...session, answers });
-    if (!isLast) setTimeout(() => setSession((s) => (s ? { ...s, index: Math.min(s.index + 1, questions.length - 1) } : s)), 280);
+    setSession((s) => {
+      if (!s) return s;
+
+      // Ignore stale/duplicate clicks from the previous question. This prevents
+      // rapid taps from queuing multiple advances and skipping unanswered items.
+      const currentQuestion = questions[s.index];
+      if (!currentQuestion || currentQuestion.question_id !== q.question_id) return s;
+
+      const answers = { ...s.answers, [q.question_id]: v };
+
+      return {
+        ...s,
+        answers,
+        index: isLast ? s.index : Math.min(s.index + 1, questions.length - 1),
+      };
+    });
   };
   const finish = () => {
     const finishedAt = new Date().toISOString();
