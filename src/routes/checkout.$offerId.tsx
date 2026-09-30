@@ -32,10 +32,41 @@ function loadMercadoPagoScript() {
       return;
     }
 
-    const existing = document.getElementById(mpScriptId);
+    const fail = () =>
+      reject(
+        new Error(
+          "Não foi possível carregar o Checkout Transparente do Mercado Pago. Verifique a Public Key e o carregamento do SDK.",
+        ),
+      );
+
+    const existing = document.getElementById(mpScriptId) as HTMLScriptElement | null;
     if (existing) {
-      existing.addEventListener("load", () => resolve(), { once: true });
-      existing.addEventListener("error", () => reject(new Error("Não foi possível carregar o Mercado Pago.")), { once: true });
+      const timeout = window.setTimeout(fail, 12000);
+      existing.addEventListener(
+        "load",
+        () => {
+          window.clearTimeout(timeout);
+          if (window.MercadoPago) resolve();
+          else fail();
+        },
+        { once: true },
+      );
+      existing.addEventListener(
+        "error",
+        () => {
+          window.clearTimeout(timeout);
+          fail();
+        },
+        { once: true },
+      );
+      // If the script was already loaded before listeners were attached, don't
+      // leave the checkout stuck on the loading state.
+      window.setTimeout(() => {
+        if (window.MercadoPago) {
+          window.clearTimeout(timeout);
+          resolve();
+        }
+      }, 0);
       return;
     }
 
@@ -43,8 +74,16 @@ function loadMercadoPagoScript() {
     script.id = mpScriptId;
     script.src = "https://sdk.mercadopago.com/js/v2";
     script.async = true;
-    script.onload = () => resolve();
-    script.onerror = () => reject(new Error("Não foi possível carregar o Mercado Pago."));
+    const timeout = window.setTimeout(fail, 12000);
+    script.onload = () => {
+      window.clearTimeout(timeout);
+      if (window.MercadoPago) resolve();
+      else fail();
+    };
+    script.onerror = () => {
+      window.clearTimeout(timeout);
+      fail();
+    };
     document.head.appendChild(script);
   });
 }
@@ -94,7 +133,8 @@ function Checkout() {
               creditCard: "all",
               prepaidCard: "all",
               debitCard: "all",
-              mercadoPago: "all",
+              // The wallet option requires a preferenceId. This is a
+              // transparent checkout, so cards/Pix/boleto are rendered directly.
             },
           },
           callbacks: {
