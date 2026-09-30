@@ -1,0 +1,46 @@
+export type OfferBilling = "one_time_installments" | "recurring";
+
+export interface Offer {
+  id: string;
+  name: string;
+  product: "report" | "community";
+  billing: OfferBilling;
+  totalCents: number;
+  installmentCount: number;
+  installmentCents: number;
+  accessDays: number;
+  autoRenew: boolean;
+  description: string;
+}
+
+export const OFFERS: Record<string, Offer> = {
+  "community-12m-6x": {
+    id: "community-12m-6x",
+    name: "Comunidade de Apoio - NeuroSpectro · 12 meses",
+    product: "community",
+    billing: "one_time_installments",
+    totalCents: 8940,
+    installmentCount: 6,
+    installmentCents: 1490,
+    accessDays: 365,
+    autoRenew: false,
+    description: "Pague em 6x de R$ 14,90 e tenha 12 meses de acesso.",
+  },
+  "community-monthly": {
+    id: "community-monthly",
+    name: "Comunidade de Apoio - NeuroSpectro · mensal",
+    product: "community",
+    billing: "recurring",
+    totalCents: 1490,
+    installmentCount: 1,
+    installmentCents: 1490,
+    accessDays: 30,
+    autoRenew: true,
+    description: "Acesso mensal com renovação automática.",
+  },
+};
+
+export const getOffer = (id: string) => OFFERS[id];
+
+export const formatBRL = (cents: number) =>
+  (cents / 100).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
