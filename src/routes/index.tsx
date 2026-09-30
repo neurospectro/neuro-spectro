@@ -84,15 +84,15 @@ function Index() {
           <div className="rounded-[2rem] border border-primary/20 bg-primary/5 p-7 shadow-soft md:p-9">
             <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
               <div className="max-w-2xl">
-                <p className="text-xs font-semibold uppercase tracking-[0.25em] text-primary">Benefício do acesso completo</p>
+                <p className="text-xs font-semibold uppercase tracking-[0.25em] text-primary">Uma opção para continuar depois da avaliação</p>
                 <h2 className="mt-3 font-display text-2xl font-semibold text-ink md:text-3xl">Você não precisa explorar tudo isso sozinho.</h2>
                 <p className="mt-3 text-muted-foreground">
-                  Ao liberar seu acesso completo, você também poderá entrar na Comunidade NeuroSpectro: um espaço de troca de experiências, informação e apoio para continuar sua jornada.
+                  Depois de concluir seu acesso principal, você poderá adicionar o Círculo NeuroSpectro: um espaço de troca de experiências, conteúdo exclusivo e apoio sobre neurodiversidade.
                 </p>
               </div>
               <div className="flex shrink-0 items-center gap-3 rounded-2xl bg-card px-5 py-4">
                 <Users className="h-6 w-6 text-primary" />
-                <span className="text-sm font-semibold text-ink">Comunidade incluída</span>
+                <span className="text-sm font-semibold text-ink">Comunidade opcional</span>
               </div>
             </div>
           </div>
@@ -117,7 +117,7 @@ function Index() {
             {[
               ["01", "Responda com calma", "Uma pergunta por tela. Salve e retome quando quiser."],
               ["02", "Veja sua prévia", "Receba uma primeira leitura do seu perfil ao final."],
-              ["03", "Aprofunde", "Libere o relatório completo, PDF e acesso à comunidade."],
+              ["03", "Aprofunde", "Libere o relatório completo e, se quiser, adicione a comunidade como uma experiência complementar."],
             ].map(([n, t, d]) => (
               <div key={n} className="rounded-3xl bg-card p-7 shadow-soft">
                 <span className="font-display text-sm font-semibold text-primary">{n}</span>
