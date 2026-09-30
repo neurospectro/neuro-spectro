@@ -4,7 +4,6 @@ import { ArrowLeft, ArrowRight, Check, RotateCcw, Users, FileText, Clock } from 
 import mark from "@/assets/mark.png.asset.json";
 import { ASSESSMENT, DIMENSIONS, SCALE, getVisibleQuestions, scoreByDimension } from "@/lib/assessment/questions";
 import { persistCompletedAssessment } from "@/lib/assessment/persistence";
-import { persistCompletedAssessment } from "@/lib/assessment/persistence";
 
 export const Route = createFileRoute("/avaliacao")({
   head: () => ({
