@@ -93,10 +93,19 @@ function Index() {
               </div>
               <div className="flex shrink-0 items-center gap-3 rounded-2xl bg-card px-5 py-4">
                 <Users className="h-6 w-6 text-primary" />
-                <span className="text-sm font-semibold text-ink">Comunidade opcional</span>
+                <div><span className="text-sm font-semibold text-ink">Comunidade de Apoio - NeuroSpectro</span><p className="mt-1 text-xs font-normal text-muted-foreground">Troca de experiências, conteúdos exclusivos e apoio sobre neurodiversidade.</p></div>
               </div>
             </div>
           </div>
+        </section>
+
+        <section className="mx-auto max-w-6xl px-5 py-16">
+          <div className="mb-8 text-center">
+            <p className="text-xs font-semibold uppercase tracking-[0.25em] text-primary">Experiências</p>
+            <h2 className="mt-2 font-display text-3xl font-semibold text-ink">O que essa jornada pode ajudar você a organizar</h2>
+            <p className="mx-auto mt-2 max-w-2xl text-muted-foreground">Veja exemplos do tipo de descoberta e reflexão que o NeuroSpectro foi desenvolvido para apoiar.</p>
+          </div>
+          <TestimonialsCarousel />
         </section>
 
         <section className="mx-auto max-w-6xl px-5 py-16">
