@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
-import { ArrowLeft, ArrowRight, Check, RotateCcw } from "lucide-react";
+import { ArrowLeft, ArrowRight, Check, RotateCcw, Users, FileText } from "lucide-react";
 import mark from "@/assets/mark.png.asset.json";
 import { ASSESSMENT, DIMENSIONS, SCALE, getVisibleQuestions, scoreByDimension } from "@/lib/assessment/questions";
 
@@ -59,6 +59,27 @@ function Avaliacao() {
           <li>• Não há respostas certas ou erradas. Você pode voltar e mudar qualquer resposta.</li>
           <li>• Seu progresso fica salvo neste aparelho.</li>
         </ul>
+
+        <div className="mx-auto mt-7 max-w-md rounded-3xl border border-primary/20 bg-primary/5 p-5 text-left">
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-primary">Ao liberar o acesso completo</p>
+          <div className="mt-4 space-y-4">
+            <div className="flex gap-3">
+              <FileText className="mt-0.5 h-5 w-5 shrink-0 text-primary" />
+              <div>
+                <p className="font-semibold text-ink">Resultado completo e relatório em PDF</p>
+                <p className="mt-1 text-sm text-muted-foreground">Uma leitura organizada para seu autoconhecimento e para levar a uma conversa com um profissional, se desejar.</p>
+              </div>
+            </div>
+            <div className="flex gap-3">
+              <Users className="mt-0.5 h-5 w-5 shrink-0 text-primary" />
+              <div>
+                <p className="font-semibold text-ink">Comunidade NeuroSpectro</p>
+                <p className="mt-1 text-sm text-muted-foreground">Troca de experiências, informação e apoio com outras pessoas que também estão explorando seus próprios perfis.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <p className="mx-auto mt-6 max-w-md rounded-2xl bg-secondary p-4 text-sm text-secondary-foreground">
           Esta é uma autoavaliação informativa e de autoconhecimento. Não é um diagnóstico e não substitui a avaliação de um profissional de saúde.
         </p>
