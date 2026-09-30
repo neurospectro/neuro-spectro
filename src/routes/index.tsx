@@ -71,7 +71,6 @@ function Index() {
               </p>
               <div className="mt-8 flex flex-col gap-4 sm:flex-row sm:items-center">
                 <Cta />
-                <span className="flex items-center gap-2 text-sm text-muted-foreground"><Clock className="h-4 w-4" /> Cerca de 12 minutos</span>
               </div>
               <div className="mt-8 h-1 w-40 rounded-full bg-spectrum" />
             </div>

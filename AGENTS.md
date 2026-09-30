@@ -8,3 +8,7 @@
 > Commits you push to the connected branch sync back to Lovable and show up in
 > the editor, so keep the branch in a working state.
 <!-- LOVABLE:END -->
+
+- Question bank + metadata lives in src/lib/assessment/questions.ts, versioned by ASSESSMENT.version; why: single source until backend DB exists.
+- Questionnaire session saved in localStorage keyed by assessment id+version; why: works without login, moves to Cloud with auth step.
+- IN_REVIEW items visible during pre-launch (VISIBLE_STATUSES); why: no clinical review yet — restrict to APPROVED before publishing.
