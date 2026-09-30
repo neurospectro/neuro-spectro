@@ -122,7 +122,7 @@ function Checkout() {
         const mp = new window.MercadoPago(publicKey, { locale: "pt-BR" });
         const bricksBuilder = mp.bricks();
 
-        brickRef.current = await bricksBuilder.create("payment", "paymentBrick_container", {
+        const brick = await bricksBuilder.create("payment", "paymentBrick_container", {
           initialization: {
             amount: offer.totalCents / 100,
             payer: { email: sessionData.session.user.email ?? "" },
@@ -192,10 +192,22 @@ function Checkout() {
             },
           },
         });
+
+        if (cancelled) {
+          brick.unmount();
+          return;
+        }
+
+        brickRef.current = brick;
+        setLoading(false);
       } catch (mountError) {
         if (!cancelled) {
           setLoading(false);
-          setError(mountError instanceof Error ? mountError.message : "Não foi possível carregar o checkout.");
+          setError(
+            mountError instanceof Error
+              ? mountError.message
+              : "Não foi possível carregar o checkout.",
+          );
         }
       }
     };
