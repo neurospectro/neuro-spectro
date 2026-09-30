@@ -72,6 +72,31 @@ Deno.serve(async (req) => {
     return json({ error: "A configuração da oferta não corresponde ao catálogo seguro." }, 409);
   }
 
+  const productSlug = String(offer?.produtos?.slug ?? configured.product);
+
+  if (productSlug === "relatorio-pdf") {
+    const { data: reportProduct } = await admin
+      .from("produtos")
+      .select("id")
+      .eq("slug", "relatorio-completo")
+      .maybeSingle();
+
+    const { data: reportAccess } = reportProduct
+      ? await admin
+          .from("acessos")
+          .select("id")
+          .eq("user_id", userData.user.id)
+          .eq("produto_id", reportProduct.id)
+          .eq("status", "active")
+          .or("expires_at.is.null,expires_at.gt.now()")
+          .limit(1)
+      : { data: [] };
+
+    if (!reportAccess?.length) {
+      return json({ error: "O Relatório PDF é um complemento do Relatório Completo." }, 403);
+    }
+  }
+
   const payerEmail = String(formData?.payer?.email ?? userData.user.email ?? "").trim();
   if (!payerEmail) return json({ error: "E-mail do pagador é obrigatório." }, 400);
 
@@ -81,6 +106,13 @@ Deno.serve(async (req) => {
 
   if (!normalizedType || !selectedPaymentMethod) {
     return json({ error: "Forma de pagamento não reconhecida." }, 400);
+  }
+
+  if (configured.installments > 1 && normalizedType.includes("card")) {
+    const selectedInstallments = Number(formData?.installments ?? 0);
+    if (selectedInstallments !== configured.installments) {
+      return json({ error: `Esta oferta deve ser paga em ${configured.installments}x de R$ ${(configured.installment / 100).toFixed(2).replace(".", ",")}.` }, 400);
+    }
   }
 
   const amount = centsToAmount(configured.total);
