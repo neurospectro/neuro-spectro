@@ -17,7 +17,7 @@ export interface Offer {
 export const OFFERS: Record<string, Offer> = {
   "community-12m-6x": {
     id: "community-12m-6x",
-    name: "Comunidade de Apoio - NeuroSpectro · 12 meses",
+    name: "Comunidade de Apoio - NeuroSpectro · acesso por tempo indeterminado",
     product: "community",
     billing: "one_time_installments",
     totalCents: 8940,
@@ -26,7 +26,7 @@ export const OFFERS: Record<string, Offer> = {
     accessDays: null,
     autoRenew: false,
     lifetimeAccess: true,
-    description: "Pague em 6x de R$ 14,90 e tenha 12 meses de acesso.",
+    description: "6x de R$ 14,90 · total de R$ 89,40 · acesso por tempo indeterminado, sem renovação automática.",
   },
   "community-monthly": {
     id: "community-monthly",
