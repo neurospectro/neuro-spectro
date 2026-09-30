@@ -96,8 +96,8 @@ function Index() {
                   <span className="text-lg" aria-hidden>🧠🧩</span>
                 </div>
                 <div>
-                  <span className="text-sm font-semibold text-ink">🧠🧩 Comunidade de Apoio</span>
-                  <p className="mt-1 text-xs font-normal text-muted-foreground">Troca de experiências e apoio para continuar essa jornada.</p>
+                  <span className="text-[13px] font-semibold leading-5 tracking-tight text-ink">🧠🧩 Comunidade de Apoio</span>
+                  <p className="mt-1.5 text-[11px] font-normal leading-4 text-muted-foreground">Troca de experiências e apoio para continuar essa jornada.</p>
                 </div>
               </div>
             </div>
