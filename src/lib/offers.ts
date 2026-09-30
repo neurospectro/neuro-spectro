@@ -30,7 +30,7 @@ export const OFFERS: Record<string, Offer> = {
     lifetimeAccess: true,
     description: "De R$ 69,90 por R$ 24,90 · pagamento único · acesso ao relatório completo.",
     referenceCents: 6990,
-    promotionalWindowMinutes: 15,
+    promotionalWindowMinutes: 7,
   },
   "community-12m-6x": {
     id: "community-12m-6x",
