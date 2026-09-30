@@ -11,6 +11,12 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AvaliacaoRouteImport } from './routes/avaliacao'
+import { Route as ComunidadeRouteImport } from './routes/comunidade'
+import { Route as DashboardRouteImport } from './routes/dashboard'
+import { Route as DepoimentoRouteImport } from './routes/depoimento'
+import { Route as LoginRouteImport } from './routes/login'
+import { Route as RelatorioPdfRouteImport } from './routes/relatorio-pdf'
+import { Route as CheckoutOfferIdRouteImport } from './routes/checkout.$offerId'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -22,31 +28,110 @@ const AvaliacaoRoute = AvaliacaoRouteImport.update({
   path: '/avaliacao',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ComunidadeRoute = ComunidadeRouteImport.update({
+  id: '/comunidade',
+  path: '/comunidade',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DashboardRoute = DashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DepoimentoRoute = DepoimentoRouteImport.update({
+  id: '/depoimento',
+  path: '/depoimento',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RelatorioPdfRoute = RelatorioPdfRouteImport.update({
+  id: '/relatorio-pdf',
+  path: '/relatorio-pdf',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CheckoutOfferIdRoute = CheckoutOfferIdRouteImport.update({
+  id: '/checkout/$offerId',
+  path: '/checkout/$offerId',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/avaliacao': typeof AvaliacaoRoute
+  '/comunidade': typeof ComunidadeRoute
+  '/dashboard': typeof DashboardRoute
+  '/depoimento': typeof DepoimentoRoute
+  '/login': typeof LoginRoute
+  '/relatorio-pdf': typeof RelatorioPdfRoute
+  '/checkout/$offerId': typeof CheckoutOfferIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/avaliacao': typeof AvaliacaoRoute
+  '/comunidade': typeof ComunidadeRoute
+  '/dashboard': typeof DashboardRoute
+  '/depoimento': typeof DepoimentoRoute
+  '/login': typeof LoginRoute
+  '/relatorio-pdf': typeof RelatorioPdfRoute
+  '/checkout/$offerId': typeof CheckoutOfferIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/avaliacao': typeof AvaliacaoRoute
+  '/comunidade': typeof ComunidadeRoute
+  '/dashboard': typeof DashboardRoute
+  '/depoimento': typeof DepoimentoRoute
+  '/login': typeof LoginRoute
+  '/relatorio-pdf': typeof RelatorioPdfRoute
+  '/checkout/$offerId': typeof CheckoutOfferIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/avaliacao'
+  fullPaths:
+    | '/'
+    | '/avaliacao'
+    | '/comunidade'
+    | '/dashboard'
+    | '/depoimento'
+    | '/login'
+    | '/relatorio-pdf'
+    | '/checkout/$offerId'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/avaliacao'
-  id: '__root__' | '/' | '/avaliacao'
+  to:
+    | '/'
+    | '/avaliacao'
+    | '/comunidade'
+    | '/dashboard'
+    | '/depoimento'
+    | '/login'
+    | '/relatorio-pdf'
+    | '/checkout/$offerId'
+  id:
+    | '__root__'
+    | '/'
+    | '/avaliacao'
+    | '/comunidade'
+    | '/dashboard'
+    | '/depoimento'
+    | '/login'
+    | '/relatorio-pdf'
+    | '/checkout/$offerId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AvaliacaoRoute: typeof AvaliacaoRoute
+  ComunidadeRoute: typeof ComunidadeRoute
+  DashboardRoute: typeof DashboardRoute
+  DepoimentoRoute: typeof DepoimentoRoute
+  LoginRoute: typeof LoginRoute
+  RelatorioPdfRoute: typeof RelatorioPdfRoute
+  CheckoutOfferIdRoute: typeof CheckoutOfferIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -65,12 +150,60 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AvaliacaoRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/comunidade': {
+      id: '/comunidade'
+      path: '/comunidade'
+      fullPath: '/comunidade'
+      preLoaderRoute: typeof ComunidadeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dashboard': {
+      id: '/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof DashboardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/depoimento': {
+      id: '/depoimento'
+      path: '/depoimento'
+      fullPath: '/depoimento'
+      preLoaderRoute: typeof DepoimentoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/relatorio-pdf': {
+      id: '/relatorio-pdf'
+      path: '/relatorio-pdf'
+      fullPath: '/relatorio-pdf'
+      preLoaderRoute: typeof RelatorioPdfRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/checkout/$offerId': {
+      id: '/checkout/$offerId'
+      path: '/checkout/$offerId'
+      fullPath: '/checkout/$offerId'
+      preLoaderRoute: typeof CheckoutOfferIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AvaliacaoRoute: AvaliacaoRoute,
+  ComunidadeRoute: ComunidadeRoute,
+  DashboardRoute: DashboardRoute,
+  DepoimentoRoute: DepoimentoRoute,
+  LoginRoute: LoginRoute,
+  RelatorioPdfRoute: RelatorioPdfRoute,
+  CheckoutOfferIdRoute: CheckoutOfferIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
