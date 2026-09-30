@@ -30,6 +30,17 @@ function Checkout() {
           <h1 className="mt-3 font-display text-3xl font-semibold text-ink">{offer.name}</h1>
           <p className="mt-3 text-muted-foreground">{offer.description}</p>
 
+          {offer.referenceCents && (
+            <div className="mt-7 rounded-2xl border border-primary/20 bg-primary/5 p-5">
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-primary">Condição promocional</p>
+              <div className="mt-2 flex items-end gap-3">
+                <span className="text-lg text-muted-foreground line-through">{formatBRL(offer.referenceCents)}</span>
+                <span className="text-3xl font-bold text-ink">{formatBRL(offer.totalCents)}</span>
+              </div>
+              <p className="mt-1 text-sm text-muted-foreground">Condição reservada para esta sessão de avaliação.</p>
+            </div>
+          )}
+
           <div className="mt-7 rounded-2xl bg-primary/5 p-5">
             <div className="flex items-end justify-between gap-4">
               <div>
