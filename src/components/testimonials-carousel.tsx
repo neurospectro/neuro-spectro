@@ -1,13 +1,31 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Quote } from "lucide-react";
-import { APPROVED_TESTIMONIALS } from "@/lib/testimonials";
+import { supabase } from "@/lib/supabase";
+
+type ApprovedTestimonial = {
+  id: string;
+  name: string;
+  text: string;
+};
 
 export function TestimonialsCarousel() {
   const ref = useRef<HTMLDivElement>(null);
+  const [items, setItems] = useState<ApprovedTestimonial[]>([]);
+
+  useEffect(() => {
+    if (!supabase) return;
+    void supabase
+      .from("depoimentos")
+      .select("id,name,text")
+      .eq("status", "APPROVED")
+      .order("created_at", { ascending: false })
+      .limit(30)
+      .then(({ data }) => setItems((data ?? []) as ApprovedTestimonial[]));
+  }, []);
 
   useEffect(() => {
     const el = ref.current;
-    if (!el || APPROVED_TESTIMONIALS.length < 2) return;
+    if (!el || items.length < 2) return;
 
     let frame = 0;
     let last = performance.now();
@@ -25,9 +43,9 @@ export function TestimonialsCarousel() {
 
     frame = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(frame);
-  }, []);
+  }, [items.length]);
 
-  if (APPROVED_TESTIMONIALS.length === 0) {
+  if (items.length === 0) {
     return (
       <div className="rounded-3xl border border-dashed border-primary/30 bg-primary/5 p-8 text-center">
         <Quote className="mx-auto h-8 w-8 text-primary/60" />
@@ -39,17 +57,15 @@ export function TestimonialsCarousel() {
     );
   }
 
-  const items = [...APPROVED_TESTIMONIALS, ...APPROVED_TESTIMONIALS];
+  const loopItems = [...items, ...items];
 
   return (
     <div ref={ref} className="flex gap-5 overflow-hidden pb-4" aria-label="Depoimentos aprovados">
-      {items.map((testimonial, index) => (
+      {loopItems.map((testimonial, index) => (
         <article key={`${testimonial.id}-${index}`} className="min-w-[300px] max-w-sm shrink-0 rounded-3xl border border-border bg-card p-7 shadow-soft md:min-w-[360px]">
           <Quote className="h-7 w-7 text-primary/60" />
           <p className="mt-5 leading-7 text-foreground">“{testimonial.text}”</p>
-          <p className="mt-5 text-sm font-semibold text-ink">
-            {testimonial.name}{testimonial.age ? `, ${testimonial.age} anos` : ""}
-          </p>
+          <p className="mt-5 text-sm font-semibold text-ink">{testimonial.name}</p>
         </article>
       ))}
     </div>
