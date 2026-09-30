@@ -1,0 +1,13 @@
+#paymentBrick_container {
+  min-height: 120px;
+}
+
+#paymentBrick_container iframe {
+  max-width: 100%;
+}
+
+@media (max-width: 640px) {
+  #paymentBrick_container {
+    overflow-x: hidden;
+  }
+}
