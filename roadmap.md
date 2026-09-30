@@ -1,0 +1,11 @@
+# NeuroSpectro roadmap
+- [x] 1. Design system + identity (logo/brand board) + Home
+- [ ] 2. Questionnaire + database + progress
+- [ ] 3. Partial result + paywall
+- [ ] 4. Checkout Pix/card + webhook (provider undecided)
+- [ ] 5. Auth + magic link
+- [ ] 6. Full result + PDF + dashboard
+- [ ] 7. Admin panel
+- [ ] 8. Meta Pixel/CAPI/GA
+- [ ] 9. SEO/performance/a11y
+- [ ] 10. Security + QA
