@@ -67,7 +67,7 @@ function Dashboard() {
     const firstError = resultQuery.error ?? accessQuery.error ?? orderQuery.error;
     if (firstError) setError(firstError.message);
     setResults((resultQuery.data ?? []) as ResultRow[]);
-    setAccesses((accessQuery.data ?? []) as AccessRow[]);
+    setAccesses((accessQuery.data ?? []) as unknown as AccessRow[]);
     setOrders((orderQuery.data ?? []) as OrderRow[]);
     setLoading(false);
   }
