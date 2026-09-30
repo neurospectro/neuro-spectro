@@ -12,9 +12,26 @@ export interface Offer {
   autoRenew: boolean;
   lifetimeAccess?: boolean;
   description: string;
+  referenceCents?: number;
+  promotionalWindowMinutes?: number;
 }
 
 export const OFFERS: Record<string, Offer> = {
+  "report-full-2490": {
+    id: "report-full-2490",
+    name: "Relatório Completo NeuroSpectro",
+    product: "report",
+    billing: "one_time_installments",
+    totalCents: 2490,
+    installmentCount: 1,
+    installmentCents: 2490,
+    accessDays: null,
+    autoRenew: false,
+    lifetimeAccess: true,
+    description: "De R$ 69,90 por R$ 24,90 · pagamento único · acesso ao relatório completo.",
+    referenceCents: 6990,
+    promotionalWindowMinutes: 15,
+  },
   "community-12m-6x": {
     id: "community-12m-6x",
     name: "Comunidade de Apoio - NeuroSpectro · acesso por tempo indeterminado",
