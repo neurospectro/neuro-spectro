@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Brain, Target, MessageCircle, Heart, Infinity as InfinityIcon, Sun, User, Star, ShieldCheck, Clock, FileText, Lock } from "lucide-react";
+import { Brain, Target, MessageCircle, Heart, Infinity as InfinityIcon, Sun, User, Star, ShieldCheck, FileText, Lock, Users } from "lucide-react";
 import logo from "@/assets/logo.png.asset.json";
 import mark from "@/assets/mark.png.asset.json";
 
@@ -80,6 +80,24 @@ function Index() {
           </div>
         </section>
 
+        <section className="mx-auto max-w-6xl px-5 py-10">
+          <div className="rounded-[2rem] border border-primary/20 bg-primary/5 p-7 shadow-soft md:p-9">
+            <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
+              <div className="max-w-2xl">
+                <p className="text-xs font-semibold uppercase tracking-[0.25em] text-primary">Benefício do acesso completo</p>
+                <h2 className="mt-3 font-display text-2xl font-semibold text-ink md:text-3xl">Você não precisa explorar tudo isso sozinho.</h2>
+                <p className="mt-3 text-muted-foreground">
+                  Ao liberar seu acesso completo, você também poderá entrar na Comunidade NeuroSpectro: um espaço de troca de experiências, informação e apoio para continuar sua jornada.
+                </p>
+              </div>
+              <div className="flex shrink-0 items-center gap-3 rounded-2xl bg-card px-5 py-4">
+                <Users className="h-6 w-6 text-primary" />
+                <span className="text-sm font-semibold text-ink">Comunidade incluída</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
         <section className="mx-auto max-w-6xl px-5 py-16">
           <h2 className="font-display text-3xl font-semibold text-ink">O que você vai explorar</h2>
           <p className="mt-2 text-muted-foreground">Dimensões do seu funcionamento, observadas com cuidado.</p>
@@ -99,7 +117,7 @@ function Index() {
             {[
               ["01", "Responda com calma", "Uma pergunta por tela. Salve e retome quando quiser."],
               ["02", "Veja sua prévia", "Receba uma primeira leitura do seu perfil ao final."],
-              ["03", "Aprofunde", "Libere o relatório completo com PDF e orientações."],
+              ["03", "Aprofunde", "Libere o relatório completo, PDF e acesso à comunidade."],
             ].map(([n, t, d]) => (
               <div key={n} className="rounded-3xl bg-card p-7 shadow-soft">
                 <span className="font-display text-sm font-semibold text-primary">{n}</span>
