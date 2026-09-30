@@ -8,8 +8,9 @@ export interface Offer {
   totalCents: number;
   installmentCount: number;
   installmentCents: number;
-  accessDays: number;
+  accessDays: number | null;
   autoRenew: boolean;
+  lifetimeAccess?: boolean;
   description: string;
 }
 
@@ -22,8 +23,9 @@ export const OFFERS: Record<string, Offer> = {
     totalCents: 8940,
     installmentCount: 6,
     installmentCents: 1490,
-    accessDays: 365,
+    accessDays: null,
     autoRenew: false,
+    lifetimeAccess: true,
     description: "Pague em 6x de R$ 14,90 e tenha 12 meses de acesso.",
   },
   "community-monthly": {
