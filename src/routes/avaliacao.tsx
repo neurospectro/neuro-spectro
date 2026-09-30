@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
-import { ArrowLeft, ArrowRight, Check, RotateCcw, Users, FileText } from "lucide-react";
+import { ArrowLeft, ArrowRight, Check, RotateCcw, Users, FileText, Clock } from "lucide-react";
 import mark from "@/assets/mark.png.asset.json";
 import { ASSESSMENT, DIMENSIONS, SCALE, getVisibleQuestions, scoreByDimension } from "@/lib/assessment/questions";
 
@@ -61,7 +61,7 @@ function Avaliacao() {
         </ul>
 
         <div className="mx-auto mt-7 max-w-md rounded-3xl border border-primary/20 bg-primary/5 p-5 text-left">
-          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-primary">Depois do acesso principal</p>
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-primary">Depois da avaliação</p>
           <div className="mt-4 space-y-4">
             <div className="flex gap-3">
               <FileText className="mt-0.5 h-5 w-5 shrink-0 text-primary" />
@@ -73,7 +73,7 @@ function Avaliacao() {
             <div className="flex gap-3">
               <Users className="mt-0.5 h-5 w-5 shrink-0 text-primary" />
               <div>
-                <p className="font-semibold text-ink">Círculo NeuroSpectro</p>
+                <p className="font-semibold text-ink">Comunidade de Apoio - NeuroSpectro</p>
                 <p className="mt-1 text-sm text-muted-foreground">Uma comunidade opcional com conteúdos exclusivos, troca de experiências e conversas sobre neurodiversidade.</p>
               </div>
             </div>
@@ -201,6 +201,23 @@ function Done({ session, onReview }: { session: Session; onReview: () => void })
         ))}
       </div>
       <p className="mx-auto mt-6 max-w-md text-xs text-muted-foreground">Não é diagnóstico. Pontuações indicam maior ou menor presença de características em cada dimensão, sem pontos de corte clínicos.</p>
+
+      <div className="mx-auto mt-7 max-w-md rounded-3xl border border-primary/20 bg-card p-6 text-left shadow-soft">
+        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-primary">Experiência complementar</p>
+        <h2 className="mt-2 font-display text-xl font-semibold text-ink">Comunidade de Apoio - NeuroSpectro</h2>
+        <p className="mt-2 text-sm text-muted-foreground">Pague 6 meses e tenha 1 ano de acesso à comunidade.</p>
+        <div className="mt-4 flex items-center gap-3 rounded-2xl bg-primary/5 p-4">
+          <Clock className="h-5 w-5 text-primary" />
+          <div>
+            <p className="font-semibold text-ink">6x R$ 14,90</p>
+            <p className="text-xs text-muted-foreground">Total de R$ 89,40 · 12 meses de acesso · sem renovação automática</p>
+          </div>
+        </div>
+        <Link to="/checkout/$offerId" params={{ offerId: "community-12m-6x" }} className="mt-5 block rounded-full bg-primary px-6 py-3 text-center text-sm font-semibold text-primary-foreground shadow-soft">
+          Conhecer a oferta
+        </Link>
+      </div>
+
       <button onClick={onReview} className="mt-6 rounded-full border border-border px-6 py-3 text-sm font-medium hover:bg-secondary">Revisar respostas</button>
     </Shell>
   );
