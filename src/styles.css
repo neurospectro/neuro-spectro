@@ -167,3 +167,67 @@
     color: var(--color-foreground);
   }
 }
+
+
+/* NeuroSpectro — sensory comfort mode.
+ * Uses a deep, low-glare palette rather than pure black/white and suppresses
+ * non-essential motion. The preference is persisted by SensoryMode.
+ */
+html.sensory-comfort {
+  --background: oklch(0.15 0.025 285);
+  --foreground: oklch(0.88 0.025 285);
+  --card: oklch(0.19 0.025 285);
+  --card-foreground: oklch(0.9 0.02 285);
+  --popover: oklch(0.19 0.025 285);
+  --popover-foreground: oklch(0.9 0.02 285);
+  --primary: oklch(0.72 0.12 292);
+  --primary-foreground: oklch(0.15 0.025 285);
+  --secondary: oklch(0.25 0.025 285);
+  --secondary-foreground: oklch(0.88 0.025 285);
+  --muted: oklch(0.23 0.02 285);
+  --muted-foreground: oklch(0.68 0.025 285);
+  --accent: oklch(0.26 0.035 285);
+  --accent-foreground: oklch(0.9 0.02 285);
+  --border: oklch(0.32 0.025 285);
+  --input: oklch(0.29 0.025 285);
+  --ring: oklch(0.72 0.12 292);
+  --ink: oklch(0.9 0.02 285);
+  --ink-foreground: oklch(0.15 0.025 285);
+  --sidebar: oklch(0.18 0.025 285);
+  --sidebar-foreground: oklch(0.88 0.025 285);
+  --sidebar-primary: oklch(0.72 0.12 292);
+  --sidebar-primary-foreground: oklch(0.15 0.025 285);
+  --sidebar-accent: oklch(0.25 0.025 285);
+  --sidebar-accent-foreground: oklch(0.88 0.025 285);
+  --sidebar-border: oklch(0.3 0.025 285);
+  --sidebar-ring: oklch(0.55 0.025 285);
+  --gradient-spectrum: linear-gradient(90deg, oklch(0.58 0.06 250), oklch(0.62 0.05 165), oklch(0.66 0.06 90), oklch(0.62 0.05 350), oklch(0.62 0.08 292));
+  --shadow-soft: 0 16px 40px -24px color-mix(in oklab, var(--primary) 25%, transparent);
+}
+
+html.sensory-comfort *,
+html.sensory-comfort *::before,
+html.sensory-comfort *::after {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+  scroll-behavior: auto !important;
+}
+
+html.reduce-motion *,
+html.reduce-motion *::before,
+html.reduce-motion *::after {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+  scroll-behavior: auto !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
