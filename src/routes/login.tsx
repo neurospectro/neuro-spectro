@@ -17,7 +17,7 @@ function LoginPage() {
   useEffect(() => {
     if (!supabase) return;
     void supabase.auth.getSession().then(({ data }) => {
-      if (data.session) void navigate({ to: "/depoimento" });
+      if (data.session) void navigate({ to: "/dashboard" });
     });
   }, [navigate]);
 
@@ -28,7 +28,7 @@ function LoginPage() {
     setLoading(true);
     setMessage("");
 
-    const redirectTo = `${window.location.origin}/depoimento`;
+    const redirectTo = `${window.location.origin}/dashboard`;
     const { error } = await supabase.auth.signInWithOtp({
       email: email.trim(),
       options: { emailRedirectTo: redirectTo },
