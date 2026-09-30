@@ -15,6 +15,7 @@ alter table public.depoimentos enable row level security;
 
 revoke all on table public.depoimentos from anon;
 grant select, insert on table public.depoimentos to authenticated;
+grant select (id, name, text, status, created_at) on table public.depoimentos to anon;
 
 drop policy if exists "Users can read their own testimonials" on public.depoimentos;
 create policy "Users can read their own testimonials"
@@ -31,6 +32,12 @@ with check (
   and status = 'PENDING'
   and consented_to_publish = true
 );
+
+drop policy if exists "Public can read approved testimonials" on public.depoimentos;
+create policy "Public can read approved testimonials"
+on public.depoimentos for select
+to anon, authenticated
+using (status = 'APPROVED');
 
 create index if not exists depoimentos_user_id_idx on public.depoimentos(user_id);
 create index if not exists depoimentos_status_idx on public.depoimentos(status);
