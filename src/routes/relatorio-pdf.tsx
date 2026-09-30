@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import mark from "@/assets/mark.png.asset.json";
 import { ASSESSMENT, DIMENSIONS } from "@/lib/assessment/questions";
 import { supabase } from "@/lib/supabase";
+import "@/styles/report-print.css";
 
 type Score = { id: string; label: string; raw: number; max: number };
 type Result = {
