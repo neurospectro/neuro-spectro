@@ -11,7 +11,7 @@ export interface CommunityConfig {
 export const COMMUNITY: CommunityConfig = {
   enabled: true,
   platform: "whatsapp",
-  title: "Círculo NeuroSpectro",
+  title: "Comunidade de Apoio - NeuroSpectro",
   description:
     "Um espaço acolhedor de troca de experiências, informação e apoio para pessoas neurodivergentes, neurotípicas e pessoas interessadas em compreender melhor a neurodiversidade.",
   accessMode: "post_purchase",
