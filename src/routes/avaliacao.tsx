@@ -210,7 +210,7 @@ function Done({ session, onReview }: { session: Session; onReview: () => void })
           <Clock className="h-5 w-5 text-primary" />
           <div>
             <p className="font-semibold text-ink">6x R$ 14,90</p>
-            <p className="text-xs text-muted-foreground">Total de R$ 89,40 · 12 meses de acesso · sem renovação automática</p>
+            <p className="text-xs text-muted-foreground">Total de R$ 89,40 · acesso por tempo indeterminado · sem renovação automática</p>
           </div>
         </div>
         <Link to="/checkout/$offerId" params={{ offerId: "community-12m-6x" }} className="mt-5 block rounded-full bg-primary px-6 py-3 text-center text-sm font-semibold text-primary-foreground shadow-soft">
