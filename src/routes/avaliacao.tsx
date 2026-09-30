@@ -202,24 +202,79 @@ function Done({ session, onReview }: { session: Session; onReview: () => void })
       </div>
       <p className="mx-auto mt-6 max-w-md text-xs text-muted-foreground">Não é diagnóstico. Pontuações indicam maior ou menor presença de características em cada dimensão, sem pontos de corte clínicos.</p>
 
-      <div className="mx-auto mt-7 max-w-md rounded-3xl border border-primary/20 bg-card p-6 text-left shadow-soft">
-        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-primary">Experiência complementar</p>
-        <h2 className="mt-2 font-display text-xl font-semibold text-ink">Comunidade de Apoio - NeuroSpectro</h2>
-        <p className="mt-2 text-sm text-muted-foreground">Um único pagamento parcelado em 6x, com acesso por tempo indeterminado e sem renovação automática.</p>
-        <div className="mt-4 flex items-center gap-3 rounded-2xl bg-primary/5 p-4">
-          <Clock className="h-5 w-5 text-primary" />
-          <div>
-            <p className="font-semibold text-ink">6x R$ 14,90</p>
-            <p className="text-xs text-muted-foreground">Total de R$ 89,40 · acesso por tempo indeterminado · sem renovação automática</p>
-          </div>
-        </div>
-        <Link to="/checkout/$offerId" params={{ offerId: "community-12m-6x" }} className="mt-5 block rounded-full bg-primary px-6 py-3 text-center text-sm font-semibold text-primary-foreground shadow-soft">
-          Conhecer a oferta
-        </Link>
-      </div>
+      <ReportOffer session={session} />
 
       <button onClick={onReview} className="mt-6 rounded-full border border-border px-6 py-3 text-sm font-medium hover:bg-secondary">Revisar respostas</button>
     </Shell>
+  );
+}
+
+function ReportOffer({ session }: { session: Session }) {
+  const offerEndsAt = new Date(session.finishedAt!).getTime() + 15 * 60 * 1000;
+  const [remaining, setRemaining] = useState(Math.max(0, offerEndsAt - Date.now()));
+
+  useEffect(() => {
+    const timer = window.setInterval(() => {
+      setRemaining(Math.max(0, offerEndsAt - Date.now()));
+    }, 1000);
+    return () => window.clearInterval(timer);
+  }, [offerEndsAt]);
+
+  const expired = remaining <= 0;
+  const minutes = Math.floor(remaining / 60000);
+  const seconds = Math.floor((remaining % 60000) / 1000);
+
+  return (
+    <div className="mx-auto mt-7 max-w-md rounded-3xl border-2 border-primary/30 bg-card p-6 text-left shadow-soft">
+      <p className="text-xs font-semibold uppercase tracking-[0.25em] text-primary">Condição promocional da sua sessão</p>
+      <h2 className="mt-2 font-display text-2xl font-semibold text-ink">Seu Relatório Completo NeuroSpectro</h2>
+      <p className="mt-2 text-sm text-muted-foreground">
+        Transforme suas respostas em uma leitura organizada das dimensões avaliadas, padrões observados e pontos para explorar em seu autoconhecimento.
+      </p>
+
+      <div className="mt-5 rounded-2xl bg-primary/5 p-4">
+        <div className="flex items-center justify-between gap-3">
+          <div>
+            <p className="text-sm text-muted-foreground">De</p>
+            <p className="text-lg font-medium text-muted-foreground line-through">R$ 69,90</p>
+          </div>
+          <div className="text-right">
+            <p className="text-xs font-semibold uppercase tracking-wider text-primary">Hoje</p>
+            <p className="text-3xl font-bold text-ink">R$ 24,90</p>
+          </div>
+        </div>
+      </div>
+
+      <div className="mt-4 flex items-center gap-3 rounded-2xl border border-primary/20 bg-background p-4">
+        <Clock className="h-6 w-6 shrink-0 text-primary" />
+        <div>
+          <p className="text-sm font-semibold text-ink">{expired ? "Condição promocional encerrada" : "Tempo restante desta condição"}</p>
+          <p className="font-display text-2xl font-bold tabular-nums text-primary">
+            {expired ? "00:00" : `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`}
+          </p>
+        </div>
+      </div>
+
+      <ul className="mt-5 space-y-2 text-sm text-muted-foreground">
+        <li>✓ Análise completa das dimensões avaliadas</li>
+        <li>✓ Leitura organizada dos padrões observados</li>
+        <li>✓ Pontos para explorar em uma conversa com profissional</li>
+        <li>✓ Conteúdo informativo e não diagnóstico</li>
+      </ul>
+
+      <Link
+        to="/checkout/$offerId"
+        params={{ offerId: "report-full-2490" }}
+        className={`mt-6 block rounded-full bg-primary px-6 py-4 text-center font-semibold text-primary-foreground shadow-soft transition-opacity ${expired ? "pointer-events-none opacity-40" : "hover:opacity-90"}`}
+        aria-disabled={expired}
+      >
+        {expired ? "Condição encerrada" : "Quero meu Relatório Completo"}
+      </Link>
+
+      <p className="mt-3 text-center text-xs text-muted-foreground">
+        Pagamento único. O relatório é informativo e não substitui avaliação profissional.
+      </p>
+    </div>
   );
 }
 
