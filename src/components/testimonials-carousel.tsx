@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Quote, Star } from "lucide-react";
+import { Quote, Star, Pause, Play } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 
 type Testimonial = {
@@ -49,6 +49,7 @@ const testerTestimonials: Testimonial[] = [
 export function TestimonialsCarousel() {
   const ref = useRef<HTMLDivElement>(null);
   const [approvedItems, setApprovedItems] = useState<Testimonial[]>([]);
+  const [isPaused, setIsPaused] = useState(false);
 
   useEffect(() => {
     if (!supabase) return;
@@ -82,30 +83,28 @@ export function TestimonialsCarousel() {
     const tick = (now: number) => {
       const delta = now - last;
       last = now;
-      if (document.visibilityState === "visible") {
-        el.scrollLeft += delta * 0.035;
+
+      if (!isPaused && document.visibilityState === "visible") {
+        el.scrollLeft += delta * 0.018;
         const loopWidth = el.scrollWidth / 2;
         if (loopWidth > 0 && el.scrollLeft >= loopWidth) el.scrollLeft = 0;
       }
+
       frame = requestAnimationFrame(tick);
     };
 
     frame = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(frame);
-  }, [cards.length]);
+  }, [cards.length, isPaused]);
 
   return (
     <div>
-      {approvedItems.length === 0 && (
-        <p className="mb-4 text-center text-xs text-muted-foreground">
-          Depoimentos de testadores da versão inicial do NeuroSpectro.
-        </p>
-      )}
-
       <div
         ref={ref}
-        className="flex gap-5 overflow-hidden pb-4"
+        className="flex gap-5 overflow-x-auto pb-4 scrollbar-none"
         aria-label="Depoimentos de usuários"
+        onMouseEnter={() => setIsPaused(true)}
+        onMouseLeave={() => setIsPaused(false)}
       >
         {loopItems.map((testimonial, index) => (
           <article
@@ -136,6 +135,19 @@ export function TestimonialsCarousel() {
             <p className="mt-3 leading-7 text-foreground">“{testimonial.text}”</p>
           </article>
         ))}
+      </div>
+
+      <div className="mt-2 flex justify-center">
+        <button
+          type="button"
+          onClick={() => setIsPaused((paused) => !paused)}
+          className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-4 py-2 text-xs font-semibold text-ink transition hover:bg-muted"
+          aria-label={isPaused ? "Continuar rolagem dos depoimentos" : "Pausar rolagem dos depoimentos"}
+          aria-pressed={isPaused}
+        >
+          {isPaused ? <Play className="h-3.5 w-3.5" /> : <Pause className="h-3.5 w-3.5" />}
+          {isPaused ? "Continuar" : "Pausar"}
+        </button>
       </div>
     </div>
   );
