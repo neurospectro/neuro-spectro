@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Brain, Target, MessageCircle, Heart, Infinity as InfinityIcon, Sun, User, Star, ShieldCheck, FileText, Lock, Users, Quote } from "lucide-react";
-import { APPROVED_TESTIMONIALS } from "@/lib/testimonials";
+import { Brain, Target, MessageCircle, Heart, Infinity as InfinityIcon, Sun, User, Star, ShieldCheck, FileText, Lock, Users } from "lucide-react";
+import { TestimonialsCarousel } from "@/components/testimonials-carousel";
 import logo from "@/assets/logo.png.asset.json";
 import mark from "@/assets/mark.png.asset.json";
 
