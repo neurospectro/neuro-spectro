@@ -11,8 +11,7 @@ export interface CommunityConfig {
 export const COMMUNITY: CommunityConfig = {
   enabled: true,
   platform: "whatsapp",
-  // Configure the real invite link before launch. Never publish a private admin link.
-  inviteUrl: "",
+  inviteUrl: "https://chat.whatsapp.com/HOQHLS3XgpbLaStkLlU1yC",
   title: "Comunidade NeuroSpectro",
   description:
     "Um espaço de troca de experiências, informação e apoio para continuar sua jornada de autoconhecimento.",
