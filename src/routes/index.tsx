@@ -88,12 +88,17 @@ function Index() {
                 <p className="text-xs font-semibold uppercase tracking-[0.25em] text-primary">Uma opção para continuar depois da avaliação</p>
                 <h2 className="mt-3 font-display text-2xl font-semibold text-ink md:text-3xl">Você não precisa explorar tudo isso sozinho.</h2>
                 <p className="mt-3 text-muted-foreground">
-                  Depois de concluir seu acesso principal, você poderá adicionar a Comunidade de Apoio: um espaço de troca de experiências, conteúdo exclusivo e apoio sobre neurodiversidade.
+                  Um espaço para continuar essa jornada com troca de experiências, conteúdos exclusivos e apoio sobre neurodiversidade.
                 </p>
               </div>
-              <div className="flex shrink-0 items-center gap-3 rounded-2xl bg-card px-5 py-4">
-                <Users className="h-6 w-6 text-primary" />
-                <div><span className="text-sm font-semibold text-ink">Comunidade de Apoio - NeuroSpectro</span><p className="mt-1 text-xs font-normal text-muted-foreground">Troca de experiências, conteúdos exclusivos e apoio sobre neurodiversidade.</p></div>
+              <div className="flex shrink-0 items-center gap-3 rounded-2xl border border-primary/20 bg-card px-5 py-4 shadow-soft">
+                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-soft">
+                  <span className="text-lg" aria-hidden>🧠🧩</span>
+                </div>
+                <div>
+                  <span className="text-sm font-semibold text-ink">🧠🧩 Comunidade de Apoio</span>
+                  <p className="mt-1 text-xs font-normal text-muted-foreground">Troca de experiências e apoio para continuar essa jornada.</p>
+                </div>
               </div>
             </div>
           </div>
