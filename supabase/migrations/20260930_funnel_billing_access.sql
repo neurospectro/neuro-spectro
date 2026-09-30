@@ -22,7 +22,7 @@ create table if not exists public.ofertas (
   total_cents integer not null check (total_cents > 0),
   installment_count integer not null default 1 check (installment_count > 0),
   installment_cents integer not null check (installment_cents > 0),
-  access_days integer not null check (access_days > 0),
+  access_days integer check (access_days is null or access_days > 0),
   auto_renew boolean not null default false,
   active boolean not null default true,
   created_at timestamptz not null default now()
