@@ -88,7 +88,7 @@ Deno.serve(async (req) => {
           .eq("user_id", userData.user.id)
           .eq("produto_id", reportProduct.id)
           .eq("status", "active")
-          .or("expires_at.is.null,expires_at.gt.now()")
+          .or(`expires_at.is.null,expires_at.gt.${new Date().toISOString()}`)
           .limit(1)
       : { data: [] };
 
