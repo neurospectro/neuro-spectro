@@ -96,14 +96,6 @@ create table if not exists public.webhook_events (
   unique(provider, event_id)
 );
 
--- Marketing consent is separate from operational WhatsApp contact.
-alter table public.usuarios
-  add column if not exists whatsapp text,
-  add column if not exists whatsapp_verified boolean not null default false,
-  add column if not exists whatsapp_marketing_opt_in boolean not null default false,
-  add column if not exists whatsapp_marketing_opt_in_at timestamptz,
-  add column if not exists whatsapp_marketing_opt_in_source text;
-
 alter table public.acessos enable row level security;
 alter table public.pedidos enable row level security;
 alter table public.pagamentos enable row level security;
