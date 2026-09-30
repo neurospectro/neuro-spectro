@@ -72,6 +72,7 @@ function Index() {
               </p>
               <div className="mt-8 flex flex-col gap-4 sm:flex-row sm:items-center">
                 <Cta />
+              </div>
               <div className="mt-8 h-1 w-40 rounded-full bg-spectrum" />
             </div>
             <div className="flex justify-center">
