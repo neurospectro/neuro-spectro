@@ -144,6 +144,27 @@ function Index() {
           })}
         </section>
 
+        <section className="mx-auto max-w-6xl px-5 py-16">
+          <div className="grid gap-6 md:grid-cols-3">
+            {[
+              [ShieldCheck, "Privacidade em primeiro lugar", "Tratamos suas respostas como dados pessoais sensíveis e evitamos expor informações individuais em ferramentas de publicidade."],
+              [Lock, "Acesso protegido", "Resultados completos devem ficar vinculados à sua conta e protegidos por controle de acesso no servidor."],
+              [FileText, "Informação, não diagnóstico", "A NeuroSpectro organiza uma leitura de características. O resultado não substitui avaliação de um profissional qualificado."],
+            ].map(([Icon, t, d]) => {
+              const I = Icon as typeof ShieldCheck;
+              return (
+                <div key={t as string} className="rounded-3xl border border-border bg-card p-7 shadow-soft">
+                  <div className="flex h-11 w-11 items-center justify-center rounded-full bg-secondary text-primary">
+                    <I className="h-5 w-5" />
+                  </div>
+                  <h3 className="mt-5 font-display text-lg font-semibold text-ink">{t as string}</h3>
+                  <p className="mt-2 text-sm leading-6 text-muted-foreground">{d as string}</p>
+                </div>
+              );
+            })}
+          </div>
+        </section>
+
         <section className="mx-auto max-w-4xl px-5 pb-20 text-center">
           <h2 className="font-display text-3xl font-semibold text-ink md:text-4xl">Entenda seu perfil. Descubra novas perspectivas.</h2>
           <Cta className="mt-8" />
