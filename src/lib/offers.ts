@@ -3,7 +3,7 @@ export type OfferBilling = "one_time_installments" | "recurring";
 export interface Offer {
   id: string;
   name: string;
-  product: "report" | "community";
+  product: "report" | "pdf" | "community";
   billing: OfferBilling;
   totalCents: number;
   installmentCount: number;
@@ -35,7 +35,7 @@ export const OFFERS: Record<string, Offer> = {
   "pdf-report-1490": {
     id: "pdf-report-1490",
     name: "Relatório PDF NeuroSpectro",
-    product: "report",
+    product: "pdf",
     billing: "one_time_installments",
     totalCents: 1490,
     installmentCount: 1,
