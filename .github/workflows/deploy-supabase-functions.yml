@@ -2,8 +2,7 @@ name: Deploy Supabase Edge Functions
 
 on:
   push:
-    branches:
-      - main
+    branches: [main]
     paths:
       - "supabase/functions/**"
       - "supabase/config.toml"
@@ -32,10 +31,15 @@ jobs:
         with:
           version: latest
 
-      - name: Validate Supabase credentials
+      - name: Check required secrets
+        env:
+          HAS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN != '' }}
+          HAS_PROJECT: ${{ secrets.SUPABASE_PROJECT_ID != '' }}
         run: |
-          test -n "$SUPABASE_ACCESS_TOKEN" || (echo "Missing GitHub secret: SUPABASE_ACCESS_TOKEN" && exit 1)
-          test -n "$SUPABASE_PROJECT_ID" || (echo "Missing GitHub secret: SUPABASE_PROJECT_ID" && exit 1)
+          echo "SUPABASE_ACCESS_TOKEN configured: $HAS_TOKEN"
+          echo "SUPABASE_PROJECT_ID configured: $HAS_PROJECT"
+          test "$HAS_TOKEN" = "true" || (echo "SUPABASE_ACCESS_TOKEN is missing or empty" && exit 1)
+          test "$HAS_PROJECT" = "true" || (echo "SUPABASE_PROJECT_ID is missing or empty" && exit 1)
 
       - name: Deploy process-payment
         run: supabase functions deploy process-payment --project-ref "$SUPABASE_PROJECT_ID" --use-api
