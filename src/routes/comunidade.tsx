@@ -6,11 +6,11 @@ import { COMMUNITY, COMMUNITY_CONTENT } from "@/lib/community";
 export const Route = createFileRoute("/comunidade")({
   head: () => ({
     meta: [
-      { title: "Círculo NeuroSpectro — Comunidade" },
+      { title: "Comunidade de Apoio - NeuroSpectro — Comunidade" },
       {
         name: "description",
         content:
-          "Conheça o Círculo NeuroSpectro, uma comunidade acolhedora sobre neurodiversidade, autoconhecimento e troca de experiências.",
+          "Conheça o Comunidade de Apoio - NeuroSpectro, uma comunidade acolhedora sobre neurodiversidade, autoconhecimento e troca de experiências.",
       },
     ],
   }),
