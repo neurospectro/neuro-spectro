@@ -1,0 +1,16 @@
+
+/* NeuroSpectro PDF / papel timbrado */
+@media print {
+  @page { size: A4; margin: 0; }
+  body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .report-paper { box-shadow: none !important; }
+  .report-section, .report-cover { break-inside: avoid; }
+  .report-final { break-before: auto; }
+}
+.report-header { padding: 18mm 18mm 8mm; border-bottom: 1px solid #e2e8f0; }
+.report-body { padding: 0 18mm; }
+.report-cover { padding: 18mm 0 14mm; min-height: 92mm; display: flex; flex-direction: column; justify-content: center; }
+.report-section { padding: 12mm 0; border-bottom: 1px solid #e2e8f0; }
+.report-note { border-left: 4px solid hsl(var(--primary)); background: #f8fafc; padding: 14px 16px; font-size: 12px; line-height: 1.7; color: #475569; }
+.report-footer { margin-top: 8mm; padding: 7mm 18mm; border-top: 1px solid #e2e8f0; display: flex; justify-content: space-between; gap: 20px; font-size: 9px; line-height: 1.6; color: #64748b; }
+@media screen { .report-paper { border-radius: 10px; overflow: hidden; } }
