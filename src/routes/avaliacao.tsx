@@ -205,7 +205,7 @@ function Done({ session, onReview }: { session: Session; onReview: () => void })
       <div className="mx-auto mt-7 max-w-md rounded-3xl border border-primary/20 bg-card p-6 text-left shadow-soft">
         <p className="text-xs font-semibold uppercase tracking-[0.2em] text-primary">Experiência complementar</p>
         <h2 className="mt-2 font-display text-xl font-semibold text-ink">Comunidade de Apoio - NeuroSpectro</h2>
-        <p className="mt-2 text-sm text-muted-foreground">Pague 6 meses e tenha 1 ano de acesso à comunidade.</p>
+        <p className="mt-2 text-sm text-muted-foreground">Um único pagamento parcelado em 6x, com acesso por tempo indeterminado e sem renovação automática.</p>
         <div className="mt-4 flex items-center gap-3 rounded-2xl bg-primary/5 p-4">
           <Clock className="h-5 w-5 text-primary" />
           <div>
