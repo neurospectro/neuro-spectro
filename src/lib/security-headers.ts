@@ -11,7 +11,7 @@ const contentSecurityPolicy = [
   "font-src 'self' https://fonts.gstatic.com data:",
   "img-src 'self' data: blob: https:",
   "frame-src 'self' https://*.mercadopago.com.br https://*.mercadopago.com https://*.mercadolibre.com",
-  "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://api.mercadopago.com",
+  "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://api.mercadopago.com https://*.mercadopago.com https://*.mercadolibre.com",
 ].join("; ");
 
 export const securityHeadersMiddleware = createMiddleware().server(async ({ next }) => {
@@ -22,7 +22,7 @@ export const securityHeadersMiddleware = createMiddleware().server(async ({ next
   headers.set("X-Content-Type-Options", "nosniff");
   headers.set("X-Frame-Options", "DENY");
   headers.set("Referrer-Policy", "strict-origin-when-cross-origin");
-  headers.set("Permissions-Policy", "camera=(), microphone=(), geolocation=(), payment=()");
+  headers.set("Permissions-Policy", "camera=(), microphone=(), geolocation=(), payment=(self)");
   headers.set("Cross-Origin-Resource-Policy", "same-origin");
   headers.set("X-DNS-Prefetch-Control", "off");
   headers.set("X-Permitted-Cross-Domain-Policies", "none");
