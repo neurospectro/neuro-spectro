@@ -8,6 +8,29 @@ type ApprovedTestimonial = {
   text: string;
 };
 
+const illustrativeExperiences = [
+  {
+    id: "example-1",
+    title: "Exemplo de experiência",
+    text: "Entender minhas respostas por dimensões tornou mais fácil perceber padrões do meu dia a dia e decidir quais pontos eu queria aprofundar.",
+  },
+  {
+    id: "example-2",
+    title: "Exemplo de experiência",
+    text: "O relatório organiza as respostas de um jeito que ajuda a transformar uma sensação difícil de explicar em temas concretos para conversar com um profissional.",
+  },
+  {
+    id: "example-3",
+    title: "Exemplo de experiência",
+    text: "Mais do que uma conclusão, a proposta é sair da avaliação com uma visão mais estruturada sobre características que merecem ser exploradas.",
+  },
+  {
+    id: "example-4",
+    title: "Exemplo de experiência",
+    text: "Ter o histórico e os pontos para explorar reunidos em um relatório facilita revisitar a própria experiência com mais contexto.",
+  },
+];
+
 export function TestimonialsCarousel() {
   const ref = useRef<HTMLDivElement>(null);
   const [items, setItems] = useState<ApprovedTestimonial[]>([]);
@@ -23,9 +46,13 @@ export function TestimonialsCarousel() {
       .then(({ data }) => setItems((data ?? []) as ApprovedTestimonial[]));
   }, []);
 
+  const cards = items.length > 0
+    ? items.map((item) => ({ ...item, title: item.name }))
+    : illustrativeExperiences;
+
   useEffect(() => {
     const el = ref.current;
-    if (!el || items.length < 2) return;
+    if (!el || cards.length < 2) return;
 
     let frame = 0;
     let last = performance.now();
@@ -43,31 +70,42 @@ export function TestimonialsCarousel() {
 
     frame = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(frame);
-  }, [items.length]);
+  }, [cards.length]);
 
-  if (items.length === 0) {
-    return (
-      <div className="rounded-3xl border border-dashed border-primary/30 bg-primary/5 p-8 text-center">
-        <Quote className="mx-auto h-8 w-8 text-primary/60" />
-        <p className="mt-4 font-display text-lg font-semibold text-ink">Este espaço será preenchido por experiências reais.</p>
-        <p className="mx-auto mt-2 max-w-xl text-sm text-muted-foreground">
-          Os depoimentos passam por aprovação antes de aparecerem publicamente.
-        </p>
-      </div>
-    );
-  }
-
-  const loopItems = [...items, ...items];
+  const loopItems = [...cards, ...cards];
 
   return (
-    <div ref={ref} className="flex gap-5 overflow-hidden pb-4" aria-label="Depoimentos aprovados">
-      {loopItems.map((testimonial, index) => (
-        <article key={`${testimonial.id}-${index}`} className="min-w-[300px] max-w-sm shrink-0 rounded-3xl border border-border bg-card p-7 shadow-soft md:min-w-[360px]">
-          <Quote className="h-7 w-7 text-primary/60" />
-          <p className="mt-5 leading-7 text-foreground">“{testimonial.text}”</p>
-          <p className="mt-5 text-sm font-semibold text-ink">{testimonial.name}</p>
-        </article>
-      ))}
+    <div>
+      {items.length === 0 && (
+        <p className="mb-4 text-center text-xs text-muted-foreground">
+          Exemplos ilustrativos baseados no tipo de experiência que o relatório foi desenvolvido para organizar. Não são depoimentos de usuários.
+        </p>
+      )}
+
+      <div ref={ref} className="flex gap-5 overflow-hidden pb-4" aria-label={items.length > 0 ? "Depoimentos aprovados" : "Exemplos de experiências"}>
+        {loopItems.map((testimonial, index) => (
+          <article
+            key={`${testimonial.id}-${index}`}
+            className="min-w-[300px] max-w-sm shrink-0 rounded-3xl border border-border bg-card p-6 shadow-soft md:min-w-[360px]"
+          >
+            <div className="flex items-center gap-3">
+              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-spectrum/20 font-display text-sm font-semibold text-primary">
+                {items.length > 0 ? testimonial.name.slice(0, 1).toUpperCase() : "NS"}
+              </div>
+              <div>
+                <p className="text-sm font-semibold text-ink">{testimonial.title}</p>
+                {items.length > 0 ? (
+                  <p className="text-xs text-muted-foreground">Depoimento aprovado</p>
+                ) : (
+                  <p className="text-xs text-muted-foreground">NeuroSpectro</p>
+                )}
+              </div>
+            </div>
+            <Quote className="mt-5 h-7 w-7 text-primary/60" />
+            <p className="mt-3 leading-7 text-foreground">“{testimonial.text}”</p>
+          </article>
+        ))}
+      </div>
     </div>
   );
 }
