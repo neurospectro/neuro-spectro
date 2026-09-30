@@ -106,13 +106,14 @@ function Checkout() {
 
     const mountBrick = async () => {
       try {
+        if (!supabase) return;
         const { data: sessionData } = await supabase.auth.getSession();
         if (!sessionData.session) {
           await navigate({ to: "/login" });
           return;
         }
 
-        const publicKey = import.meta.env.VITE_MERCADOPAGO_PUBLIC_KEY;
+        const publicKey = import.meta.env["VITE_MERCADOPAGO_PUBLIC_KEY"];
         if (!publicKey) throw new Error("O Mercado Pago ainda não está configurado no ambiente.");
 
         await loadMercadoPagoScript();
@@ -148,12 +149,13 @@ function Checkout() {
               setProcessing(true);
 
               try {
+                if (!supabase) throw new Error("O serviço de autenticação não está configurado.");
                 const { data: current } = await supabase.auth.getSession();
                 const token = current.session?.access_token;
                 if (!token) throw new Error("Sua sessão expirou. Entre novamente.");
 
                 const response = await fetch(
-                  `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/process-payment`,
+                  `${import.meta.env["VITE_SUPABASE_URL"]}/functions/v1/process-payment`,
                   {
                     method: "POST",
                     headers: {

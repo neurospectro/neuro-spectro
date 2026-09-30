@@ -4,7 +4,7 @@ export const ADSENSE = {
    * Preenchido quando a conta AdSense e os blocos de anúncio estiverem aprovados.
    * Mantido fora do código até a configuração real para evitar anúncios acidentais.
    */
-  clientId: import.meta.env.VITE_ADSENSE_CLIENT_ID ?? "",
+  clientId: import.meta.env["VITE_ADSENSE_CLIENT_ID"] ?? "",
   paidContentOnly: true,
 } as const;
 
