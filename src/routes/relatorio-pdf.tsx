@@ -37,6 +37,25 @@ function RelatorioPdf() {
       return;
     }
     setEmail(auth.user.email ?? "");
+    const { data: access } = await supabase
+      .from("acessos")
+      .select("status,expires_at,produtos(slug)")
+      .eq("status", "active")
+      .eq("produtos.slug", "relatorio-completo")
+      .limit(1)
+      .maybeSingle();
+
+    const accessRow = access as { status: string; expires_at: string | null; produtos?: { slug: string } | null } | null;
+    const validAccess = Boolean(
+      accessRow?.status === "active" &&
+      accessRow?.produtos?.slug === "relatorio-completo" &&
+      (!accessRow.expires_at || new Date(accessRow.expires_at).getTime() > Date.now()),
+    );
+    if (!validAccess) {
+      setLoading(false);
+      return;
+    }
+
     const { data } = await supabase
       .from("resultados")
       .select("id,created_at,total_raw,max_raw,scores")
