@@ -3,6 +3,7 @@ import { useEffect, useMemo, useState } from "react";
 import { ArrowLeft, ArrowRight, Check, RotateCcw, Users, FileText, Clock } from "lucide-react";
 import mark from "@/assets/mark.png.asset.json";
 import { ASSESSMENT, DIMENSIONS, SCALE, getVisibleQuestions, scoreByDimension } from "@/lib/assessment/questions";
+import { persistCompletedAssessment } from "@/lib/assessment/persistence";
 
 export const Route = createFileRoute("/avaliacao")({
   head: () => ({
@@ -118,7 +119,20 @@ function Avaliacao() {
     setSession({ ...session, answers });
     if (!isLast) setTimeout(() => setSession((s) => (s ? { ...s, index: Math.min(s.index + 1, questions.length - 1) } : s)), 280);
   };
-  const finish = () => setSession({ ...session, finishedAt: new Date().toISOString() });
+  const finish = () => {
+    const finishedAt = new Date().toISOString();
+    const completed = { ...session, finishedAt };
+    setSession(completed);
+    void persistCompletedAssessment({
+      session: completed,
+      assessmentId: ASSESSMENT.assessment_id,
+      assessmentVersion: ASSESSMENT.version,
+      questions,
+      scores: scoreByDimension(completed.answers),
+    }).catch(() => {
+      // The local session remains the source for this anonymous flow; persistence can retry after login.
+    });
+  };
 
   return (
     <div className="flex min-h-screen flex-col bg-background font-sans">
@@ -210,7 +224,7 @@ function Done({ session, onReview }: { session: Session; onReview: () => void })
 }
 
 function ReportOffer({ session }: { session: Session }) {
-  const offerEndsAt = new Date(session.finishedAt!).getTime() + 15 * 60 * 1000;
+  const offerEndsAt = new Date(session.finishedAt!).getTime() + 7 * 60 * 1000;
   const [remaining, setRemaining] = useState(Math.max(0, offerEndsAt - Date.now()));
 
   useEffect(() => {
