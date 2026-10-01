@@ -72,10 +72,23 @@ function loadMercadoPagoScript() {
       return;
     }
 
+    // Abre a conexão com o CDN antes de iniciar o download do SDK.
+    // Isso reduz o tempo de DNS/TLS/TCP no primeiro carregamento do checkout.
+    for (const href of ["https://sdk.mercadopago.com", "https://*.mercadopago.com"]) {
+      if (!document.head.querySelector(`link[rel="preconnect"][href="${href}"]`)) {
+        const link = document.createElement("link");
+        link.rel = "preconnect";
+        link.href = href;
+        link.crossOrigin = "anonymous";
+        document.head.appendChild(link);
+      }
+    }
+
     const script = document.createElement("script");
     script.id = mpScriptId;
     script.src = "https://sdk.mercadopago.com/js/v2";
     script.async = true;
+    script.setAttribute("fetchpriority", "high");
     const timeout = window.setTimeout(fail, 12000);
     script.onload = () => {
       window.clearTimeout(timeout);
@@ -128,7 +141,7 @@ function Checkout() {
           },
           customization: {
             paymentMethods: {
-              bankTransfer: "all",
+              bankTransfer: "pix",
               creditCard: "all",
               debitCard: "all",
             },
