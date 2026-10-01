@@ -136,7 +136,7 @@ function Checkout() {
         const createBrickPromise = bricksBuilder.create("payment", "paymentBrick_container", {
           initialization: {
             amount: offer.totalCents / 100,
-            payer: { email: checkoutSession.user.email ?? "" },
+            
           },
           customization: {
             paymentMethods: {
@@ -290,6 +290,21 @@ function Checkout() {
               </div>
             </div>
           )}
+
+          <div className="mt-6 grid gap-3 sm:grid-cols-3">
+            <div className="rounded-2xl border border-border bg-background p-4 text-center">
+              <p className="font-semibold text-ink">Pix</p>
+              <p className="mt-1 text-xs text-muted-foreground">QR Code e Copia e Cola</p>
+            </div>
+            <div className="rounded-2xl border border-border bg-background p-4 text-center">
+              <p className="font-semibold text-ink">Cartão de crédito</p>
+              <p className="mt-1 text-xs text-muted-foreground">{offer.installmentCount > 1 ? `${offer.installmentCount}x de ${formatBRL(offer.installmentCents)}` : "Pagamento único"}</p>
+            </div>
+            <div className="rounded-2xl border border-border bg-background p-4 text-center">
+              <p className="font-semibold text-ink">Cartão de débito</p>
+              <p className="mt-1 text-xs text-muted-foreground">Pagamento seguro</p>
+            </div>
+          </div>
 
           <div className="mt-6 flex items-center gap-3 rounded-2xl bg-primary/5 p-4">
             <CreditCard className="h-6 w-6 shrink-0 text-primary" />
