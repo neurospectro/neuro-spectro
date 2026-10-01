@@ -51,13 +51,16 @@ Deno.serve(async (req) => {
   if (req.method !== "POST") return json({ ok: true });
 
   const url = new URL(req.url);
-  const dataId = url.searchParams.get("data.id") ?? "";
+  const dataIdFromQuery = url.searchParams.get("data.id") ?? "";
+  const typeFromQuery = url.searchParams.get("type") ?? "";
+  const rawBody = await req.clone().json().catch(() => ({}));
+  const dataId = dataIdFromQuery || String(rawBody?.data?.id ?? "");
   const valid = await verifySignature(req, dataId);
   if (!valid) return json({ error: "Assinatura inválida." }, 401);
 
-  const body = await req.json().catch(() => ({}));
-  const eventId = String(body?.id ?? `${body?.type ?? "order"}:${dataId}`);
-  const eventType = String(body?.type ?? "order");
+  const body = rawBody;
+  const eventId = String(body?.id ?? `${body?.type ?? typeFromQuery ?? "order"}:${dataId}`);
+  const eventType = String(body?.type ?? typeFromQuery ?? "order");
 
   const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
   const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
@@ -93,10 +96,18 @@ Deno.serve(async (req) => {
     headers: { Authorization: `Bearer ${mpToken}` },
   });
   if (!resourceResponse.ok) {
-    // O botão de simulação do Mercado Pago pode enviar um Data ID de teste
-    // que não existe na conta de produção. Nesse caso a assinatura já foi
-    // validada; devolvemos 200 para a simulação não ser marcada como falha.
-    if (body?.live_mode === false) return json({ ok: true, simulation: true });
+    // O Mercado Pago permite testar Webhooks informando manualmente um Data ID.
+    // Esse ID pode não existir na conta de produção, mesmo com a assinatura válida.
+    // Em 404, a notificação foi recebida e autenticada, então respondemos 200 para
+    // evitar que o teste seja marcado como falha. Erros transitórios do provedor
+    // continuam retornando 502 para permitir nova tentativa.
+    if (resourceResponse.status === 404) {
+      await admin.from("webhook_events")
+        .update({ processed_at: new Date().toISOString() })
+        .eq("provider", "mercadopago")
+        .eq("event_id", eventId);
+      return json({ ok: true, acknowledged: true, resource_not_found: true });
+    }
     return json({ error: "Não foi possível consultar o recurso no Mercado Pago.", status: resourceResponse.status }, 502);
   }
 
