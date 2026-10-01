@@ -3,6 +3,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { CheckCircle2, CreditCard, Loader2, ShieldCheck } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { getOffer, formatBRL } from "@/lib/offers";
+import { SecurityCaptcha, isTurnstileConfigured } from "@/components/security-captcha";
 import { supabase } from "@/lib/supabase";
 import "@/styles/mercadopago.css";
 
@@ -116,6 +117,8 @@ function Checkout() {
   const [pixEmail, setPixEmail] = useState("");
   const [pixEmailStatus, setPixEmailStatus] = useState("");
   const [pixProcessing, setPixProcessing] = useState(false);
+  const [captchaToken, setCaptchaToken] = useState("");
+  const [captchaResetKey, setCaptchaResetKey] = useState(0);
 
   const generatePix = async () => {
     const email = pixEmail.trim();
@@ -125,6 +128,14 @@ function Checkout() {
     }
     if (!offer || !supabase) {
       setError("Não foi possível iniciar o pagamento agora. Recarregue a página e tente novamente.");
+      return;
+    }
+    if (!isTurnstileConfigured()) {
+      setError("A verificação de segurança ainda não está configurada.");
+      return;
+    }
+    if (!captchaToken) {
+      setError("Conclua a verificação de segurança para gerar o Pix.");
       return;
     }
     setPixProcessing(true);
@@ -170,6 +181,7 @@ function Checkout() {
       setError(submitError instanceof Error ? submitError.message : "Não foi possível gerar o Pix.");
     } finally {
       setPixProcessing(false);
+      setCaptchaResetKey((value) => value + 1);
     }
   };
 
@@ -252,6 +264,8 @@ function Checkout() {
 
               try {
                 if (!supabase) throw new Error("O serviço de autenticação não está configurado.");
+                if (!isTurnstileConfigured()) throw new Error("A verificação de segurança ainda não está configurada.");
+                if (!captchaToken) throw new Error("Conclua a verificação de segurança para continuar.");
                 let { data: current } = await supabase.auth.getSession();
                 let token = current.session?.access_token;
 
@@ -287,7 +301,7 @@ function Checkout() {
                       "Content-Type": "application/json",
                       Authorization: `Bearer ${token}`,
                     },
-                    body: JSON.stringify({ offerId: offer.id, formData: normalizedFormData }),
+                    body: JSON.stringify({ offerId: offer.id, captchaToken, formData: normalizedFormData }),
                   },
                 );
 
@@ -309,6 +323,7 @@ function Checkout() {
                 throw submitError;
               } finally {
                 setProcessing(false);
+                setCaptchaResetKey((value) => value + 1);
               }
             },
             onError: (brickError: unknown) => {
