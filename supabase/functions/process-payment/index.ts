@@ -209,8 +209,34 @@ Deno.serve(async (req) => {
   }
 
   if (!mpResponse.ok) {
-    const detail = mpData?.message ?? mpData?.cause?.[0]?.description ?? mpData?.error ?? "Erro retornado pelo Mercado Pago.";
-    console.error("PROCESS_PAYMENT_MP_ERROR", { status: mpResponse.status, detail, orderId: pedido.id });
+    const causeDetails = Array.isArray(mpData?.cause)
+      ? mpData.cause
+          .map((item: unknown) => {
+            if (!item || typeof item !== "object") return "";
+            const cause = item as Record<string, unknown>;
+            return String(cause.description ?? cause.code ?? "").trim();
+          })
+          .filter(Boolean)
+      : [];
+
+    const detail =
+      String(
+        mpData?.message ??
+        mpData?.error ??
+        causeDetails[0] ??
+        mpData?.details ??
+        "Erro retornado pelo Mercado Pago.",
+      ).trim();
+
+    const errorCode = String(mpData?.error ?? mpData?.code ?? mpData?.cause?.[0]?.code ?? "").trim();
+
+    console.error("PROCESS_PAYMENT_MP_ERROR", {
+      status: mpResponse.status,
+      errorCode,
+      detail,
+      causes: causeDetails,
+      orderId: pedido.id,
+    });
 
     await admin.from("pedidos").update({
       status: mpResponse.status >= 500 || mpResponse.status === 429 ? "pending" : "failed",
@@ -223,7 +249,12 @@ Deno.serve(async (req) => {
       return json({ error: "O Mercado Pago está temporariamente indisponível. Tente novamente.", retryable: true }, 502);
     }
 
-    return json({ error: detail, orderId: pedido.id }, 400);
+    return json({
+      error: detail,
+      code: errorCode || null,
+      causes: causeDetails,
+      orderId: pedido.id,
+    }, 400);
   }
 
   const payment = mpData?.transactions?.payments?.[0] ?? null;
