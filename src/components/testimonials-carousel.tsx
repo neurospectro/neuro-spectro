@@ -78,34 +78,28 @@ export function TestimonialsCarousel() {
 
   useEffect(() => {
     const viewport = viewportRef.current;
-    const track = trackRef.current;
-
-    if (!viewport || !track || cards.length < 2) return;
+    if (!viewport || cards.length < 2) return;
 
     let frame = 0;
     let last = performance.now();
-    let offset = 0;
 
     const tick = (now: number) => {
       const delta = now - last;
       last = now;
 
       if (!isPaused && document.visibilityState === "visible") {
-        offset += delta * 0.012;
-        const loopWidth = track.scrollWidth / 2;
+        viewport.scrollLeft += delta * 0.018;
+        const loopWidth = viewport.scrollWidth / 2;
 
-        if (loopWidth > 0 && offset >= loopWidth) {
-          offset -= loopWidth;
+        if (loopWidth > 0 && viewport.scrollLeft >= loopWidth) {
+          viewport.scrollLeft -= loopWidth;
         }
-
-        track.style.transform = `translate3d(-${offset}px, 0, 0)`;
       }
 
       frame = requestAnimationFrame(tick);
     };
 
     frame = requestAnimationFrame(tick);
-
     return () => cancelAnimationFrame(frame);
   }, [cards.length, isPaused]);
 
@@ -113,14 +107,15 @@ export function TestimonialsCarousel() {
     <div>
       <div
         ref={viewportRef}
-        className="overflow-x-hidden pb-4"
+        className="flex gap-5 overflow-x-auto pb-4 scrollbar-none overscroll-x-contain"
         aria-label="Depoimentos de usuários"
+        onPointerDown={() => setIsPaused(true)}
+        onPointerUp={() => setIsPaused(false)}
+        onPointerCancel={() => setIsPaused(false)}
+        onMouseEnter={() => setIsPaused(true)}
+        onMouseLeave={() => setIsPaused(false)}
       >
-        <div
-          ref={trackRef}
-          className="flex w-max gap-5 will-change-transform"
-        >
-          {loopItems.map((testimonial, index) => (
+        {loopItems.map((testimonial, index) => (
             <article
               key={`${testimonial.id}-${index}`}
               className="min-w-[300px] max-w-sm shrink-0 rounded-3xl border border-border bg-card p-6 shadow-soft md:min-w-[360px]"
@@ -146,7 +141,7 @@ export function TestimonialsCarousel() {
 
               <div
                 className="mt-4 flex items-center gap-0.5"
-                aria-label="${testimonial.rating ?? 5} estrelas"
+                aria-label={`${testimonial.rating ?? 5} estrelas`}
               >
                 {Array.from({ length: testimonial.rating ?? 5 }).map(
                   (_, starIndex) => (
@@ -163,9 +158,8 @@ export function TestimonialsCarousel() {
               <p className="mt-3 leading-7 text-foreground">
                 “{testimonial.text}”
               </p>
-            </article>
-          ))}
-        </div>
+          </article>
+        ))}
       </div>
 
       <div className="mt-2 flex justify-center">
