@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AvaliacaoRouteImport } from './routes/avaliacao'
 import { Route as ComunidadeRouteImport } from './routes/comunidade'
 import { Route as DashboardRouteImport } from './routes/dashboard'
@@ -19,6 +20,11 @@ import { Route as PosCompraRouteImport } from './routes/pos-compra'
 import { Route as RelatorioPdfRouteImport } from './routes/relatorio-pdf'
 import { Route as CheckoutOfferIdRouteImport } from './routes/checkout.$offerId'
 
+const AdminRoute = AdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -66,6 +72,7 @@ const CheckoutOfferIdRoute = CheckoutOfferIdRouteImport.update({
 } as any)
 
 export interface FileRoutesByFullPath {
+  '/admin': typeof AdminRoute
   '/': typeof IndexRoute
   '/avaliacao': typeof AvaliacaoRoute
   '/comunidade': typeof ComunidadeRoute
@@ -77,6 +84,7 @@ export interface FileRoutesByFullPath {
   '/checkout/$offerId': typeof CheckoutOfferIdRoute
 }
 export interface FileRoutesByTo {
+  '/admin': typeof AdminRoute
   '/': typeof IndexRoute
   '/avaliacao': typeof AvaliacaoRoute
   '/comunidade': typeof ComunidadeRoute
@@ -88,6 +96,7 @@ export interface FileRoutesByTo {
   '/checkout/$offerId': typeof CheckoutOfferIdRoute
 }
 export interface FileRoutesById {
+  '/admin': typeof AdminRoute
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/avaliacao': typeof AvaliacaoRoute
@@ -102,6 +111,7 @@ export interface FileRoutesById {
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
+    | '/admin'
     | '/'
     | '/avaliacao'
     | '/comunidade'
@@ -113,6 +123,7 @@ export interface FileRouteTypes {
     | '/checkout/$offerId'
   fileRoutesByTo: FileRoutesByTo
   to:
+    | '/admin'
     | '/'
     | '/avaliacao'
     | '/comunidade'
@@ -124,6 +135,7 @@ export interface FileRouteTypes {
     | '/checkout/$offerId'
   id:
     | '__root__'
+    | '/admin'
     | '/'
     | '/avaliacao'
     | '/comunidade'
@@ -136,6 +148,7 @@ export interface FileRouteTypes {
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
+  AdminRoute: typeof AdminRoute
   IndexRoute: typeof IndexRoute
   AvaliacaoRoute: typeof AvaliacaoRoute
   ComunidadeRoute: typeof ComunidadeRoute
@@ -149,6 +162,13 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -216,6 +236,7 @@ declare module '@tanstack/react-router' {
 }
 
 const rootRouteChildren: RootRouteChildren = {
+  AdminRoute: AdminRoute,
   IndexRoute: IndexRoute,
   AvaliacaoRoute: AvaliacaoRoute,
   ComunidadeRoute: ComunidadeRoute,
