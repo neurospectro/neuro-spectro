@@ -10,9 +10,17 @@ export async function persistCompletedAssessment(args: {
 }) {
   if (!supabase || !args.session.finishedAt) return null;
 
-  const { data: auth } = await supabase.auth.getUser();
+  let { data: auth } = await supabase.auth.getUser();
+
+  if (!auth.user) {
+    const anonymous = await supabase.auth.signInAnonymously();
+    if (anonymous.error || !anonymous.data.user) {
+      throw anonymous.error ?? new Error("Não foi possível iniciar sua sessão.");
+    }
+    auth = { user: anonymous.data.user };
+  }
+
   const user = auth.user;
-  if (!user) return null;
 
   const { data: testSession, error: sessionError } = await supabase
     .from("sessoes_teste")
@@ -27,7 +35,9 @@ export async function persistCompletedAssessment(args: {
     .select("id")
     .single();
 
-  if (sessionError || !testSession) throw sessionError ?? new Error("Não foi possível salvar a sessão.");
+  if (sessionError || !testSession) {
+    throw sessionError ?? new Error("Não foi possível salvar a sessão.");
+  }
 
   const responseRows = args.questions
     .filter((q) => args.session.answers[q.question_id] !== undefined)
