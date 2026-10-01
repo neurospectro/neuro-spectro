@@ -525,7 +525,27 @@ function Checkout() {
                     <button
                       type="button"
                       className="mt-3 w-full rounded-xl bg-primary px-5 py-3.5 text-sm font-bold text-primary-foreground shadow-sm transition hover:opacity-95"
-                      onClick={() => void navigator.clipboard.writeText(pix.qrCode!)}
+                      onClick={async () => {
+                        const code = pix.qrCode!;
+                        try {
+                          if (navigator.clipboard?.writeText) {
+                            await navigator.clipboard.writeText(code);
+                          } else {
+                            const textarea = document.createElement("textarea");
+                            textarea.value = code;
+                            textarea.setAttribute("readonly", "");
+                            textarea.style.position = "fixed";
+                            textarea.style.opacity = "0";
+                            document.body.appendChild(textarea);
+                            textarea.select();
+                            document.execCommand("copy");
+                            textarea.remove();
+                          }
+                          setPixEmailStatus("Código Pix copiado! Agora é só colar no aplicativo do seu banco.");
+                        } catch {
+                          setPixEmailStatus("Não foi possível copiar automaticamente. Pressione e segure o código para copiar.");
+                        }
+                      }}
                     >
                       Copiar código Pix
                     </button>
