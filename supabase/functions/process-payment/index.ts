@@ -46,11 +46,11 @@ function isProcessed(status: string | null | undefined, statusDetail: string | n
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders(req) });
-  if (req.method !== "POST") return json({ error: "Método não permitido." }, 405);
+  if (req.method !== "POST") return json(req, { error: "Método não permitido." }, 405);
 
   const authHeader = req.headers.get("Authorization");
   const accessToken = authHeader?.replace(/^Bearer\s+/i, "");
-  if (!accessToken) return json({ error: "Autenticação necessária." }, 401);
+  if (!accessToken) return json(req, { error: "Autenticação necessária." }, 401);
 
   const supabaseUrl = Deno.env.get("SUPABASE_URL")?.trim();
   const anonKey = Deno.env.get("SUPABASE_ANON_KEY")?.trim();
@@ -59,27 +59,27 @@ Deno.serve(async (req) => {
 
   if (!supabaseUrl || !anonKey || !serviceKey) {
     console.error("PROCESS_PAYMENT_CONFIG_ERROR: Supabase server configuration is incomplete.");
-    return json({ error: "O servidor ainda não está configurado corretamente." }, 503);
+    return json(req, { error: "O servidor ainda não está configurado corretamente." }, 503);
   }
 
   if (!mpToken) {
     console.error("PROCESS_PAYMENT_CONFIG_ERROR: Mercado Pago Access Token is missing.");
-    return json({ error: "Mercado Pago ainda não está configurado no servidor." }, 503);
+    return json(req, { error: "Mercado Pago ainda não está configurado no servidor." }, 503);
   }
 
   const authClient = createClient(supabaseUrl, anonKey);
   const admin = createClient(supabaseUrl, serviceKey);
 
   const { data: userData, error: userError } = await authClient.auth.getUser(accessToken);
-  if (userError || !userData.user) return json({ error: "Sessão inválida ou expirada." }, 401);
+  if (userError || !userData.user) return json(req, { error: "Sessão inválida ou expirada." }, 401);
 
   const body = await req.json().catch(() => null);
-  if (!body || typeof body !== "object") return json({ error: "Dados de pagamento inválidos." }, 400);
+  if (!body || typeof body !== "object") return json(req, { error: "Dados de pagamento inválidos." }, 400);
 
   const turnstileSecret = Deno.env.get("TURNSTILE_SECRET_KEY")?.trim();
   const turnstileToken = String(body?.captchaToken ?? "").trim();
   if (!turnstileSecret || !turnstileToken || turnstileToken.length > 2048) {
-    return json({ error: "Verificação de segurança necessária. Atualize a página e tente novamente." }, 403);
+    return json(req, { error: "Verificação de segurança necessária. Atualize a página e tente novamente." }, 403);
   }
 
   const clientIp =
@@ -101,7 +101,7 @@ Deno.serve(async (req) => {
     turnstileResult = await verification.json().catch(() => ({}));
   } catch (error) {
     console.error("PROCESS_PAYMENT_TURNSTILE_NETWORK_ERROR", error);
-    return json({ error: "Não foi possível validar a verificação de segurança. Tente novamente." }, 503);
+    return json(req, { error: "Não foi possível validar a verificação de segurança. Tente novamente." }, 503);
   }
 
   const turnstileHostname = String(turnstileResult.hostname ?? "").trim().toLowerCase();
@@ -120,14 +120,14 @@ Deno.serve(async (req) => {
       action: turnstileResult.action ?? null,
       hostname: turnstileHostname || null,
     });
-    return json({ error: "A verificação de segurança expirou ou não foi concluída. Tente novamente." }, 403);
+    return json(req, { error: "A verificação de segurança expirou ou não foi concluída. Tente novamente." }, 403);
   }
 
   const offerId = body?.offerId;
   const formData = body?.formData ?? {};
   const configured = offers[offerId];
 
-  if (!configured) return json({ error: "Oferta inválida." }, 400);
+  if (!configured) return json(req, { error: "Oferta inválida." }, 400);
 
   const { data: offer, error: offerError } = await admin
     .from("ofertas")
@@ -138,11 +138,11 @@ Deno.serve(async (req) => {
 
   if (offerError) {
     console.error("PROCESS_PAYMENT_OFFER_ERROR", offerError);
-    return json(req, req, { error: "Não foi possível validar a oferta." }, 500);
+    return json(req, { error: "Não foi possível validar a oferta." }, 500);
   }
-  if (!offer) return json({ error: "Oferta não disponível." }, 400);
+  if (!offer) return json(req, { error: "Oferta não disponível." }, 400);
   if (offer.total_cents !== configured.total || offer.installment_count !== configured.installments) {
-    return json({ error: "A configuração da oferta não corresponde ao catálogo seguro." }, 409);
+    return json(req, { error: "A configuração da oferta não corresponde ao catálogo seguro." }, 409);
   }
 
   const productSlug = String(offer?.produtos?.slug ?? configured.product);
@@ -166,13 +166,13 @@ Deno.serve(async (req) => {
       : { data: [] };
 
     if (!reportAccess?.length) {
-      return json({ error: "O Relatório PDF é um complemento do Relatório Completo." }, 403);
+      return json(req, { error: "O Relatório PDF é um complemento do Relatório Completo." }, 403);
     }
   }
 
   const payerEmail = String(formData?.payer?.email ?? userData.user.email ?? "").trim().toLowerCase();
   if (!payerEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(payerEmail)) {
-    return json(req, req, { error: "E-mail do pagador é obrigatório e deve ser válido." }, 400);
+    return json(req, { error: "E-mail do pagador é obrigatório e deve ser válido." }, 400);
   }
 
   const digest = async (value: string) => {
@@ -190,10 +190,10 @@ Deno.serve(async (req) => {
   );
   if (ipLimitError) {
     console.error("PROCESS_PAYMENT_RATE_LIMIT_ERROR", ipLimitError);
-    return json({ error: "Não foi possível validar o limite de segurança. Tente novamente." }, 503);
+    return json(req, { error: "Não foi possível validar o limite de segurança. Tente novamente." }, 503);
   }
   if (ipAllowed !== true) {
-    return json({ error: "Muitas tentativas de pagamento. Aguarde alguns minutos e tente novamente." }, 429);
+    return json(req, { error: "Muitas tentativas de pagamento. Aguarde alguns minutos e tente novamente." }, 429);
   }
 
   const { data: emailAllowed, error: emailLimitError } = await admin.rpc(
@@ -202,10 +202,10 @@ Deno.serve(async (req) => {
   );
   if (emailLimitError) {
     console.error("PROCESS_PAYMENT_EMAIL_RATE_LIMIT_ERROR", emailLimitError);
-    return json({ error: "Não foi possível validar o limite de segurança. Tente novamente." }, 503);
+    return json(req, { error: "Não foi possível validar o limite de segurança. Tente novamente." }, 503);
   }
   if (emailAllowed !== true) {
-    return json({ error: "Este e-mail atingiu o limite de tentativas de pagamento. Aguarde e tente novamente." }, 429);
+    return json(req, { error: "Este e-mail atingiu o limite de tentativas de pagamento. Aguarde e tente novamente." }, 429);
   }
 
   const paymentMethodId = String(formData?.payment_method_id ?? "");
@@ -213,18 +213,18 @@ Deno.serve(async (req) => {
   const normalizedType = paymentType(selectedPaymentType, paymentMethodId);
 
   if (!normalizedType || !paymentMethodId) {
-    return json({ error: "Forma de pagamento não reconhecida." }, 400);
+    return json(req, { error: "Forma de pagamento não reconhecida." }, 400);
   }
 
   if (normalizedType === "credit_card" || normalizedType === "debit_card") {
-    if (!formData?.token) return json(req, req, { error: "Não foi possível validar os dados do cartão." }, 400);
+    if (!formData?.token) return json(req, { error: "Não foi possível validar os dados do cartão." }, 400);
 
     const selectedInstallments = Number(formData?.installments ?? 1);
     if (!Number.isInteger(selectedInstallments) || selectedInstallments < 1) {
-      return json({ error: "Número de parcelas inválido." }, 400);
+      return json(req, { error: "Número de parcelas inválido." }, 400);
     }
     if (selectedInstallments !== configured.installments) {
-      return json({ error: `Esta oferta deve ser paga em ${configured.installments}x de R$ ${(configured.installment / 100).toFixed(2).replace(".", ",")}.` }, 400);
+      return json(req, { error: `Esta oferta deve ser paga em ${configured.installments}x de R$ ${(configured.installment / 100).toFixed(2).replace(".", ",")}.` }, 400);
     }
   }
 
@@ -244,7 +244,7 @@ Deno.serve(async (req) => {
     .select("id")
     .single();
 
-  if (pedidoError || !pedido) return json(req, req, { error: "Não foi possível criar o pedido." }, 500);
+  if (pedidoError || !pedido) return json(req, { error: "Não foi possível criar o pedido." }, 500);
 
   // Pix e cartões usam a Payments API. Para Pix, ela retorna diretamente o Copia e Cola.
   const paymentPayload: Record<string, unknown> = {
@@ -281,7 +281,7 @@ Deno.serve(async (req) => {
     mpData = await mpResponse.json().catch(() => ({}));
   } catch (error) {
     console.error("PROCESS_PAYMENT_MP_NETWORK_ERROR", error);
-    return json({ error: "Não foi possível conectar ao Mercado Pago. Tente novamente.", orderId: pedido.id, retryable: true }, 502);
+    return json(req, { error: "Não foi possível conectar ao Mercado Pago. Tente novamente.", orderId: pedido.id, retryable: true }, 502);
   }
 
   if (!mpResponse.ok) {
@@ -301,13 +301,13 @@ Deno.serve(async (req) => {
     await admin.from("pedidos").update({ status: mpResponse.status >= 500 || mpResponse.status === 429 ? "pending" : "failed" }).eq("id", pedido.id);
 
     if (mpResponse.status === 401 || mpResponse.status === 403) {
-      return json({ error: "A credencial do Mercado Pago não foi aceita pelo servidor." }, 503);
+      return json(req, { error: "A credencial do Mercado Pago não foi aceita pelo servidor." }, 503);
     }
     if (mpResponse.status === 429 || mpResponse.status >= 500) {
-      return json({ error: "O Mercado Pago está temporariamente indisponível. Tente novamente.", retryable: true }, 502);
+      return json(req, { error: "O Mercado Pago está temporariamente indisponível. Tente novamente.", retryable: true }, 502);
     }
 
-    return json({
+    return json(req, {
       error: detail,
       code: errorCode || null,
       causes,
@@ -362,7 +362,7 @@ Deno.serve(async (req) => {
   }
 
   const paymentMethodData = payment?.point_of_interaction?.transaction_data ?? payment?.payment_method ?? {};
-  return json({
+  return json(req, {
     ok: true,
     orderId: mpData.id,
     paymentId: payment?.id ?? null,
