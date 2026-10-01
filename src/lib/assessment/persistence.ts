@@ -1,5 +1,6 @@
 import { supabase } from "@/lib/supabase";
 import type { Question } from "@/lib/assessment/questions";
+import { generateAssessmentAnalysis } from "@/lib/assessment/analysis";
 
 export async function persistCompletedAssessment(args: {
   session: { answers: Record<string, number>; startedAt: string; finishedAt?: string };
@@ -53,11 +54,18 @@ export async function persistCompletedAssessment(args: {
   const totalRaw = args.scores.reduce((sum, item) => sum + item.raw, 0);
   const maxRaw = args.scores.reduce((sum, item) => sum + item.max, 0);
 
+  const analysis = generateAssessmentAnalysis({
+    answers: args.session.answers,
+    questions: args.questions,
+    scores: args.scores,
+  });
+
   const { error: resultError } = await supabase.from("resultados").insert({
     sessao_id: testSession.id,
     user_id: user.id,
     total_raw: totalRaw,
     max_raw: maxRaw,
+    analysis,
     scores: args.scores.map((item) => ({
       id: item.dimension.id,
       label: item.dimension.label,
