@@ -70,7 +70,7 @@ export function TestimonialsCarousel() {
       );
   }, []);
 
-  const cards = approvedItems.length > 0 ? approvedItems : testerTestimonials;
+  // Em desktop, poucos depoimentos aprovados podem não gerar largura suficiente para overflow.\n  // Mantemos o conjunto de exemplos de teste como fallback até existir uma quantidade mínima.\n  const cards = approvedItems.length >= 2 ? approvedItems : testerTestimonials;
   const loopItems = [...cards, ...cards];
 
   useEffect(() => {
@@ -101,7 +101,7 @@ export function TestimonialsCarousel() {
     <div>
       <div
         ref={ref}
-        className="flex gap-5 overflow-x-auto pb-4 scrollbar-none"
+        className="flex gap-5 overflow-x-scroll pb-4 scrollbar-none overscroll-x-contain"
         aria-label="Depoimentos de usuários"
       >
         {loopItems.map((testimonial, index) => (
