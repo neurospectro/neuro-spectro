@@ -3,6 +3,7 @@ import { ArrowLeft, Download, ShieldCheck } from "lucide-react";
 import { useEffect, useState } from "react";
 import mark from "@/assets/mark.png.asset.json";
 import { ASSESSMENT, DIMENSIONS } from "@/lib/assessment/questions";
+import type { AssessmentAnalysis } from "@/lib/assessment/analysis";
 import { supabase } from "@/lib/supabase";
 import "@/styles/report-print.css";
 
@@ -13,6 +14,7 @@ type Result = {
   total_raw: number;
   max_raw: number;
   scores: Score[];
+  analysis: AssessmentAnalysis | null;
 };
 
 export const Route = createFileRoute("/relatorio-pdf")({ component: RelatorioPdf });
@@ -41,7 +43,7 @@ function RelatorioPdf() {
       .from("acessos")
       .select("status,expires_at,produtos(slug)")
       .eq("status", "active")
-      .eq("produtos.slug", "relatorio-completo")
+      .eq("produtos.slug", "relatorio-pdf")
       .limit(1)
       .maybeSingle();
 
@@ -58,7 +60,7 @@ function RelatorioPdf() {
 
     const { data } = await supabase
       .from("resultados")
-      .select("id,created_at,total_raw,max_raw,scores")
+      .select("id,created_at,total_raw,max_raw,scores,analysis")
       .order("created_at", { ascending: false })
       .limit(1)
       .maybeSingle();
@@ -141,6 +143,9 @@ function RelatorioPdf() {
           <section className="report-section">
             <SectionTitle eyebrow="01" title="Sobre esta avaliação" />
             <p>{ASSESSMENT.description} O objetivo é oferecer um ponto de partida para reflexão sobre características e experiências pessoais.</p>
+            {result.analysis?.clinicalContext && (
+              <div className="report-note mt-5"><strong>Contexto de interpretação:</strong> {result.analysis.clinicalContext}</div>
+            )}
             <div className="report-note mt-5">
               <strong>Importante:</strong> este relatório é informativo e de autoconhecimento. Ele não constitui diagnóstico, não estabelece ponto de corte clínico e não substitui avaliação realizada por profissional qualificado.
             </div>
@@ -172,56 +177,62 @@ function RelatorioPdf() {
           </section>
 
           <section className="report-section">
-            <SectionTitle eyebrow="03" title="Como interpretar estes resultados" />
-            <p>As pontuações representam a forma como as respostas foram distribuídas nas dimensões avaliadas. Uma pontuação maior ou menor não determina, por si só, uma condição clínica.</p>
-            <p className="mt-4">O valor deste relatório está em identificar temas que podem merecer observação, reflexão e, se fizer sentido para você, uma conversa mais aprofundada com um profissional.</p>
+            <SectionTitle eyebrow="03" title="Leitura personalizada" />
+            {result.analysis ? (
+              <>
+                <p>{result.analysis.overview}</p>
+                <div className="report-note mt-5"><strong>Principais pontos:</strong></div>
+                <ul className="mt-3 space-y-2">{result.analysis.highlights.map((item) => <li key={item} className="rounded-2xl bg-slate-50 p-4 text-sm leading-6">{item}</li>)}</ul>
+              </>
+            ) : (
+              <p>A análise detalhada desta avaliação ainda não está disponível.</p>
+            )}
           </section>
 
           <section className="report-section">
-            <SectionTitle eyebrow="04" title="Pontos para explorar" />
-            <div className="grid gap-3 sm:grid-cols-2">
-              {result.scores
-                .slice()
-                .sort((a, b) => (b.max ? b.raw / b.max : 0) - (a.max ? a.raw / a.max : 0))
-                .slice(0, 4)
-                .map((score) => (
-                  <div key={`explore-${score.id}`} className="rounded-2xl bg-slate-50 p-5">
-                    <p className="font-semibold text-slate-900">{score.label}</p>
-                    <p className="mt-2 text-sm leading-6 text-slate-600">
-                      Observe como características relacionadas a esta dimensão aparecem no seu cotidiano, em diferentes contextos e ao longo do tempo.
-                    </p>
+            <SectionTitle eyebrow="04" title="Interpretação por dimensão" />
+            {result.analysis ? (
+              <div className="grid gap-4">
+                {result.analysis.dimensions.map((dimension) => (
+                  <div key={dimension.id} className="rounded-2xl border border-slate-200 p-5">
+                    <div className="flex items-end justify-between gap-4">
+                      <div><h3 className="font-semibold text-slate-900">{dimension.label}</h3><p className="mt-1 text-xs text-slate-500">{dimension.level} · {dimension.percentage}%</p></div>
+                      <span className="text-xs font-semibold text-slate-600">{dimension.signals.join(" · ")}</span>
+                    </div>
+                    <p className="mt-3 text-sm leading-6 text-slate-600">{dimension.summary}</p>
+                    <p className="mt-3 text-sm leading-6 text-slate-600">{dimension.interpretation}</p>
+                    <p className="mt-3 text-xs leading-5 text-slate-500"><strong>Estratégias:</strong> {dimension.practicalSupports.join(" ")}</p>
                   </div>
                 ))}
-            </div>
+              </div>
+            ) : (
+              <p>As pontuações permanecem disponíveis acima; a interpretação detalhada não foi gerada para esta avaliação.</p>
+            )}
           </section>
 
           <section className="report-section">
-            <SectionTitle eyebrow="05" title="Perguntas para uma conversa com profissional" />
-            <ol className="space-y-3">
-              {[
-                "Quais aspectos deste relatório fazem sentido para a minha experiência?",
-                "Existem outros fatores que poderiam explicar essas características ou experiências?",
-                "Seria pertinente realizar uma avaliação clínica mais aprofundada?",
-                "Quais estratégias poderiam ajudar nas situações que mais me causam desgaste?",
-              ].map((question, index) => (
-                <li key={question} className="flex gap-3 rounded-2xl border border-slate-200 p-4 text-sm leading-6 text-slate-700">
-                  <span className="font-semibold text-primary">{index + 1}.</span>
-                  <span>{question}</span>
-                </li>
-              ))}
-            </ol>
+            <SectionTitle eyebrow="05" title="Padrões, próximos passos e conversa profissional" />
+            {result.analysis && (
+              <>
+                <h3 className="font-semibold text-slate-900">Padrões para observar</h3>
+                <ul className="mt-3 space-y-2">{result.analysis.patterns.map((item) => <li key={item} className="rounded-2xl bg-slate-50 p-4 text-sm leading-6">{item}</li>)}</ul>
+                <h3 className="mt-6 font-semibold text-slate-900">Pontos para explorar</h3>
+                <ul className="mt-3 space-y-2">{result.analysis.explore.map((item) => <li key={item} className="rounded-2xl bg-slate-50 p-4 text-sm leading-6">{item}</li>)}</ul>
+                <h3 className="mt-6 font-semibold text-slate-900">Perguntas para o especialista</h3>
+                <ol className="mt-3 space-y-2">{result.analysis.professionalQuestions.map((item, index) => <li key={item} className="flex gap-3 rounded-2xl border border-slate-200 p-4 text-sm leading-6"><span className="font-semibold text-primary">{index + 1}.</span><span>{item}</span></li>)}</ol>
+              </>
+            )}
           </section>
 
           <section className="report-section">
-            <SectionTitle eyebrow="06" title="Metodologia e limitações" />
+            <SectionTitle eyebrow="06" title="Metodologia, evidências e limites" />
             <p>{ASSESSMENT.methodological_notes}</p>
-            <p className="mt-4">Os itens são autorais e foram construídos a partir de construtos descritos em referências metodológicas. As referências não significam que o NeuroSpectro seja equivalente ou validado como qualquer instrumento citado.</p>
+            {result.analysis && <ul className="mt-4 list-disc space-y-2 pl-5 text-sm leading-6 text-slate-600">{result.analysis.limitations.map((item) => <li key={item}>{item}</li>)}</ul>}
             <div className="mt-5 rounded-2xl border border-slate-200 p-5 text-xs leading-6 text-slate-600">
               <p className="font-semibold text-slate-800">Referências metodológicas</p>
-              <ul className="mt-2 list-disc space-y-1 pl-5">
-                {ASSESSMENT.scientific_references.map((reference) => <li key={reference}>{reference}</li>)}
-              </ul>
+              <ul className="mt-2 list-disc space-y-1 pl-5">{ASSESSMENT.scientific_references.map((reference) => <li key={reference}>{reference}</li>)}</ul>
             </div>
+            {result.analysis?.disclaimer && <div className="report-note mt-5"><strong>Aviso:</strong> {result.analysis.disclaimer}</div>}
           </section>
 
           <section className="report-section report-final">
