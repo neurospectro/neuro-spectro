@@ -4,9 +4,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { SecurityCaptcha, isTurnstileConfigured } from "@/components/security-captcha";
 
-export const Route = createFileRoute("/pos-compra")({
-  component: PostPurchasePage,
-});
+export const Route = createFileRoute("/pos-compra")({ component: PostPurchasePage });
 
 function PostPurchasePage() {
   const navigate = useNavigate();
@@ -27,33 +25,33 @@ function PostPurchasePage() {
   async function createAccess(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (!supabase || !email.trim()) return;
+    setLoading(true);
+    setMessage("");
+
     if (!isTurnstileConfigured()) {
+      setLoading(false);
       setMessage("A verificação de segurança ainda não está disponível.");
       return;
     }
     if (!captchaToken) {
+      setLoading(false);
       setMessage("Marque a verificação de segurança para continuar.");
       return;
     }
 
-    setLoading(true);
-    setMessage("");
-
     const { error } = await supabase.auth.signInWithOtp({
       email: email.trim(),
       options: {
-        emailRedirectTo: `${window.location.origin}/dashboard`,
+        emailRedirectTo: \${window.location.origin}/dashboard,
         captchaToken,
       },
     });
 
     setLoading(false);
-
     if (error) {
       setMessage("Não foi possível enviar o acesso agora. Tente novamente.");
       return;
     }
-
     setSent(true);
   }
 
@@ -64,10 +62,7 @@ function PostPurchasePage() {
           <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/10 text-primary">
             <CheckCircle2 className="h-7 w-7" />
           </div>
-
-          <p className="mt-6 text-xs font-semibold uppercase tracking-[0.25em] text-primary">
-            Compra confirmada
-          </p>
+          <p className="mt-6 text-xs font-semibold uppercase tracking-[0.25em] text-primary">Compra confirmada</p>
           <h1 className="mt-3 font-display text-3xl font-semibold text-ink sm:text-4xl">
             Você está a um passo de descobrir seu perfil.
           </h1>
@@ -100,9 +95,8 @@ function PostPurchasePage() {
                   />
                 </label>
 
-                {message && <p className="text-sm text-destructive">{message}</p>}
-
                 <SecurityCaptcha onToken={setCaptchaToken} />
+                {message && <p className="text-sm text-destructive">{message}</p>}
 
                 <button
                   type="submit"
@@ -124,7 +118,6 @@ function PostPurchasePage() {
               <MailCheck className="h-4 w-4" />
               JÁ TENHO UMA CONTA · ENTRAR
             </button>
-
           </div>
 
           <p className="mt-6 text-center text-xs leading-5 text-muted-foreground">
