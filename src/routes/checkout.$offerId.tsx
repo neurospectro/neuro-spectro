@@ -306,10 +306,20 @@ function Checkout() {
             </div>
           )}
 
-          <div className="mt-4 rounded-2xl border border-primary/10 bg-background p-3 sm:mt-6 sm:p-4">
-            <p className="text-sm font-semibold text-ink">Escolha como pagar</p>
-            <p className="mt-1 text-xs text-muted-foreground">Pix, cartão de crédito ou débito são exibidos diretamente pelo Mercado Pago.</p>
-          </div>
+          <button
+            type="button"
+            className="mt-4 w-full rounded-2xl border border-primary/20 bg-background p-3 text-left transition hover:border-primary/40 hover:bg-primary/5 focus:outline-none focus:ring-2 focus:ring-primary/30 sm:mt-6 sm:p-4"
+            onClick={() => document.getElementById("paymentBrick_container")?.scrollIntoView({ behavior: "smooth", block: "center" })}
+            aria-label="Escolher forma de pagamento"
+          >
+            <span className="flex items-center justify-between gap-3">
+              <span>
+                <span className="block text-sm font-semibold text-ink">Escolha como pagar</span>
+                <span className="mt-1 block text-xs text-muted-foreground">Pix, cartão de crédito ou débito</span>
+              </span>
+              <span className="rounded-full bg-primary px-4 py-2 text-xs font-semibold text-primary-foreground">ESCOLHER</span>
+            </span>
+          </button>
 
           <div className="mt-4 flex items-center gap-3 rounded-2xl bg-primary/5 p-4 sm:mt-6">
             <CreditCard className="h-6 w-6 shrink-0 text-primary" />
