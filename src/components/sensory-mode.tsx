@@ -28,12 +28,12 @@ export function SensoryMode() {
       type="button"
       onClick={toggle}
       aria-pressed={enabled}
-      aria-label={enabled ? "Desativar modo de conforto sensorial" : "Ativar modo de conforto sensorial"}
-      title={enabled ? "Desativar conforto sensorial" : "Ativar conforto sensorial"}
+      aria-label={enabled ? "Desativar acessibilidade sensorial" : "Ativar acessibilidade sensorial"}
+      title={enabled ? "Desativar acessibilidade sensorial" : "Ativar acessibilidade sensorial"}
       className="fixed right-4 top-4 z-[100] inline-flex items-center gap-2 rounded-full border border-border bg-card px-3 py-2 text-xs font-semibold text-card-foreground shadow-lg transition-colors hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
     >
       {enabled ? <Sun className="size-4" aria-hidden="true" /> : <Moon className="size-4" aria-hidden="true" />}
-      <span className="hidden sm:inline">Conforto sensorial</span>
+      <span className="hidden sm:inline">Acessibilidade sensorial</span>
       <Sparkles className="size-3.5 opacity-60" aria-hidden="true" />
     </button>
   );
