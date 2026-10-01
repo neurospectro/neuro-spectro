@@ -156,115 +156,10 @@ Deno.serve(async (req) => {
 
   if (pedidoError || !pedido) return json({ error: "Não foi possível criar o pedido." }, 500);
 
-  // Checkout Transparente atual do Mercado Pago usa a Orders API (/v1/orders).
-  // O Payment Brick fornece payment_method_id, payment_type_id, token e installments.
-  const paymentMethod: Record<string, unknown> = {
-    id: paymentMethodId,
-    type: normalizedType,
-  };
-
-  if (formData?.token) paymentMethod.token = String(formData.token);
-  if (normalizedType === "credit_card" || normalizedType === "debit_card") {
-    paymentMethod.installments = Number(formData?.installments ?? 1);
-  }
-
-  const orderPayload: Record<string, unknown> = {
-    type: "online",
-    processing_mode: "automatic",
-    total_amount: amount,
-    external_reference: `ns_${pedido.id}`,
-    payer: {
-      email: payerEmail,
-      ...(formData?.payer?.identification
-        ? { identification: formData.payer.identification }
-        : {}),
-    },
-    transactions: {
-      payments: [
-        {
-          amount,
-          payment_method: paymentMethod,
-        },
-      ],
-    },
-  };
-
-  let mpResponse: Response;
-  let mpData: any;
-
-  try {
-    mpResponse = await fetch("https://api.mercadopago.com/v1/orders", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${mpToken}`,
-        "X-Idempotency-Key": pedido.id,
-      },
-      body: JSON.stringify(orderPayload),
-    });
-    mpData = await mpResponse.json().catch(() => ({}));
-  } catch (error) {
-    console.error("PROCESS_PAYMENT_MP_NETWORK_ERROR", error);
-    return json({ error: "Não foi possível conectar ao Mercado Pago. Tente novamente.", orderId: pedido.id, retryable: true }, 502);
-  }
-
-  if (!mpResponse.ok) {
-    const causeDetails = Array.isArray(mpData?.cause)
-      ? mpData.cause
-          .map((item: unknown) => {
-            if (!item || typeof item !== "object") return "";
-            const cause = item as Record<string, unknown>;
-            return String(cause.description ?? cause.code ?? "").trim();
-          })
-          .filter(Boolean)
-      : [];
-
-    const detail =
-      String(
-        mpData?.message ??
-        mpData?.error ??
-        causeDetails[0] ??
-        mpData?.details ??
-        "Erro retornado pelo Mercado Pago.",
-      ).trim();
-
-    const errorCode = String(mpData?.error ?? mpData?.code ?? mpData?.cause?.[0]?.code ?? "").trim();
-
-    console.error("PROCESS_PAYMENT_MP_ERROR", {
-      status: mpResponse.status,
-      errorCode,
-      detail,
-      causes: causeDetails,
-      orderId: pedido.id,
-    });
-
-    await admin.from("pedidos").update({
-      status: mpResponse.status >= 500 || mpResponse.status === 429 ? "pending" : "failed",
-    }).eq("id", pedido.id);
-
-    if (mpResponse.status === 401 || mpResponse.status === 403) {
-      return json({ error: "A credencial do Mercado Pago não foi aceita pelo servidor." }, 503);
-    }
-    if (mpResponse.status === 429 || mpResponse.status >= 500) {
-      return json({ error: "O Mercado Pago está temporariamente indisponível. Tente novamente.", retryable: true }, 502);
-    }
-
-    return json({
-      error: detail,
-      code: errorCode || null,
-      causes: causeDetails,
-      details: mpData?.details ?? null,
-      message: mpData?.message ?? null,
-      error: mpData?.error ?? null,
-      status: mpResponse.status,
-      mercadoPagoResponse: mpData,
-      orderId: pedido.id,
-    }, 400);
-  }
-
-  const payment = mpData?.transactions?.payments?.[0] ?? null;
-  const paymentStatus = String(payment?.status ?? mpData?.status ?? "pending");
-  const paymentStatusDetail = payment?.status_detail ?? mpData?.status_detail ?? null;
+  // Pix e cartões usam a Payments API. Para Pix, ela retorna diretamente o Copia e Cola.\n  const paymentPayload: Record<string, unknown> = {\n    transaction_amount: Number(amount),\n    description: configured.product,\n    payment_method_id: paymentMethodId,\n    external_reference: \`ns_\${pedido.id}\`,\n    payer: {\n      email: payerEmail,\n      ...(formData?.payer?.identification\n        ? { identification: formData.payer.identification }\n        : {}),\n    },\n  };\n\n  if (formData?.token) paymentPayload.token = String(formData.token);\n  if (normalizedType === "credit_card" || normalizedType === "debit_card") {\n    paymentPayload.installments = Number(formData?.installments ?? 1);\n  }\n\n  let mpResponse: Response;\n  let mpData: any;\n\n  try {\n    mpResponse = await fetch("https://api.mercadopago.com/v1/payments", {\n      method: "POST",\n      headers: {\n        "Content-Type": "application/json",\n        Authorization: \`Bearer \${mpToken}\`,\n        "X-Idempotency-Key": pedido.id,\n      },\n      body: JSON.stringify(paymentPayload),\n    });\n    mpData = await mpResponse.json().catch(() => ({}));\n  } catch (error) {\n    console.error("PROCESS_PAYMENT_MP_NETWORK_ERROR", error);\n    return json({ error: "Não foi possível conectar ao Mercado Pago. Tente novamente.", orderId: pedido.id, retryable: true }, 502);\n  }\n\n  if (!mpResponse.ok) {\n    const causes = Array.isArray(mpData?.cause) ? mpData.cause : [];\n    const errors = Array.isArray(mpData?.errors) ? mpData.errors : [];\n    const messages = [...causes, ...errors]\n      .map((item: unknown) => {\n        if (!item || typeof item !== "object") return String(item ?? "").trim();\n        const value = item as Record<string, unknown>;\n        return String(value.description ?? value.message ?? value.code ?? value.error ?? "").trim();\n      })\n      .filter(Boolean);\n    const detail = String(mpData?.message ?? mpData?.error ?? messages[0] ?? "Erro retornado pelo Mercado Pago.").trim();\n    const errorCode = String(mpData?.error ?? mpData?.code ?? causes[0]?.code ?? errors[0]?.code ?? "").trim();\n\n    console.error("PROCESS_PAYMENT_MP_ERROR", { status: mpResponse.status, errorCode, detail, orderId: pedido.id });\n    await admin.from("pedidos").update({ status: mpResponse.status >= 500 || mpResponse.status === 429 ? "pending" : "failed" }).eq("id", pedido.id);\n\n    if (mpResponse.status === 401 || mpResponse.status === 403) {\n      return json({ error: "A credencial do Mercado Pago não foi aceita pelo servidor." }, 503);\n    }\n    if (mpResponse.status === 429 || mpResponse.status >= 500) {\n      return json({ error: "O Mercado Pago está temporariamente indisponível. Tente novamente.", retryable: true }, 502);\n    }\n\n    return json({\n      error: detail,\n      code: errorCode || null,\n      causes,\n      errors,\n      status: mpResponse.status,\n      mercadoPagoResponse: mpData,\n      orderId: pedido.id,\n    }, mpResponse.status);\n  }\n
+  const payment = mpData ?? null;
+  const paymentStatus = String(payment?.status ?? "pending");
+  const paymentStatusDetail = payment?.status_detail ?? null;
   const paid = isProcessed(paymentStatus, paymentStatusDetail);
 
   await admin
@@ -305,7 +200,7 @@ Deno.serve(async (req) => {
     }
   }
 
-  const paymentMethodData = payment?.payment_method ?? {};
+  const paymentMethodData = payment?.point_of_interaction?.transaction_data ?? payment?.payment_method ?? {};
   return json({
     ok: true,
     orderId: mpData.id,
