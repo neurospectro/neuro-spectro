@@ -1,60 +1,9 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { CheckCircle2, MailCheck, ArrowLeft } from "lucide-react";
-import { useEffect, useState } from "react";
-import { supabase } from "@/lib/supabase";
-import { SecurityCaptcha, isTurnstileConfigured } from "@/components/security-captcha";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { ArrowLeft, CheckCircle2, MailCheck } from "lucide-react";
 
 export const Route = createFileRoute("/pos-compra")({ component: PostPurchasePage });
 
 function PostPurchasePage() {
-  const navigate = useNavigate();
-  const [email, setEmail] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [sent, setSent] = useState(false);
-  const [message, setMessage] = useState("");
-  const [captchaToken, setCaptchaToken] = useState("");
-
-  useEffect(() => {
-    if (!supabase) return;
-    void supabase.auth.getSession().then(({ data }) => {
-      const currentEmail = data.session?.user.email ?? "";
-      if (currentEmail) setEmail(currentEmail);
-    });
-  }, []);
-
-  async function createAccess(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    if (!supabase || !email.trim()) return;
-    setLoading(true);
-    setMessage("");
-
-    if (!isTurnstileConfigured()) {
-      setLoading(false);
-      setMessage("A verificação de segurança ainda não está disponível.");
-      return;
-    }
-    if (!captchaToken) {
-      setLoading(false);
-      setMessage("Marque a verificação de segurança para continuar.");
-      return;
-    }
-
-    const { error } = await supabase.auth.signInWithOtp({
-      email: email.trim(),
-      options: {
-        emailRedirectTo: `${window.location.origin}/dashboard`,
-        captchaToken,
-      },
-    });
-
-    setLoading(false);
-    if (error) {
-      setMessage("Não foi possível enviar o acesso agora. Tente novamente.");
-      return;
-    }
-    setSent(true);
-  }
-
   return (
     <main className="min-h-screen bg-background px-5 py-10">
       <div className="mx-auto flex min-h-[80vh] max-w-xl items-center justify-center">
@@ -62,69 +11,49 @@ function PostPurchasePage() {
           <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/10 text-primary">
             <CheckCircle2 className="h-7 w-7" />
           </div>
-          <p className="mt-6 text-xs font-semibold uppercase tracking-[0.25em] text-primary">Compra confirmada</p>
+
+          <p className="mt-6 text-xs font-semibold uppercase tracking-[0.25em] text-primary">
+            Pagamento aprovado
+          </p>
+
           <h1 className="mt-3 font-display text-3xl font-semibold text-ink sm:text-4xl">
-            Você está a um passo de descobrir seu perfil.
+            Seu acesso está sendo preparado.
           </h1>
+
           <p className="mt-4 leading-7 text-muted-foreground">
-            Seu pagamento foi recebido. Agora crie seu acesso para consultar seu Relatório Completo e acompanhar tudo pelo seu dashboard.
+            O pagamento foi confirmado. Enviamos para o e-mail informado no checkout
+            um link para confirmar seu acesso ao NeuroSpectro.
           </p>
 
           <div className="mt-7 rounded-3xl border border-primary/15 bg-primary/5 p-5">
-            <div className="flex items-center gap-3">
-              <MailCheck className="h-5 w-5 text-primary" />
-              <h2 className="font-semibold text-ink">Crie seu acesso</h2>
-            </div>
-
-            {sent ? (
-              <div className="mt-4 text-sm leading-6 text-foreground">
-                <strong>Link enviado.</strong> Verifique seu e-mail e toque no link para entrar na sua conta e acessar seu dashboard.
+            <div className="flex items-start gap-3">
+              <MailCheck className="mt-0.5 h-5 w-5 shrink-0 text-primary" />
+              <div>
+                <h2 className="font-semibold text-ink">Confira sua caixa de entrada</h2>
+                <p className="mt-2 text-sm leading-6 text-muted-foreground">
+                  Ao confirmar o e-mail, sua conta permanente mantém o mesmo acesso
+                  e os dados da avaliação vinculados à compra.
+                </p>
               </div>
-            ) : (
-              <form onSubmit={createAccess} className="mt-4 space-y-4">
-                <label className="block">
-                  <span className="text-sm font-semibold text-ink">E-mail</span>
-                  <input
-                    type="email"
-                    value={email}
-                    onChange={(event) => setEmail(event.target.value)}
-                    required
-                    autoComplete="email"
-                    placeholder="voce@email.com"
-                    className="mt-2 w-full rounded-2xl border border-border bg-background px-4 py-3 outline-none focus:border-primary"
-                  />
-                </label>
-
-                <SecurityCaptcha onToken={setCaptchaToken} />
-                {message && <p className="text-sm text-destructive">{message}</p>}
-
-                <button
-                  type="submit"
-                  disabled={loading || !email.trim() || !captchaToken}
-                  className="w-full rounded-full bg-primary px-7 py-4 font-semibold text-primary-foreground disabled:cursor-not-allowed disabled:opacity-50"
-                >
-                  {loading ? "Enviando..." : "CRIAR MEU ACESSO"}
-                </button>
-              </form>
-            )}
+            </div>
           </div>
 
-          <div className="mt-5 flex flex-col gap-3 sm:flex-row">
-            <button
-              type="button"
-              onClick={() => void navigate({ to: "/login" })}
-              className="inline-flex flex-1 items-center justify-center gap-2 rounded-full border border-border px-5 py-3 font-semibold text-ink hover:bg-secondary"
-            >
-              <MailCheck className="h-4 w-4" />
-              JÁ TENHO UMA CONTA · ENTRAR
-            </button>
+          <div className="mt-6 rounded-2xl border border-border bg-secondary/50 p-4 text-sm leading-6 text-muted-foreground">
+            Se você ainda estiver neste dispositivo, também pode acessar sua área
+            normalmente enquanto confirma o e-mail.
           </div>
 
-          <p className="mt-6 text-center text-xs leading-5 text-muted-foreground">
-            O acesso é vinculado ao e-mail informado na compra. Você não precisa criar uma senha.
-          </p>
+          <Link
+            to="/dashboard"
+            className="mt-6 flex w-full items-center justify-center rounded-full bg-primary px-7 py-4 font-semibold text-primary-foreground shadow-soft transition hover:opacity-90"
+          >
+            Acessar minha área
+          </Link>
 
-          <Link to="/" className="mt-6 flex items-center justify-center gap-2 text-sm text-muted-foreground hover:text-foreground">
+          <Link
+            to="/"
+            className="mt-6 flex items-center justify-center gap-2 text-sm text-muted-foreground hover:text-foreground"
+          >
             <ArrowLeft className="h-4 w-4" />
             Voltar para a NeuroSpectro
           </Link>
