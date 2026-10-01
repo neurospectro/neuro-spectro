@@ -10,6 +10,7 @@ type TurnstileWidget = {
       "expired-callback"?: () => void;
       "error-callback"?: () => void;
       action?: string;
+      appearance?: "always" | "execute" | "interaction-only";
     },
   ) => string;
   reset: (widgetId?: string) => void;
@@ -21,7 +22,7 @@ declare global {
   }
 }
 
-const SITE_KEY = import.meta.env["VITE_TURNSTILE_SITE_KEY"] ?? "";
+const SITE_KEY = import.meta.env["VITE_TURNSTILE_SITE_KEY"] ?? "0x4AAAAAAFLca1wvjy36oj_0";
 const SCRIPT_ID = "cloudflare-turnstile-script";
 
 export function isTurnstileConfigured() {
@@ -31,9 +32,11 @@ export function isTurnstileConfigured() {
 export function SecurityCaptcha({
   onToken,
   resetKey = 0,
+  action = "payment",
 }: {
   onToken: (token: string) => void;
   resetKey?: number;
+  action?: string;
 }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const widgetIdRef = useRef<string | undefined>(undefined);
@@ -50,7 +53,8 @@ export function SecurityCaptcha({
       widgetIdRef.current = window.turnstile.render(containerRef.current, {
         sitekey: SITE_KEY,
         theme: "auto",
-        action: "payment",
+        action,
+        appearance: "interaction-only",
         callback: onToken,
         "expired-callback": () => onToken(""),
         "error-callback": () => onToken(""),
@@ -89,7 +93,7 @@ export function SecurityCaptcha({
       cancelled = true;
       script?.removeEventListener("load", handleLoad);
     };
-  }, [onToken]);
+  }, [action, onToken]);
 
   useEffect(() => {
     if (!SITE_KEY || !widgetIdRef.current || !window.turnstile || resetKey === 0) return;
