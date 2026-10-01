@@ -113,17 +113,11 @@ function Checkout() {
         const publicKey = MERCADOPAGO_PUBLIC_KEY;
         if (!publicKey) throw new Error("O Mercado Pago ainda não está configurado no ambiente.");
 
-        // Load the SDK while Supabase checks the session, so the checkout does
-        // not wait for two sequential network operations.
-        const [sessionResult] = await Promise.all([
-          supabase.auth.getSession(),
-          loadMercadoPagoScript(),
-        ]);
-        const sessionData = sessionResult.data;
-
         // O Payment Brick pode ser renderizado sem autenticação.
-        // A sessão anônima só é criada no envio, evitando bloquear o checkout
-        // quando o projeto ainda não habilitou anonymous sign-ins no Supabase.
+        // Não bloqueamos a montagem do checkout esperando uma sessão do Supabase:
+        // a sessão só é necessária quando o cliente envia o pagamento.
+        await loadMercadoPagoScript();
+
         if (cancelled || !window.MercadoPago) return;
 
         const mp = new window.MercadoPago(publicKey, { locale: "pt-BR" });
