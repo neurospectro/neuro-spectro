@@ -122,7 +122,8 @@ function Checkout() {
         const mp = new window.MercadoPago(publicKey, { locale: "pt-BR" });
         const bricksBuilder = mp.bricks();
 
-        const brick = await bricksBuilder.create("payment", "paymentBrick_container", {
+        const brick = await Promise.race([
+          bricksBuilder.create("payment", "paymentBrick_container", {
           initialization: {
             amount: offer.totalCents / 100,
             payer: { email: sessionData.session.user.email ?? "" },
@@ -191,7 +192,14 @@ function Checkout() {
               setProcessing(false);
             },
           },
-        });
+          }),
+          new Promise<never>((_, reject) =>
+            window.setTimeout(
+              () => reject(new Error("O checkout do Mercado Pago demorou mais que o esperado para carregar.")),
+              15000,
+            ),
+          ),
+        ]);
 
         if (cancelled) {
           brick.unmount();
@@ -199,6 +207,8 @@ function Checkout() {
         }
 
         brickRef.current = brick;
+        // The SDK can render the Brick successfully even if its onReady callback
+        // is delayed or not emitted in some mobile/browser environments.
         setLoading(false);
       } catch (mountError) {
         if (!cancelled) {
