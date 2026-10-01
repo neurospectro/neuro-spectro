@@ -102,14 +102,12 @@ function Checkout() {
   const [pix, setPix] = useState<{ qrCode: string | null; qrCodeBase64: string | null; ticketUrl: string | null } | null>(null);
 
   useEffect(() => {
-    if (!offer || !supabase) return;
+    if (!offer) return;
 
     let cancelled = false;
 
     const mountBrick = async () => {
       try {
-        if (!supabase) return;
-
         const publicKey = MERCADOPAGO_PUBLIC_KEY;
         if (!publicKey) throw new Error("O Mercado Pago ainda não está configurado no ambiente.");
 
