@@ -34,7 +34,7 @@ export function SecurityCaptcha({
 }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const widgetIdRef = useRef<string | undefined>(undefined);
-  const [ready, setReady] = useState(Boolean(window.turnstile));
+  const [ready, setReady] = useState(false);
 
   useEffect(() => {
     if (!SITE_KEY) return;
