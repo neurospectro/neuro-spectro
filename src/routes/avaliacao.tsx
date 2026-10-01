@@ -1,9 +1,11 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
-import { ArrowLeft, ArrowRight, Check, RotateCcw, Users, FileText, Clock } from "lucide-react";
+import { ArrowLeft, ArrowRight, Check, RotateCcw, Users, FileText, Clock, CheckCircle2, Loader2, ShieldCheck } from "lucide-react";
 import mark from "@/assets/mark.png.asset.json";
 import { ASSESSMENT, DIMENSIONS, SCALE, getVisibleQuestions, scoreByDimension } from "@/lib/assessment/questions";
 import { persistCompletedAssessment } from "@/lib/assessment/persistence";
+import { getOffer, formatBRL } from "@/lib/offers";
+import { supabase } from "@/lib/supabase";
 
 export const Route = createFileRoute("/avaliacao")({
   head: () => ({
@@ -18,6 +20,10 @@ export const Route = createFileRoute("/avaliacao")({
   }),
   component: Avaliacao,
 });
+
+declare global { interface Window { MercadoPago?: new (key: string, options?: { locale?: string }) => { bricks: () => { create: (type: string, id: string, settings: Record<string, unknown>) => Promise<{ unmount: () => void }> } } } }
+const MP_SCRIPT_ID = "mercadopago-js-v2";
+function preloadMercadoPago() { if (document.getElementById(MP_SCRIPT_ID) || window.MercadoPago) return; const s=document.createElement("script"); s.id=MP_SCRIPT_ID; s.src="https://sdk.mercadopago.com/js/v2"; s.async=true; document.head.appendChild(s); }
 
 const KEY = `ns-session-${ASSESSMENT.assessment_id}-${ASSESSMENT.version}`;
 type Session = { answers: Record<string, number>; index: number; startedAt: string; finishedAt?: string | undefined };
@@ -241,72 +247,56 @@ function Done({ session, onReview }: { session: Session; onReview: () => void })
 }
 
 function ReportOffer({ session }: { session: Session }) {
-  const offerEndsAt = new Date(session.finishedAt!).getTime() + 7 * 60 * 1000;
-  const [remaining, setRemaining] = useState(Math.max(0, offerEndsAt - Date.now()));
-
-  useEffect(() => {
-    const timer = window.setInterval(() => {
-      setRemaining(Math.max(0, offerEndsAt - Date.now()));
-    }, 1000);
-    return () => window.clearInterval(timer);
-  }, [offerEndsAt]);
-
-  const expired = remaining <= 0;
-  const minutes = Math.floor(remaining / 60000);
-  const seconds = Math.floor((remaining % 60000) / 1000);
-
-  return (
-    <div className="mx-auto mt-7 max-w-md rounded-3xl border-2 border-primary/30 bg-card p-6 text-left shadow-soft">
-      <p className="text-xs font-semibold uppercase tracking-[0.25em] text-primary">Condição promocional da sua sessão</p>
-      <h2 className="mt-2 font-display text-2xl font-semibold text-ink">Seu Relatório Completo NeuroSpectro</h2>
-      <p className="mt-2 text-sm text-muted-foreground">
-        Transforme suas respostas em uma leitura organizada das dimensões avaliadas, padrões observados e pontos para explorar em seu autoconhecimento.
-      </p>
-
-      <div className="mt-5 rounded-2xl bg-primary/5 p-4">
-        <div className="flex items-center justify-between gap-3">
-          <div>
-            <p className="text-sm text-muted-foreground">De</p>
-            <p className="text-lg font-medium text-muted-foreground line-through">R$ 69,90</p>
-          </div>
-          <div className="text-right">
-            <p className="text-xs font-semibold uppercase tracking-wider text-primary">Hoje</p>
-            <p className="text-3xl font-bold text-ink">R$ 24,90</p>
-          </div>
-        </div>
-      </div>
-
-      <div className="mt-4 flex items-center gap-3 rounded-2xl border border-primary/20 bg-background p-4">
-        <Clock className="h-6 w-6 shrink-0 text-primary" />
-        <div>
-          <p className="text-sm font-semibold text-ink">{expired ? "Condição promocional encerrada" : "Tempo restante desta condição"}</p>
-          <p className="font-display text-2xl font-bold tabular-nums text-primary">
-            {expired ? "00:00" : `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`}
-          </p>
-        </div>
-      </div>
-
-      <ul className="mt-5 space-y-2 text-sm text-muted-foreground">
-        <li>✓ Análise completa das dimensões avaliadas</li>
-        <li>✓ Leitura organizada dos padrões observados</li>
-        <li>✓ Pontos para explorar em uma conversa com profissional</li>
-        <li>✓ Conteúdo informativo e não diagnóstico</li>
-      </ul>
-
-      <Link
-        to="/checkout/$offerId"
-        params={{ offerId: "report-full-2490" }}
-        className={`mt-6 block rounded-full bg-primary px-6 py-4 text-center font-semibold text-primary-foreground shadow-soft transition-opacity ${expired ? "pointer-events-none opacity-40" : "hover:opacity-90"}`}
-        aria-disabled={expired}
-      >
-        {expired ? "Condição encerrada" : "Quero meu Relatório Completo"}
-      </Link>
-
-      <p className="mt-3 text-center text-xs text-muted-foreground">
-        Pagamento único. O relatório é informativo e não substitui avaliação profissional.
-      </p>
+  const offer = getOffer("report-full-2490");
+  const ends = new Date(session.finishedAt!).getTime() + 7 * 60 * 1000;
+  const [remaining,setRemaining]=useState(Math.max(0,ends-Date.now()));
+  const [open,setOpen]=useState(false);
+  useEffect(()=>{ preloadMercadoPago(); const t=window.setInterval(()=>setRemaining(Math.max(0,ends-Date.now())),1000); return()=>window.clearInterval(t); },[ends]);
+  const expired=remaining<=0, mins=Math.floor(remaining/60000), secs=Math.floor(remaining%60000/1000);
+  return <>{offer && <div className="mx-auto mt-7 max-w-md rounded-3xl border-2 border-red-500 bg-card p-6 text-left shadow-[0_0_35px_rgba(239,68,68,0.18)]">
+    <div className="rounded-2xl bg-gradient-to-r from-red-700 via-red-500 to-red-700 p-5 text-white">
+      <p className="text-[11px] font-black uppercase tracking-[0.22em] text-red-100">Oferta especial da sua avaliação</p>
+      <h2 className="mt-2 font-display text-2xl font-black">Seu Relatório Completo NeuroSpectro</h2>
+      <p className="mt-2 text-sm font-medium text-red-50">Desbloqueie a leitura completa das suas respostas.</p>
     </div>
-  );
+    <div className="mt-4 rounded-2xl border border-red-200 bg-red-50 p-4"><div className="flex items-end justify-between"><div><p className="text-xs font-bold text-red-700">DE</p><p className="text-lg line-through text-red-900/60">R$ 69,90</p></div><div className="text-right"><p className="text-xs font-black text-red-700">HOJE</p><p className="text-3xl font-black text-red-700">R$ 24,90</p></div></div></div>
+    <div className="mt-4 flex items-center gap-3 rounded-2xl border border-red-200 p-4"><Clock className="h-6 w-6 text-red-500"/><div><p className="text-sm font-bold text-ink">{expired?"Condição encerrada":"Condição especial da sua sessão"}</p><p className="font-display text-2xl font-black tabular-nums text-red-600">{expired?"00:00":`${String(mins).padStart(2,"0")}:${String(secs).padStart(2,"0")}`}</p></div></div>
+    <ul className="mt-5 grid gap-2 text-sm text-muted-foreground"><li>✓ Análise completa das dimensões</li><li>✓ Leitura organizada dos padrões</li><li>✓ Pontos para explorar com profissional</li><li>✓ Conteúdo informativo e não diagnóstico</li></ul>
+    <button type="button" disabled={expired} onClick={()=>setOpen(true)} className="mt-6 w-full rounded-full bg-red-600 px-6 py-4 font-black text-white shadow-[0_8px_24px_rgba(220,38,38,0.3)] hover:bg-red-500 disabled:opacity-40">{expired?"Condição encerrada":"QUERO MEU RELATÓRIO COMPLETO"}</button>
+    <p className="mt-3 text-center text-xs text-muted-foreground">Pagamento único · acesso por tempo indeterminado.</p>
+  </div>}{open && !expired && offer && <OfferCheckoutModal offer={offer}/>}</>;
+}
+
+function OfferCheckoutModal({offer}:{offer: ReturnType<typeof getOffer>}) {
+  const brickRef=useRef<{unmount:()=>void}|null>(null); const [loading,setLoading]=useState(true),[processing,setProcessing]=useState(false),[error,setError]=useState(""),[success,setSuccess]=useState("");
+  useEffect(()=>{document.body.style.overflow="hidden";return()=>{document.body.style.overflow=""}},[]);
+  useEffect(()=>{let cancelled=false;
+    const mount=async()=>{try{
+      const key=import.meta.env["VITE_MERCADOPAGO_PUBLIC_KEY"]; if(!key||!offer||!supabase) throw new Error("Checkout ainda não configurado.");
+      const sessionPromise=supabase.auth.getSession(); const sdkPromise=new Promise<void>((resolve,reject)=>{if(window.MercadoPago)return resolve();const s=document.getElementById(MP_SCRIPT_ID);if(!s)return reject(new Error("Não foi possível iniciar o Mercado Pago."));const t=window.setTimeout(()=>reject(new Error("O checkout demorou mais que o esperado.")),12000);s.addEventListener("load",()=>{window.clearTimeout(t);window.MercadoPago?resolve():reject(new Error("SDK indisponível."))},{once:true});s.addEventListener("error",()=>{window.clearTimeout(t);reject(new Error("Falha ao carregar o Mercado Pago."))},{once:true})});
+      const [{data}]=await Promise.all([sessionPromise,sdkPromise]); if(!data.session) throw new Error("Entre na sua conta para continuar.");
+      if(cancelled||!window.MercadoPago)return; const mp=new window.MercadoPago(key,{locale:"pt-BR"});
+      const promise=mp.bricks().create("payment","neurospectro-payment-brick",{initialization:{amount:offer.totalCents/100,payer:{email:data.session.user.email??""}},customization:{paymentMethods:{ticket:"all",bankTransfer:"all",creditCard:"all",prepaidCard:"all",debitCard:"all"}},callbacks:{
+        onReady:()=>!cancelled&&setLoading(false),
+        onSubmit:async({formData}:{selectedPaymentMethod:string;formData:Record<string,unknown>})=>{setError("");setProcessing(true);try{const {data:cur}=await supabase.auth.getSession();const token=cur.session?.access_token;if(!token)throw new Error("Sua sessão expirou.");const res=await fetch(`${import.meta.env["VITE_SUPABASE_URL"]}/functions/v1/process-payment`,{method:"POST",headers:{"Content-Type":"application/json",Authorization:`Bearer ${token}`},body:JSON.stringify({offerId:offer.id,formData})});const result=await res.json().catch(()=>({}));if(!res.ok)throw new Error(result.error??"Não foi possível processar o pagamento.");setSuccess(result.paymentStatus==="processed"||result.paymentStatus==="approved"?"Pagamento aprovado. Seu acesso foi liberado.":"Pagamento criado. Aguarde a confirmação do Mercado Pago.");}catch(e){setError(e instanceof Error?e.message:"Não foi possível processar o pagamento.");throw e}finally{setProcessing(false)}},
+        onError:()=>{setError("O formulário encontrou um problema. Confira os dados e tente novamente.");setProcessing(false)}
+      }});
+      const brick=await new Promise<Awaited<typeof promise>>((resolve,reject)=>{const t=window.setTimeout(()=>reject(new Error("O checkout demorou mais que o esperado. Tente novamente.")),10000);promise.then(b=>{window.clearTimeout(t);cancelled?b.unmount():resolve(b)},e=>{window.clearTimeout(t);reject(e)})}); if(cancelled){brick.unmount();return} brickRef.current=brick;setLoading(false);
+    }catch(e){if(!cancelled){setLoading(false);setError(e instanceof Error?e.message:"Não foi possível carregar o checkout.")}}};
+    void mount();return()=>{cancelled=true;brickRef.current?.unmount();brickRef.current=null};
+  },[offer?.id,offer?.totalCents]);
+  if(!offer)return null;
+  return <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/70 p-3 backdrop-blur-md sm:p-5" role="dialog" aria-modal="true" aria-labelledby="checkout-offer-title">
+    <div className="flex max-h-[96vh] w-full max-w-2xl flex-col overflow-hidden rounded-[2rem] border-2 border-red-500 bg-background shadow-[0_0_70px_rgba(239,68,68,0.35)]">
+      <div className="shrink-0 bg-gradient-to-r from-red-700 via-red-500 to-red-700 px-5 py-5 text-white sm:px-7"><p className="text-[11px] font-black uppercase tracking-[0.22em] text-red-100">Oferta especial liberada</p><div className="mt-1 flex items-end justify-between gap-4"><div><h2 id="checkout-offer-title" className="font-display text-2xl font-black sm:text-3xl">Seu Relatório Completo</h2><p className="text-sm text-red-50">Finalize com pagamento seguro.</p></div><div className="text-right"><p className="text-xs line-through text-red-100">{formatBRL(offer.referenceCents??6990)}</p><p className="text-3xl font-black">{formatBRL(offer.totalCents)}</p></div></div><div className="mt-4 rounded-xl bg-white/15 px-4 py-2 text-center text-sm font-bold ring-1 ring-white/25">Condição especial da sua avaliação</div></div>
+      <div className="min-h-0 overflow-y-auto px-4 py-4 sm:px-7"><div className="mb-4 grid grid-cols-2 gap-2 sm:grid-cols-4">{["✓ Análise completa","✓ Dimensões avaliadas","✓ Padrões organizados","✓ Não é diagnóstico"].map(x=><div key={x} className="rounded-xl bg-red-50 px-2 py-2 text-center text-[11px] font-bold text-red-800">{x}</div>)}</div>
+      <div className="rounded-2xl border border-red-200 bg-white p-3">{loading&&!error&&<div className="flex min-h-28 items-center justify-center gap-3 text-sm text-muted-foreground"><Loader2 className="h-5 w-5 animate-spin text-red-500"/>Preparando pagamento seguro...</div>}<div id="neurospectro-payment-brick"/></div>
+      {processing&&<div className="mt-3 flex justify-center gap-2 text-sm text-muted-foreground"><Loader2 className="h-4 w-4 animate-spin"/>Processando pagamento...</div>}
+      {error&&<div className="mt-3 rounded-2xl border border-red-200 bg-red-50 p-4 text-sm text-red-800">{error}</div>}
+      {success&&<div className="mt-3 rounded-2xl border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-800"><div className="flex gap-3"><CheckCircle2 className="h-5 w-5"/>{success}</div></div>}
+      <div className="mt-4 flex items-start gap-3 rounded-2xl bg-muted p-3 text-xs text-muted-foreground"><ShieldCheck className="h-4 w-4 shrink-0 text-red-500"/><p>Pagamento processado com segurança pelo Mercado Pago. A NeuroSpectro não armazena dados sensíveis do cartão.</p></div></div>
+    </div>
+  </div>;
 }
 
 function Shell({ children }: { children: React.ReactNode }) {
