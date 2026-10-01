@@ -218,14 +218,10 @@ function Checkout() {
                   (normalizedFormData as { payer?: { email?: string } })?.payer?.email ?? "",
                 ).trim();
 
-                if (payerEmail && !payerEmail.endsWith("@neurospectro.app")) {
-                  const { error: linkError } = await linkCheckoutEmail(payerEmail);
-                  if (linkError) {
-                    throw new Error(
-                      "Não foi possível vincular este e-mail à sessão de compra. Nenhum pagamento foi enviado. Verifique o e-mail ou entre na sua conta antes de tentar novamente.",
-                    );
-                  }
-                }
+                // O e-mail informado no Pix é enviado diretamente ao backend/Mercado Pago.
+                // Não vinculamos o e-mail à autenticação do Supabase neste momento,
+                // para que o pagamento não seja bloqueado por confirmação de e-mail.
+                void payerEmail;
 
                 const response = await fetch(
                   `${import.meta.env["VITE_SUPABASE_URL"]}/functions/v1/process-payment`,
@@ -402,7 +398,7 @@ function Checkout() {
             </div>
           )}
 
-          {pix?.qrCodeBase64 && (
+          {pix && (
             <div className="mt-5 rounded-[1.5rem] border-2 border-primary/20 bg-white p-5 shadow-[0_18px_50px_-24px_rgba(15,118,110,0.45)] sm:p-7">
               <div className="flex items-center justify-between gap-4 border-b border-border pb-4">
                 <div>
@@ -415,11 +411,17 @@ function Checkout() {
               <div className="mt-6 grid gap-6 lg:grid-cols-[minmax(220px,280px)_1fr] lg:items-center">
                 <div className="text-center">
                   <div className="mx-auto w-fit rounded-2xl border border-border bg-white p-3 shadow-sm">
-                    <img
-                      className="h-56 w-56"
-                      src={`data:image/png;base64,${pix.qrCodeBase64}`}
-                      alt="QR Code Pix para pagamento"
-                    />
+                    {pix.qrCodeBase64 ? (
+                      <img
+                        className="h-56 w-56"
+                        src={`data:image/png;base64,${pix.qrCodeBase64}`}
+                        alt="QR Code Pix para pagamento"
+                      />
+                    ) : (
+                      <div className="flex h-56 w-56 items-center justify-center rounded-xl bg-slate-50 p-5 text-center text-sm font-semibold text-muted-foreground">
+                        O QR Code foi gerado. Use o Pix Copia e Cola ao lado.
+                      </div>
+                    )}
                   </div>
                   <p className="mt-3 text-sm font-semibold text-ink">Aponte a câmera do seu banco</p>
                   <p className="mt-1 text-xs text-muted-foreground">O pagamento é processado pelo Mercado Pago.</p>
