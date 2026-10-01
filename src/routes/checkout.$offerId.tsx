@@ -112,7 +112,8 @@ function Checkout() {
   const [processing, setProcessing] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
-  const [pix, setPix] = useState<{ qrCode: string | null; qrCodeBase64: string | null; ticketUrl: string | null } | null>(null);\n  const [pixEmail, setPixEmail] = useState("");\n  const [pixEmailStatus, setPixEmailStatus] = useState("");
+  const [pix, setPix] = useState<{ qrCode: string | null; qrCodeBase64: string | null; ticketUrl: string | null } | null>(null);\n  const [pixEmail, setPixEmail] = useState("");
+  const [pixEmailStatus, setPixEmailStatus] = useState("");
 
   useEffect(() => {
     if (!offer) return;
