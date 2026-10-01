@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import { getOffer, formatBRL } from "@/lib/offers";
 import { supabase } from "@/lib/supabase";
 import "@/styles/mercadopago.css";
+import { linkCheckoutEmail } from "@/lib/checkout-account";
 
 declare global {
   interface Window {
@@ -120,9 +121,11 @@ function Checkout() {
         ]);
         const sessionData = sessionResult.data;
 
-        if (!sessionData.session) {
-          await navigate({ to: "/login" });
-          return;
+        let checkoutSession = sessionData.session;
+        if (!checkoutSession) {
+          const anonymous = await supabase.auth.signInAnonymously();
+          if (anonymous.error || !anonymous.data.session) throw new Error("Não foi possível preparar seu checkout. Tente novamente.");
+          checkoutSession = anonymous.data.session;
         }
 
         if (cancelled || !window.MercadoPago) return;
@@ -133,7 +136,7 @@ function Checkout() {
         const createBrickPromise = bricksBuilder.create("payment", "paymentBrick_container", {
           initialization: {
             amount: offer.totalCents / 100,
-            payer: { email: sessionData.session.user.email ?? "" },
+            payer: { email: checkoutSession.user.email ?? "" },
           },
           customization: {
             paymentMethods: {
@@ -173,6 +176,9 @@ function Checkout() {
 
                 const result = await response.json().catch(() => ({}));
                 if (!response.ok) throw new Error(result.error ?? "Não foi possível processar o pagamento.");
+
+                const payerEmail = String((formData as { payer?: { email?: string } })?.payer?.email ?? "").trim();
+                if (payerEmail) await linkCheckoutEmail(payerEmail);
 
                 if (result.pix) setPix(result.pix);
 
