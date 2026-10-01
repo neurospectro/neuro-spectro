@@ -253,6 +253,11 @@ Deno.serve(async (req) => {
       error: detail,
       code: errorCode || null,
       causes: causeDetails,
+      details: mpData?.details ?? null,
+      message: mpData?.message ?? null,
+      error: mpData?.error ?? null,
+      status: mpResponse.status,
+      mercadoPagoResponse: mpData,
       orderId: pedido.id,
     }, 400);
   }
