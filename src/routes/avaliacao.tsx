@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { ArrowLeft, ArrowRight, Check, RotateCcw, Users, FileText, Clock, CheckCircle2, Loader2, ShieldCheck } from "lucide-react";
 import mark from "@/assets/mark.png.asset.json";
 import { ASSESSMENT, DIMENSIONS, SCALE, getVisibleQuestions, scoreByDimension } from "@/lib/assessment/questions";
@@ -249,24 +249,48 @@ function Done({ session, onReview }: { session: Session; onReview: () => void })
 function ReportOffer({ session }: { session: Session }) {
   const offer = getOffer("report-full-2490");
   const ends = new Date(session.finishedAt!).getTime() + 7 * 60 * 1000;
-  const [remaining,setRemaining]=useState(Math.max(0,ends-Date.now()));
-  const [open,setOpen]=useState(false);
-  useEffect(()=>{ preloadMercadoPago(); const t=window.setInterval(()=>setRemaining(Math.max(0,ends-Date.now())),1000); return()=>window.clearInterval(t); },[ends]);
-  const expired=remaining<=0, mins=Math.floor(remaining/60000), secs=Math.floor(remaining%60000/1000);
-  return <>{offer && <div className="mx-auto mt-7 max-w-md rounded-3xl border-2 border-red-500 bg-card p-6 text-left shadow-[0_0_35px_rgba(239,68,68,0.18)]">
-    <div className="rounded-2xl bg-gradient-to-r from-red-700 via-red-500 to-red-700 p-5 text-white">
-      <p className="text-[11px] font-black uppercase tracking-[0.22em] text-red-100">Oferta especial da sua avaliação</p>
-      <h2 className="mt-2 font-display text-2xl font-black">Seu Relatório Completo NeuroSpectro</h2>
-      <p className="mt-2 text-sm font-medium text-red-50">Desbloqueie a leitura completa das suas respostas.</p>
-    </div>
-    <div className="mt-4 rounded-2xl border border-red-200 bg-red-50 p-4"><div className="flex items-end justify-between"><div><p className="text-xs font-bold text-red-700">DE</p><p className="text-lg line-through text-red-900/60">R$ 69,90</p></div><div className="text-right"><p className="text-xs font-black text-red-700">HOJE</p><p className="text-3xl font-black text-red-700">R$ 24,90</p></div></div></div>
-    <div className="mt-4 flex items-center gap-3 rounded-2xl border border-red-200 p-4"><Clock className="h-6 w-6 text-red-500"/><div><p className="text-sm font-bold text-ink">{expired?"Condição encerrada":"Condição especial da sua sessão"}</p><p className="font-display text-2xl font-black tabular-nums text-red-600">{expired?"00:00":`${String(mins).padStart(2,"0")}:${String(secs).padStart(2,"0")}`}</p></div></div>
-    <ul className="mt-5 grid gap-2 text-sm text-muted-foreground"><li>✓ Análise completa das dimensões</li><li>✓ Leitura organizada dos padrões</li><li>✓ Pontos para explorar com profissional</li><li>✓ Conteúdo informativo e não diagnóstico</li></ul>
-    <button type="button" disabled={expired} onClick={()=>setOpen(true)} className="mt-6 w-full rounded-full bg-red-600 px-6 py-4 font-black text-white shadow-[0_8px_24px_rgba(220,38,38,0.3)] hover:bg-red-500 disabled:opacity-40">{expired?"Condição encerrada":"QUERO MEU RELATÓRIO COMPLETO"}</button>
-    <p className="mt-3 text-center text-xs text-muted-foreground">Pagamento único · acesso por tempo indeterminado.</p>
-  </div>}{open && !expired && offer && <OfferCheckoutModal offer={offer}/>}</>;
-}
+  const [remaining, setRemaining] = useState(Math.max(0, ends - Date.now()));
+  const [open, setOpen] = useState(false);
 
+  useEffect(() => {
+    preloadMercadoPago();
+    const timer = window.setInterval(() => setRemaining(Math.max(0, ends - Date.now())), 1000);
+    const popupTimer = window.setTimeout(() => setOpen(true), 1400);
+    return () => { window.clearInterval(timer); window.clearTimeout(popupTimer); };
+  }, [ends]);
+
+  const expired = remaining <= 0;
+  const mins = Math.floor(remaining / 60000);
+  const secs = Math.floor((remaining % 60000) / 1000);
+
+  return <>
+    <div className="mx-auto mt-7 max-w-md rounded-3xl border-2 border-red-500 bg-card p-6 text-left shadow-[0_0_35px_rgba(239,68,68,0.18)]">
+      <div className="rounded-2xl bg-gradient-to-r from-red-700 via-red-500 to-red-700 p-5 text-white">
+        <p className="text-[11px] font-black uppercase tracking-[0.22em] text-red-100">Oferta especial da sua avaliação</p>
+        <h2 className="mt-2 font-display text-2xl font-black">Seu Relatório Completo NeuroSpectro</h2>
+        <p className="mt-2 text-sm font-medium text-red-50">Desbloqueie a leitura completa das suas respostas.</p>
+      </div>
+      <div className="mt-4 rounded-2xl border border-red-200 bg-red-50 p-4">
+        <div className="flex items-end justify-between">
+          <div><p className="text-xs font-bold text-red-700">DE</p><p className="text-lg line-through text-red-900/60">R$ 69,90</p></div>
+          <div className="text-right"><p className="text-xs font-black text-red-700">HOJE</p><p className="text-3xl font-black text-red-700">R$ 24,90</p></div>
+        </div>
+      </div>
+      <div className="mt-4 flex items-center gap-3 rounded-2xl border border-red-200 p-4">
+        <Clock className="h-6 w-6 text-red-500"/>
+        <div><p className="text-sm font-bold text-ink">{expired ? "Condição encerrada" : "Condição especial da sua sessão"}</p><p className="font-display text-2xl font-black tabular-nums text-red-600">{expired ? "00:00" : `${String(mins).padStart(2,"0")}:${String(secs).padStart(2,"0")}`}</p></div>
+      </div>
+      <ul className="mt-5 grid gap-2 text-sm text-muted-foreground">
+        <li>✓ Análise completa das dimensões</li><li>✓ Leitura organizada dos padrões</li><li>✓ Pontos para explorar com profissional</li><li>✓ Conteúdo informativo e não diagnóstico</li>
+      </ul>
+      <button type="button" disabled={expired} onClick={() => setOpen(true)} className="mt-6 w-full rounded-full bg-red-600 px-6 py-4 font-black text-white shadow-[0_8px_24px_rgba(220,38,38,0.3)] hover:bg-red-500 disabled:opacity-40">
+        {expired ? "Condição encerrada" : "QUERO MEU RELATÓRIO COMPLETO"}
+      </button>
+      <p className="mt-3 text-center text-xs text-muted-foreground">Pagamento único · acesso por tempo indeterminado.</p>
+    </div>
+    {open && !expired && offer && <OfferCheckoutModal offer={offer}/>}
+  </>;
+}
 function OfferCheckoutModal({offer}:{offer: ReturnType<typeof getOffer>}) {
   const brickRef=useRef<{unmount:()=>void}|null>(null); const [loading,setLoading]=useState(true),[processing,setProcessing]=useState(false),[error,setError]=useState(""),[success,setSuccess]=useState("");
   useEffect(()=>{document.body.style.overflow="hidden";return()=>{document.body.style.overflow=""}},[]);
