@@ -52,9 +52,6 @@ function Index() {
             Neuro<span className="text-primary">Spectro</span>
           </span>
         </Link>
-        <Link to="/avaliacao" className="rounded-full border border-border px-4 py-2 text-sm font-medium hover:bg-secondary">
-          Começar
-        </Link>
       </header>
 
       <main>
