@@ -299,7 +299,7 @@ function OfferCheckoutModal({offer}:{offer: ReturnType<typeof getOffer>}) {
     const mount=async()=>{try{
       const key=MERCADOPAGO_PUBLIC_KEY; if(!offer) throw new Error("Oferta indisponível."); if(!supabase) throw new Error("Checkout aguardando a conexão com o servidor de pagamentos (VITE_SUPABASE_URL e VITE_SUPABASE_PUBLISHABLE_KEY).");
       const sessionPromise=supabase.auth.getSession(); const sdkPromise=new Promise<void>((resolve,reject)=>{if(window.MercadoPago)return resolve();const s=document.getElementById(MP_SCRIPT_ID);if(!s)return reject(new Error("Não foi possível iniciar o Mercado Pago."));const t=window.setTimeout(()=>reject(new Error("O checkout demorou mais que o esperado.")),12000);s.addEventListener("load",()=>{window.clearTimeout(t);window.MercadoPago?resolve():reject(new Error("SDK indisponível."))},{once:true});s.addEventListener("error",()=>{window.clearTimeout(t);reject(new Error("Falha ao carregar o Mercado Pago."))},{once:true})});
-      const [{data}]=await Promise.all([sessionPromise,sdkPromise]); if(!data.session) throw new Error("Entre na sua conta para continuar.");
+      const [{data}]=await Promise.all([sessionPromise,sdkPromise]); if(!data.session){const anon=await supabase.auth.signInAnonymously(); if(anon.error||!anon.data.session) throw new Error("Não foi possível preparar seu checkout.");}
       if(cancelled||!window.MercadoPago)return; const mp=new window.MercadoPago(key,{locale:"pt-BR"});
       const promise=mp.bricks().create("payment","neurospectro-payment-brick",{initialization:{amount:offer.totalCents/100,payer:{email:data.session.user.email??""}},customization:{paymentMethods:{bankTransfer:"all",creditCard:"all",debitCard:"all"}},callbacks:{
         onReady:()=>!cancelled&&setLoading(false),
