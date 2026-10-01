@@ -302,19 +302,19 @@ function OfferCheckoutModal({ offer }: { offer: ReturnType<typeof getOffer> }) {
   if (!offer) return null;
 
   return (
-    <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/70 p-4 backdrop-blur-md" role="dialog" aria-modal="true" aria-labelledby="checkout-offer-title">
-      <div className="w-full max-w-lg overflow-hidden rounded-[2rem] border-2 border-red-500 bg-background shadow-[0_0_70px_rgba(239,68,68,0.35)]">
-        <div className="bg-gradient-to-r from-red-700 via-red-500 to-red-700 px-5 py-6 text-white sm:px-7 sm:py-7">
+    <div className="fixed inset-0 z-[200] flex items-end justify-center bg-black/70 p-2 backdrop-blur-md sm:items-center sm:p-4" role="dialog" aria-modal="true" aria-labelledby="checkout-offer-title">
+      <div className="max-h-[94dvh] w-full max-w-lg overflow-y-auto rounded-[1.5rem] border-2 border-red-500 bg-background shadow-[0_0_70px_rgba(239,68,68,0.35)] sm:max-h-[90vh] sm:rounded-[2rem]">
+        <div className="bg-gradient-to-r from-red-700 via-red-500 to-red-700 px-4 py-4 text-white sm:px-7 sm:py-7">
           <p className="text-[10px] font-black uppercase tracking-[0.22em] text-red-100">Sua condição especial</p>
-          <h2 id="checkout-offer-title" className="mt-2 max-w-[17ch] font-display text-[1.8rem] font-black leading-[1.08] sm:text-3xl">
+          <h2 id="checkout-offer-title" className="mt-2 max-w-[18ch] font-display text-[1.55rem] font-black leading-[1.08] sm:text-3xl">
             Seu Relatório Completo NeuroSpectro
           </h2>
-          <p className="mt-3 max-w-md text-sm leading-5 text-red-50">
+          <p className="mt-2 max-w-md text-xs leading-5 text-red-50 sm:mt-3 sm:text-sm">
             Veja uma leitura mais completa das suas respostas e organize os próximos pontos para explorar.
           </p>
         </div>
 
-        <div className="p-5 sm:p-7">
+        <div className="p-4 sm:p-7">
           <div className="flex items-end justify-between gap-4 rounded-2xl border border-red-200 bg-red-50 p-4">
             <div>
               <p className="text-[11px] font-bold uppercase tracking-wide text-red-700">Valor de referência</p>
@@ -326,9 +326,9 @@ function OfferCheckoutModal({ offer }: { offer: ReturnType<typeof getOffer> }) {
             </div>
           </div>
 
-          <div className="mt-5 grid gap-3 sm:grid-cols-2">
+          <div className="mt-4 grid gap-2 sm:mt-5 sm:grid-cols-2">
             {["Análise completa das dimensões", "Leitura organizada dos padrões", "Pontos para explorar com profissional", "Conteúdo informativo e não diagnóstico"].map((item) => (
-              <div key={item} className="rounded-xl bg-red-50/70 px-3 py-3 text-sm font-semibold text-red-900">
+              <div key={item} className="rounded-xl bg-red-50/70 px-3 py-2.5 text-xs font-semibold leading-5 text-red-900 sm:px-3 sm:py-3 sm:text-sm">
                 <span className="mr-2">✓</span>{item}
               </div>
             ))}
@@ -337,7 +337,7 @@ function OfferCheckoutModal({ offer }: { offer: ReturnType<typeof getOffer> }) {
           <Link
             to="/checkout/$offerId"
             params={{ offerId: offer.id }}
-            className="mt-6 flex w-full items-center justify-center gap-2 rounded-2xl bg-red-600 px-6 py-4 text-base font-black uppercase tracking-wide text-white shadow-[0_10px_28px_rgba(220,38,38,0.32)] transition-transform hover:bg-red-500 active:scale-[0.99]"
+            className="mt-5 flex w-full items-center justify-center gap-2 rounded-2xl bg-red-600 px-6 py-4 text-base font-black uppercase tracking-wide text-white shadow-[0_10px_28px_rgba(220,38,38,0.32)] transition-transform hover:bg-red-500 active:scale-[0.99]"
           >
             <Zap className="h-5 w-5" aria-hidden="true" />
             LIBERAR AGORA
