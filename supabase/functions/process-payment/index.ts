@@ -22,11 +22,16 @@ function centsToAmount(cents: number) {
   return (cents / 100).toFixed(2);
 }
 
-function paymentType(paymentTypeId: string | undefined) {
-  if (paymentTypeId === "credit_card") return "credit_card";
-  if (paymentTypeId === "debit_card") return "debit_card";
-  if (paymentTypeId === "bank_transfer") return "bank_transfer";
+function paymentType(paymentTypeId: string | undefined, paymentMethodId: string | undefined) {
+  if (paymentTypeId === "credit_card" || paymentTypeId === "debit_card" || paymentTypeId === "bank_transfer") {
+    return paymentTypeId;
+  }
+  if (paymentMethodId === "pix") return "bank_transfer";
   return null;
+}
+
+function isProcessed(status: string | null | undefined, statusDetail: string | null | undefined) {
+  return status === "processed" || status === "approved" || statusDetail === "accredited";
 }
 
 Deno.serve(async (req) => {
@@ -97,15 +102,15 @@ Deno.serve(async (req) => {
   const payerEmail = String(formData?.payer?.email ?? userData.user.email ?? "").trim();
   if (!payerEmail) return json({ error: "E-mail do pagador é obrigatório." }, 400);
 
+  const paymentMethodId = String(formData?.payment_method_id ?? "");
   const selectedPaymentType = String(formData?.payment_type_id ?? formData?.paymentTypeId ?? "");
-  const selectedPaymentMethod = String(formData?.payment_method_id ?? "");
-  const normalizedType = paymentType(selectedPaymentType);
+  const normalizedType = paymentType(selectedPaymentType, paymentMethodId);
 
-  if (!normalizedType || !selectedPaymentMethod) {
+  if (!normalizedType || !paymentMethodId) {
     return json({ error: "Forma de pagamento não reconhecida." }, 400);
   }
 
-  if (configured.installments > 1 && normalizedType.includes("card")) {
+  if (configured.installments > 1 && normalizedType === "credit_card") {
     const selectedInstallments = Number(formData?.installments ?? 0);
     if (selectedInstallments !== configured.installments) {
       return json({ error: `Esta oferta deve ser paga em ${configured.installments}x de R$ ${(configured.installment / 100).toFixed(2).replace(".", ",")}.` }, 400);
@@ -130,34 +135,47 @@ Deno.serve(async (req) => {
 
   if (pedidoError || !pedido) return json({ error: "Não foi possível criar o pedido." }, 500);
 
-  // Payment Brick fornece diretamente os campos esperados pela API /v1/payments.
-  // Para cartões: token, transaction_amount, installments, payment_method_id e payer.email.
-  // Para Pix: payment_method_id=pix e payer.email/documento.
-  const paymentPayload: Record<string, unknown> = {
-    transaction_amount: Number(amount),
-    description: offer.nome,
-    installments: Number(formData?.installments ?? 1),
-    payment_method_id: selectedPaymentMethod,
+  // Checkout Transparente atual do Mercado Pago usa a Orders API (/v1/orders).
+  // O Payment Brick fornece payment_method_id, payment_type_id, token e installments.
+  const paymentMethod: Record<string, unknown> = {
+    id: paymentMethodId,
+    type: normalizedType,
+  };
+
+  if (formData?.token) paymentMethod.token = String(formData.token);
+  if (normalizedType === "credit_card" || normalizedType === "debit_card") {
+    paymentMethod.installments = Number(formData?.installments ?? 1);
+  }
+
+  const orderPayload: Record<string, unknown> = {
+    type: "online",
+    processing_mode: "automatic",
+    total_amount: amount,
+    external_reference: `ns_${pedido.id}`,
     payer: {
       email: payerEmail,
       ...(formData?.payer?.identification
         ? { identification: formData.payer.identification }
         : {}),
     },
-    external_reference: `ns_${pedido.id}`,
+    transactions: {
+      payments: [
+        {
+          amount,
+          payment_method: paymentMethod,
+        },
+      ],
+    },
   };
 
-  if (formData?.token) paymentPayload.token = String(formData.token);
-  if (formData?.issuer_id) paymentPayload.issuer_id = Number(formData.issuer_id);
-
-  const mpResponse = await fetch("https://api.mercadopago.com/v1/payments", {
+  const mpResponse = await fetch("https://api.mercadopago.com/v1/orders", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
       Authorization: `Bearer ${mpToken}`,
       "X-Idempotency-Key": pedido.id,
     },
-    body: JSON.stringify(paymentPayload),
+    body: JSON.stringify(orderPayload),
   });
 
   const mpData = await mpResponse.json().catch(() => ({}));
@@ -170,7 +188,11 @@ Deno.serve(async (req) => {
     }, 400);
   }
 
-  const paid = mpData.status === "approved";
+  const payment = mpData?.transactions?.payments?.[0] ?? null;
+  const paymentStatus = String(payment?.status ?? mpData?.status ?? "pending");
+  const paymentStatusDetail = payment?.status_detail ?? mpData?.status_detail ?? null;
+  const paid = isProcessed(paymentStatus, paymentStatusDetail);
+
   await admin
     .from("pedidos")
     .update({
@@ -180,16 +202,18 @@ Deno.serve(async (req) => {
     })
     .eq("id", pedido.id);
 
-  await admin.from("pagamentos").insert({
-    pedido_id: pedido.id,
-    provider: "mercadopago",
-    provider_payment_id: String(mpData.id),
-    status: mpData.status ?? "pending",
-    amount_cents: configured.total,
-    installment_number: mpData.installments ?? Number(formData?.installments ?? 1),
-    raw_status_detail: mpData.status_detail ?? null,
-    paid_at: paid ? new Date().toISOString() : null,
-  });
+  if (payment?.id) {
+    await admin.from("pagamentos").insert({
+      pedido_id: pedido.id,
+      provider: "mercadopago",
+      provider_payment_id: String(payment.id),
+      status: paymentStatus,
+      amount_cents: configured.total,
+      installment_number: payment?.payment_method?.installments ?? Number(formData?.installments ?? 1),
+      raw_status_detail: paymentStatusDetail,
+      paid_at: paid ? new Date().toISOString() : null,
+    });
+  }
 
   if (paid) {
     const productId = offer.produto_id;
@@ -205,15 +229,17 @@ Deno.serve(async (req) => {
     }
   }
 
+  const paymentMethodData = payment?.payment_method ?? {};
   return json({
     ok: true,
-    paymentId: mpData.id,
-    paymentStatus: mpData.status,
-    paymentStatusDetail: mpData.status_detail ?? null,
+    orderId: mpData.id,
+    paymentId: payment?.id ?? null,
+    paymentStatus,
+    paymentStatusDetail,
     pix: normalizedType === "bank_transfer" ? {
-      qrCode: mpData?.point_of_interaction?.transaction_data?.qr_code ?? null,
-      qrCodeBase64: mpData?.point_of_interaction?.transaction_data?.qr_code_base64 ?? null,
-      ticketUrl: mpData?.point_of_interaction?.transaction_data?.ticket_url ?? null,
+      qrCode: paymentMethodData?.qr_code ?? null,
+      qrCodeBase64: paymentMethodData?.qr_code_base64 ?? null,
+      ticketUrl: paymentMethodData?.ticket_url ?? null,
     } : null,
   });
 });
