@@ -9,6 +9,7 @@ type TurnstileWidget = {
       callback?: (token: string) => void;
       "expired-callback"?: () => void;
       "error-callback"?: () => void;
+      action?: string;
     },
   ) => string;
   reset: (widgetId?: string) => void;
@@ -29,8 +30,10 @@ export function isTurnstileConfigured() {
 
 export function SecurityCaptcha({
   onToken,
+  resetKey = 0,
 }: {
   onToken: (token: string) => void;
+  resetKey?: number;
 }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const widgetIdRef = useRef<string | undefined>(undefined);
@@ -47,6 +50,7 @@ export function SecurityCaptcha({
       widgetIdRef.current = window.turnstile.render(containerRef.current, {
         sitekey: SITE_KEY,
         theme: "auto",
+        action: "payment",
         callback: onToken,
         "expired-callback": () => onToken(""),
         "error-callback": () => onToken(""),
@@ -86,6 +90,12 @@ export function SecurityCaptcha({
       script?.removeEventListener("load", handleLoad);
     };
   }, [onToken]);
+
+  useEffect(() => {
+    if (!SITE_KEY || !widgetIdRef.current || !window.turnstile || resetKey === 0) return;
+    window.turnstile.reset(widgetIdRef.current);
+    onToken("");
+  }, [resetKey, onToken]);
 
   if (!SITE_KEY) {
     return (
