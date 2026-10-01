@@ -42,12 +42,20 @@ Deno.serve(async (req) => {
   const accessToken = authHeader?.replace(/^Bearer\s+/i, "");
   if (!accessToken) return json({ error: "Autenticação necessária." }, 401);
 
-  const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
-  const anonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
-  const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-  const mpToken = Deno.env.get("MERCADOPAGO_ACCESS_TOKEN")!;
+  const supabaseUrl = Deno.env.get("SUPABASE_URL")?.trim();
+  const anonKey = Deno.env.get("SUPABASE_ANON_KEY")?.trim();
+  const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")?.trim();
+  const mpToken = Deno.env.get("MERCADOPAGO_ACCESS_TOKEN")?.trim();
 
-  if (!mpToken) return json({ error: "Mercado Pago ainda não está configurado no servidor." }, 503);
+  if (!supabaseUrl || !anonKey || !serviceKey) {
+    console.error("PROCESS_PAYMENT_CONFIG_ERROR: Supabase server configuration is incomplete.");
+    return json({ error: "O servidor ainda não está configurado corretamente." }, 503);
+  }
+
+  if (!mpToken) {
+    console.error("PROCESS_PAYMENT_CONFIG_ERROR: Mercado Pago Access Token is missing.");
+    return json({ error: "Mercado Pago ainda não está configurado no servidor." }, 503);
+  }
 
   const authClient = createClient(supabaseUrl, anonKey);
   const admin = createClient(supabaseUrl, serviceKey);
@@ -56,6 +64,8 @@ Deno.serve(async (req) => {
   if (userError || !userData.user) return json({ error: "Sessão inválida ou expirada." }, 401);
 
   const body = await req.json().catch(() => null);
+  if (!body || typeof body !== "object") return json({ error: "Dados de pagamento inválidos." }, 400);
+
   const offerId = body?.offerId;
   const formData = body?.formData ?? {};
   const configured = offers[offerId];
@@ -69,7 +79,11 @@ Deno.serve(async (req) => {
     .eq("active", true)
     .maybeSingle();
 
-  if (offerError || !offer) return json({ error: "Oferta não disponível." }, 400);
+  if (offerError) {
+    console.error("PROCESS_PAYMENT_OFFER_ERROR", offerError);
+    return json({ error: "Não foi possível validar a oferta." }, 500);
+  }
+  if (!offer) return json({ error: "Oferta não disponível." }, 400);
   if (offer.total_cents !== configured.total || offer.installment_count !== configured.installments) {
     return json({ error: "A configuração da oferta não corresponde ao catálogo seguro." }, 409);
   }
@@ -100,7 +114,9 @@ Deno.serve(async (req) => {
   }
 
   const payerEmail = String(formData?.payer?.email ?? userData.user.email ?? "").trim();
-  if (!payerEmail) return json({ error: "E-mail do pagador é obrigatório." }, 400);
+  if (!payerEmail || !/^\S+@\S+\.\S+$/.test(payerEmail)) {
+    return json({ error: "E-mail do pagador é obrigatório e deve ser válido." }, 400);
+  }
 
   const paymentMethodId = String(formData?.payment_method_id ?? "");
   const selectedPaymentType = String(formData?.payment_type_id ?? formData?.paymentTypeId ?? "");
@@ -110,8 +126,13 @@ Deno.serve(async (req) => {
     return json({ error: "Forma de pagamento não reconhecida." }, 400);
   }
 
-  if (configured.installments > 1 && normalizedType === "credit_card") {
-    const selectedInstallments = Number(formData?.installments ?? 0);
+  if (normalizedType === "credit_card" || normalizedType === "debit_card") {
+    if (!formData?.token) return json({ error: "Não foi possível validar os dados do cartão." }, 400);
+
+    const selectedInstallments = Number(formData?.installments ?? 1);
+    if (!Number.isInteger(selectedInstallments) || selectedInstallments < 1) {
+      return json({ error: "Número de parcelas inválido." }, 400);
+    }
     if (selectedInstallments !== configured.installments) {
       return json({ error: `Esta oferta deve ser paga em ${configured.installments}x de R$ ${(configured.installment / 100).toFixed(2).replace(".", ",")}.` }, 400);
     }
@@ -168,24 +189,41 @@ Deno.serve(async (req) => {
     },
   };
 
-  const mpResponse = await fetch("https://api.mercadopago.com/v1/orders", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${mpToken}`,
-      "X-Idempotency-Key": pedido.id,
-    },
-    body: JSON.stringify(orderPayload),
-  });
+  let mpResponse: Response;
+  let mpData: any;
 
-  const mpData = await mpResponse.json().catch(() => ({}));
+  try {
+    mpResponse = await fetch("https://api.mercadopago.com/v1/orders", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${mpToken}`,
+        "X-Idempotency-Key": pedido.id,
+      },
+      body: JSON.stringify(orderPayload),
+    });
+    mpData = await mpResponse.json().catch(() => ({}));
+  } catch (error) {
+    console.error("PROCESS_PAYMENT_MP_NETWORK_ERROR", error);
+    return json({ error: "Não foi possível conectar ao Mercado Pago. Tente novamente.", orderId: pedido.id, retryable: true }, 502);
+  }
 
   if (!mpResponse.ok) {
-    await admin.from("pedidos").update({ status: "failed" }).eq("id", pedido.id);
-    return json({
-      error: "O Mercado Pago recusou o pagamento.",
-      detail: mpData?.message ?? mpData?.cause?.[0]?.description ?? mpData?.error ?? "Erro no provedor.",
-    }, 400);
+    const detail = mpData?.message ?? mpData?.cause?.[0]?.description ?? mpData?.error ?? "Erro retornado pelo Mercado Pago.";
+    console.error("PROCESS_PAYMENT_MP_ERROR", { status: mpResponse.status, detail, orderId: pedido.id });
+
+    await admin.from("pedidos").update({
+      status: mpResponse.status >= 500 || mpResponse.status === 429 ? "pending" : "failed",
+    }).eq("id", pedido.id);
+
+    if (mpResponse.status === 401 || mpResponse.status === 403) {
+      return json({ error: "A credencial do Mercado Pago não foi aceita pelo servidor." }, 503);
+    }
+    if (mpResponse.status === 429 || mpResponse.status >= 500) {
+      return json({ error: "O Mercado Pago está temporariamente indisponível. Tente novamente.", retryable: true }, 502);
+    }
+
+    return json({ error: detail, orderId: pedido.id }, 400);
   }
 
   const payment = mpData?.transactions?.payments?.[0] ?? null;
@@ -203,7 +241,7 @@ Deno.serve(async (req) => {
     .eq("id", pedido.id);
 
   if (payment?.id) {
-    await admin.from("pagamentos").insert({
+    const { error: paymentError } = await admin.from("pagamentos").upsert({
       pedido_id: pedido.id,
       provider: "mercadopago",
       provider_payment_id: String(payment.id),
@@ -212,7 +250,9 @@ Deno.serve(async (req) => {
       installment_number: payment?.payment_method?.installments ?? Number(formData?.installments ?? 1),
       raw_status_detail: paymentStatusDetail,
       paid_at: paid ? new Date().toISOString() : null,
-    });
+    }, { onConflict: "provider,provider_payment_id" });
+
+    if (paymentError) console.error("PROCESS_PAYMENT_PAYMENT_DB_ERROR", paymentError);
   }
 
   if (paid) {
