@@ -124,7 +124,7 @@ function Checkout() {
         let checkoutSession = sessionData.session;
         if (!checkoutSession) {
           const anonymous = await supabase.auth.signInAnonymously();
-          if (anonymous.error || !anonymous.data.session) throw new Error("Não foi possível preparar seu checkout. Tente novamente.");
+          if (anonymous.error || !anonymous.data.session) throw new Error("Não foi possível iniciar sua sessão de compra. Tente novamente.");
           checkoutSession = anonymous.data.session;
         }
 
@@ -160,7 +160,7 @@ function Checkout() {
                 if (!supabase) throw new Error("O serviço de autenticação não está configurado.");
                 const { data: current } = await supabase.auth.getSession();
                 const token = current.session?.access_token;
-                if (!token) throw new Error("Sua sessão expirou. Entre novamente.");
+                if (!token) throw new Error("Sua sessão de compra expirou. Tente novamente.");
 
                 const response = await fetch(
                   `${import.meta.env["VITE_SUPABASE_URL"]}/functions/v1/process-payment`,
