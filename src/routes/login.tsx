@@ -17,7 +17,7 @@ function LoginPage() {
   useEffect(() => {
     if (!supabase) return;
     void supabase.auth.getSession().then(({ data }) => {
-      if (data.session) void navigate({ to: "/dashboard" });
+      if (data.session && !data.session.user.is_anonymous) void navigate({ to: "/dashboard" });
     });
   }, [navigate]);
 
