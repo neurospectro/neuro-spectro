@@ -119,7 +119,7 @@ function Checkout() {
 
   const generatePix = async () => {
     const email = pixEmail.trim();
-    if (!/^\\S+@\\S+\\.\\S+$/.test(email)) {
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       setPixEmailStatus("Digite um e-mail válido para gerar o Pix.");
       return;
     }
