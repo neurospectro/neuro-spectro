@@ -85,8 +85,6 @@ Deno.serve(async (req) => {
     return json({ ok: true });
   }
 
-  // A integração usa /v1/payments para o Payment Brick.
-  // Mantemos compatibilidade com eventos "order" antigos.
   const resourcePath = eventType === "payment"
     ? `https://api.mercadopago.com/v1/payments/${encodeURIComponent(dataId)}`
     : `https://api.mercadopago.com/v1/orders/${encodeURIComponent(dataId)}`;
