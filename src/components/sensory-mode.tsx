@@ -30,7 +30,7 @@ export function SensoryMode() {
       aria-pressed={enabled}
       aria-label={enabled ? "Desativar acessibilidade sensorial" : "Ativar acessibilidade sensorial"}
       title={enabled ? "Desativar acessibilidade sensorial" : "Ativar acessibilidade sensorial"}
-      className="fixed right-4 top-4 z-[100] inline-flex items-center gap-2 rounded-full border border-border bg-card px-3 py-2 text-xs font-semibold text-card-foreground shadow-lg transition-colors hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+      className="fixed right-3 top-3 z-[100] sm:right-4 sm:top-4 inline-flex items-center gap-2 rounded-full border border-border bg-card px-3 py-2 text-xs font-semibold text-card-foreground shadow-lg transition-colors hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
     >
       {enabled ? <Sun className="size-4" aria-hidden="true" /> : <Moon className="size-4" aria-hidden="true" />}
       <span className="hidden sm:inline">Acessibilidade sensorial</span>
