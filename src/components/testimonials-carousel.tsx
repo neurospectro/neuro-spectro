@@ -85,7 +85,7 @@ export function TestimonialsCarousel() {
       last = now;
 
       if (!isPaused && document.visibilityState === "visible") {
-        el.scrollLeft += delta * 0.008;
+        el.scrollLeft += delta * 0.012;
         const loopWidth = el.scrollWidth / 2;
         if (loopWidth > 0 && el.scrollLeft >= loopWidth) el.scrollLeft = 0;
       }
@@ -103,8 +103,6 @@ export function TestimonialsCarousel() {
         ref={ref}
         className="flex gap-5 overflow-x-auto pb-4 scrollbar-none"
         aria-label="Depoimentos de usuários"
-        onMouseEnter={() => setIsPaused(true)}
-        onMouseLeave={() => setIsPaused(false)}
       >
         {loopItems.map((testimonial, index) => (
           <article
