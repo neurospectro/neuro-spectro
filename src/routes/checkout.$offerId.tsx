@@ -161,21 +161,7 @@ function Checkout() {
         },
       );
       const result = await response.json().catch(() => ({}));
-      if (!response.ok) {
-        const serverMessage =
-          result?.error ||
-          result?.message ||
-          result?.details ||
-          result?.mercadoPagoResponse?.message ||
-          result?.mercadoPagoResponse?.error ||
-          (Array.isArray(result?.causes) ? result.causes.filter(Boolean).join(" ") : "");
-        const statusLabel = result?.status ? ` (HTTP ${result.status})` : ` (HTTP ${response.status})`;
-        throw new Error(
-          serverMessage
-            ? `${serverMessage}${statusLabel}`
-            : `O servidor não conseguiu gerar o Pix${statusLabel}. Tente novamente.`,
-        );
-      }
+      if (!response.ok) throw new Error(result.error ?? "Não foi possível gerar o Pix.");
       if (!result.pix) throw new Error("O Mercado Pago não retornou os dados do Pix. Tente novamente.");
       setPix(result.pix);
       setPixEmailStatus("Pix gerado. Você já pode pagar agora pelo QR Code ou Copia e Cola.");
