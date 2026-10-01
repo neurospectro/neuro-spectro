@@ -130,8 +130,8 @@ function Dashboard() {
         {error && <div className="mt-5 rounded-2xl border border-destructive/20 bg-destructive/5 p-4 text-sm text-destructive">{error}</div>}
 
         <section className="mt-6 grid gap-4 md:grid-cols-3">
-          <AccessCard icon={<FileText className="h-5 w-5" />} title="Relatório completo" active={hasReport} description={hasReport ? "Acesso liberado na sua conta." : "Transforme sua prévia em uma leitura mais completa."} href={hasReport ? undefined : "/checkout/$offerId"} params={hasReport ? undefined : { offerId: "report-full-2490" }} />
-          <AccessCard icon={<FileText className="h-5 w-5" />} title="Relatório PDF" active={hasPdf} description={hasPdf ? "Seu documento profissional está disponível." : hasReport ? "Adicione uma versão organizada para guardar e compartilhar com um profissional." : "Disponível após o Relatório Completo."} href={!hasPdf && hasReport ? "/checkout/$offerId" : undefined} params={!hasPdf && hasReport ? { offerId: "pdf-report-1490" } : undefined} />
+          <AccessCard icon={<FileText className="h-5 w-5" />} title="Relatório online" active={hasReport} description={hasReport ? "Sua análise completa está liberada." : "Transforme sua prévia em uma leitura mais completa."} href={hasReport ? "/relatorio-online" : "/checkout/$offerId"} params={hasReport ? undefined : { offerId: "report-full-2490" }} />
+          <AccessCard icon={<FileText className="h-5 w-5" />} title="Gerar PDF para consulta" active={hasPdf} description={hasPdf ? "Seu documento para levar ao especialista está disponível." : "Gere uma versão organizada para guardar e levar à consulta."} href={hasPdf ? "/relatorio-pdf" : "/checkout/$offerId"} params={hasPdf ? undefined : { offerId: "pdf-report-1490" }} />
           <AccessCard icon={<Users className="h-5 w-5" />} title="Comunidade de Apoio" active={hasCommunity} description={hasCommunity ? "Seu acesso está registrado." : "Trocas, conteúdos e conversas sobre neurodiversidade."} href={!hasCommunity ? "/checkout/$offerId" : "/comunidade"} params={!hasCommunity ? { offerId: "community-6x-1490" } : undefined} />
         </section>
 
