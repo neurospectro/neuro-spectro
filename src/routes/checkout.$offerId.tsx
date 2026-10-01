@@ -272,17 +272,17 @@ function Checkout() {
   }
 
   return (
-    <main className="min-h-screen bg-background px-5 py-10 font-sans">
-      <div className="mx-auto max-w-2xl">
+    <main className="min-h-[100dvh] bg-background px-3 py-5 font-sans sm:px-5 sm:py-10">
+      <div className="mx-auto w-full max-w-2xl">
         <Link to="/avaliacao" className="text-sm text-muted-foreground hover:text-foreground">← Voltar</Link>
 
-        <div className="mt-6 rounded-[2rem] border border-border bg-card p-5 shadow-soft sm:p-7">
+        <div className="mt-4 rounded-[1.5rem] border border-border bg-card p-4 shadow-soft sm:mt-6 sm:rounded-[2rem] sm:p-7">
           <p className="text-xs font-semibold uppercase tracking-[0.25em] text-primary">Checkout NeuroSpectro</p>
-          <h1 className="mt-3 font-display text-3xl font-semibold text-ink">{offer.name}</h1>
-          <p className="mt-3 text-muted-foreground">{offer.description}</p>
+          <h1 className="mt-2 max-w-xl font-display text-[1.65rem] font-semibold leading-tight text-ink sm:mt-3 sm:text-3xl">{offer.name}</h1>
+          <p className="mt-2 text-sm leading-5 text-muted-foreground sm:mt-3 sm:text-base">{offer.description}</p>
 
           {offer.referenceCents && (
-            <div className="mt-6 rounded-2xl border border-primary/20 bg-primary/5 p-5">
+            <div className="mt-4 rounded-2xl border border-primary/20 bg-primary/5 p-4 sm:mt-6 sm:p-5">
               <p className="text-xs font-semibold uppercase tracking-[0.2em] text-primary">Condição promocional</p>
               <div className="mt-2 flex items-end gap-3">
                 <span className="text-lg text-muted-foreground line-through">{formatBRL(offer.referenceCents)}</span>
@@ -291,8 +291,8 @@ function Checkout() {
             </div>
           )}
 
-          <div className="mt-6 grid gap-3 sm:grid-cols-3">
-            <div className="rounded-2xl border border-border bg-background p-4 text-center">
+          <div className="mt-4 grid grid-cols-1 gap-2 sm:mt-6 sm:grid-cols-3 sm:gap-3">
+            <div className="rounded-xl border border-border bg-background p-3 text-center sm:rounded-2xl sm:p-4">
               <p className="font-semibold text-ink">Pix</p>
               <p className="mt-1 text-xs text-muted-foreground">QR Code e Copia e Cola</p>
             </div>
@@ -306,7 +306,7 @@ function Checkout() {
             </div>
           </div>
 
-          <div className="mt-6 flex items-center gap-3 rounded-2xl bg-primary/5 p-4">
+          <div className="mt-4 flex items-center gap-3 rounded-2xl bg-primary/5 p-4 sm:mt-6">
             <CreditCard className="h-6 w-6 shrink-0 text-primary" />
             <div>
               <p className="font-semibold text-ink">
@@ -318,9 +318,9 @@ function Checkout() {
             </div>
           </div>
 
-          <div className="mt-7">
+          <div className="mt-5 sm:mt-7">
             {loading && !error && (
-              <div className="flex min-h-32 items-center justify-center gap-3 text-sm text-muted-foreground">
+              <div className="flex min-h-24 items-center justify-center gap-3 text-sm text-muted-foreground sm:min-h-32">
                 <Loader2 className="h-5 w-5 animate-spin text-primary" />
                 Carregando pagamento seguro...
               </div>
@@ -380,7 +380,7 @@ function Checkout() {
             </div>
           )}
 
-          <div className="mt-7 rounded-2xl border border-border bg-secondary/50 p-4 text-sm">
+          <div className="mt-5 rounded-2xl border border-border bg-secondary/50 p-4 text-xs leading-5 sm:mt-7 sm:text-sm">
             <div className="flex gap-3">
               <ShieldCheck className="h-5 w-5 shrink-0 text-primary" />
               <p className="text-muted-foreground">
