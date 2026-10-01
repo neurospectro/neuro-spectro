@@ -62,6 +62,13 @@ Deno.serve(async (req) => {
   const eventId = String(body?.id ?? `${body?.type ?? typeFromQuery ?? "order"}:${dataId}`);
   const eventType = String(body?.type ?? typeFromQuery ?? "order");
 
+  // O simulador do Mercado Pago usa dados sintéticos. Depois de validar a assinatura,
+  // reconhecemos esses eventos sem consultar um recurso fictício na API.
+  const notificationExternalReference = String(body?.data?.external_reference ?? "");
+  if (notificationExternalReference && !notificationExternalReference.startsWith("ns_")) {
+    return json({ ok: true, acknowledged: true, simulated: true });
+  }
+
   const supabaseUrl = Deno.env.get("SUPABASE_URL")?.trim();
   const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")?.trim();
   const mpToken = Deno.env.get("MERCADOPAGO_ACCESS_TOKEN")?.trim();
