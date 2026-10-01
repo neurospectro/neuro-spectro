@@ -183,7 +183,8 @@ function Checkout() {
                 if (result.pix) setPix(result.pix);
 
                 if (result.paymentStatus === "processed" || result.paymentStatus === "approved") {
-                  setSuccess("Pagamento aprovado. Seu acesso foi liberado e já pode aparecer no painel.");
+                  setSuccess("Pagamento aprovado. Vamos preparar seu acesso.");
+                  window.setTimeout(() => void navigate({ to: "/pos-compra" }), 900);
                 } else if (result.paymentStatus === "action_required" || result.paymentStatus === "pending") {
                   setSuccess("Pagamento criado. Aguarde a confirmação do Mercado Pago para liberar o acesso.");
                 } else {
