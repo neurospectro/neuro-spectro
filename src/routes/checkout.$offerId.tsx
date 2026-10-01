@@ -525,25 +525,38 @@ function Checkout() {
                     <button
                       type="button"
                       className="mt-3 w-full rounded-xl bg-primary px-5 py-3.5 text-sm font-bold text-primary-foreground shadow-sm transition hover:opacity-95"
-                      onClick={async () => {
+                      onClick={() => {
                         const code = pix.qrCode!;
+                        const textarea = document.createElement("textarea");
+                        textarea.value = code;
+                        textarea.setAttribute("readonly", "");
+                        textarea.style.position = "fixed";
+                        textarea.style.left = "-9999px";
+                        textarea.style.top = "0";
+                        document.body.appendChild(textarea);
+                        textarea.focus();
+                        textarea.select();
+                        textarea.setSelectionRange(0, textarea.value.length);
+
+                        let copied = false;
                         try {
-                          if (navigator.clipboard?.writeText) {
-                            await navigator.clipboard.writeText(code);
-                          } else {
-                            const textarea = document.createElement("textarea");
-                            textarea.value = code;
-                            textarea.setAttribute("readonly", "");
-                            textarea.style.position = "fixed";
-                            textarea.style.opacity = "0";
-                            document.body.appendChild(textarea);
-                            textarea.select();
-                            document.execCommand("copy");
-                            textarea.remove();
-                          }
-                          setPixEmailStatus("Código Pix copiado! Agora é só colar no aplicativo do seu banco.");
+                          copied = document.execCommand("copy");
                         } catch {
-                          setPixEmailStatus("Não foi possível copiar automaticamente. Pressione e segure o código para copiar.");
+                          copied = false;
+                        }
+                        textarea.remove();
+
+                        if (copied) {
+                          setPixEmailStatus("Código Pix copiado! Agora é só colar no aplicativo do seu banco.");
+                          return;
+                        }
+
+                        if (navigator.clipboard?.writeText) {
+                          navigator.clipboard.writeText(code)
+                            .then(() => setPixEmailStatus("Código Pix copiado! Agora é só colar no aplicativo do seu banco."))
+                            .catch(() => setPixEmailStatus("Selecione e copie o código Pix manualmente."));
+                        } else {
+                          setPixEmailStatus("Selecione e copie o código Pix manualmente.");
                         }
                       }}
                     >
