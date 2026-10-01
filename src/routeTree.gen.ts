@@ -18,6 +18,7 @@ import { Route as DepoimentoRouteImport } from './routes/depoimento'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as PosCompraRouteImport } from './routes/pos-compra'
 import { Route as RelatorioPdfRouteImport } from './routes/relatorio-pdf'
+import { Route as RelatorioOnlineRouteImport } from './routes/relatorio-online'
 import { Route as CheckoutOfferIdRouteImport } from './routes/checkout.$offerId'
 
 const AdminRoute = AdminRouteImport.update({
@@ -65,6 +66,11 @@ const RelatorioPdfRoute = RelatorioPdfRouteImport.update({
   path: '/relatorio-pdf',
   getParentRoute: () => rootRouteImport,
 } as any)
+const RelatorioOnlineRoute = RelatorioOnlineRouteImport.update({
+  id: '/relatorio-online',
+  path: '/relatorio-online',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const CheckoutOfferIdRoute = CheckoutOfferIdRouteImport.update({
   id: '/checkout/$offerId',
   path: '/checkout/$offerId',
@@ -81,6 +87,7 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/pos-compra': typeof PosCompraRoute
   '/relatorio-pdf': typeof RelatorioPdfRoute
+  '/relatorio-online': typeof RelatorioOnlineRoute
   '/checkout/$offerId': typeof CheckoutOfferIdRoute
 }
 export interface FileRoutesByTo {
@@ -120,6 +127,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/pos-compra'
     | '/relatorio-pdf'
+    | '/relatorio-online'
     | '/checkout/$offerId'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -157,6 +165,7 @@ export interface RootRouteChildren {
   LoginRoute: typeof LoginRoute
   PosCompraRoute: typeof PosCompraRoute
   RelatorioPdfRoute: typeof RelatorioPdfRoute
+  RelatorioOnlineRoute: typeof RelatorioOnlineRoute
   CheckoutOfferIdRoute: typeof CheckoutOfferIdRoute
 }
 
@@ -225,6 +234,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof RelatorioPdfRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/relatorio-online': {
+      id: '/relatorio-online'
+      path: '/relatorio-online'
+      fullPath: '/relatorio-online'
+      preLoaderRoute: typeof RelatorioOnlineRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/checkout/$offerId': {
       id: '/checkout/$offerId'
       path: '/checkout/$offerId'
@@ -245,6 +261,7 @@ const rootRouteChildren: RootRouteChildren = {
   LoginRoute: LoginRoute,
   PosCompraRoute: PosCompraRoute,
   RelatorioPdfRoute: RelatorioPdfRoute,
+  RelatorioOnlineRoute: RelatorioOnlineRoute,
   CheckoutOfferIdRoute: CheckoutOfferIdRoute,
 }
 export const routeTree = rootRouteImport
