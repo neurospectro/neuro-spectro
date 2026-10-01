@@ -1,5 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { CheckCircle2, LayoutDashboard, MailCheck, ArrowLeft } from "lucide-react";
+import { CheckCircle2, MailCheck, ArrowLeft } from "lucide-react";
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 
@@ -112,14 +112,6 @@ function PostPurchasePage() {
               JÁ TENHO UMA CONTA · ENTRAR
             </button>
 
-            <button
-              type="button"
-              onClick={() => void navigate({ to: "/dashboard" })}
-              className="inline-flex flex-1 items-center justify-center gap-2 rounded-full bg-secondary px-5 py-3 font-semibold text-foreground"
-            >
-              <LayoutDashboard className="h-4 w-4" />
-              ACESSAR DASHBOARD
-            </button>
           </div>
 
           <p className="mt-6 text-center text-xs leading-5 text-muted-foreground">
