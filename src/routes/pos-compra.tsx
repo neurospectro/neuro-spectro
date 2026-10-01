@@ -2,6 +2,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { CheckCircle2, MailCheck, ArrowLeft } from "lucide-react";
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
+import { SecurityCaptcha, isTurnstileConfigured } from "@/components/security-captcha";
 
 export const Route = createFileRoute("/pos-compra")({
   component: PostPurchasePage,
@@ -13,6 +14,7 @@ function PostPurchasePage() {
   const [loading, setLoading] = useState(false);
   const [sent, setSent] = useState(false);
   const [message, setMessage] = useState("");
+  const [captchaToken, setCaptchaToken] = useState("");
 
   useEffect(() => {
     if (!supabase) return;
@@ -25,6 +27,14 @@ function PostPurchasePage() {
   async function createAccess(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (!supabase || !email.trim()) return;
+    if (!isTurnstileConfigured()) {
+      setMessage("A verificação de segurança ainda não está disponível.");
+      return;
+    }
+    if (!captchaToken) {
+      setMessage("Marque a verificação de segurança para continuar.");
+      return;
+    }
 
     setLoading(true);
     setMessage("");
@@ -33,6 +43,7 @@ function PostPurchasePage() {
       email: email.trim(),
       options: {
         emailRedirectTo: `${window.location.origin}/dashboard`,
+        captchaToken,
       },
     });
 
@@ -91,9 +102,11 @@ function PostPurchasePage() {
 
                 {message && <p className="text-sm text-destructive">{message}</p>}
 
+                <SecurityCaptcha onToken={setCaptchaToken} />
+
                 <button
                   type="submit"
-                  disabled={loading || !email.trim()}
+                  disabled={loading || !email.trim() || !captchaToken}
                   className="w-full rounded-full bg-primary px-7 py-4 font-semibold text-primary-foreground disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   {loading ? "Enviando..." : "CRIAR MEU ACESSO"}
