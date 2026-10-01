@@ -206,31 +206,6 @@ Deno.serve(async (req) => {
   }
 
   return json({
-      error: "O Mercado Pago recusou a criação do pagamento.",
-      detail: mpData?.message ?? mpData?.error ?? "Erro no provedor.",
-    }, 400);
-  }
-
-  const payment = mpData?.transactions?.payments?.[0];
-  await admin
-    .from("pedidos")
-    .update({ provider_order_id: mpData.id, status: mpData.status === "processed" ? "paid" : "pending", paid_at: mpData.status === "processed" ? new Date().toISOString() : null })
-    .eq("id", pedido.id);
-
-  if (payment?.id) {
-    await admin.from("pagamentos").insert({
-      pedido_id: pedido.id,
-      provider: "mercadopago",
-      provider_payment_id: payment.id,
-      status: payment.status ?? mpData.status ?? "pending",
-      amount_cents: configured.total,
-      installment_number: payment?.payment_method?.installments ?? null,
-      raw_status_detail: payment?.status_detail ?? mpData.status_detail ?? null,
-      paid_at: payment?.status === "processed" ? new Date().toISOString() : null,
-    });
-  }
-
-  return json({
     ok: true,
     paymentId: mpData.id,
     paymentStatus: mpData.status,
