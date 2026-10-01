@@ -136,13 +136,10 @@ function Checkout() {
           },
           customization: {
             paymentMethods: {
-              ticket: "all",
               bankTransfer: "all",
               creditCard: "all",
-              prepaidCard: "all",
               debitCard: "all",
-              // The wallet option requires a preferenceId. This is a
-              // transparent checkout, so cards/Pix/boleto are rendered directly.
+              // NeuroSpectro offers only Pix, credit card and debit card.
             },
           },
           callbacks: {
