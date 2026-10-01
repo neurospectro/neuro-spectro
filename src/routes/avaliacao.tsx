@@ -280,7 +280,7 @@ function ReportOffer({ session }: { session: Session }) {
           <div><p className="text-sm font-bold text-ink">{expired ? "Condição encerrada" : "Condição especial da sua sessão"}</p><p className="font-display text-2xl font-black tabular-nums text-red-600">{expired ? "00:00" : `${String(mins).padStart(2,"0")}:${String(secs).padStart(2,"0")}`}</p></div>
         </div>
         <ul className="mt-5 grid gap-2 text-sm text-muted-foreground">
-          <li>✓ Análise completa das dimensões</li><li>✓ Leitura organizada dos padrões</li><li>✓ Pontos para explorar com profissional</li><li>✓ Conteúdo informativo e não diagnóstico</li>
+          <li>✓ Análise completa das dimensões</li><li>✓ Leitura organizada dos padrões</li><li>✓ Pontos para explorar com profissional</li>
         </ul>
         <button
           type="button"
