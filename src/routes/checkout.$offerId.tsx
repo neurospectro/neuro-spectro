@@ -107,23 +107,29 @@ function Checkout() {
     const mountBrick = async () => {
       try {
         if (!supabase) return;
-        const { data: sessionData } = await supabase.auth.getSession();
+
+        const publicKey = import.meta.env["VITE_MERCADOPAGO_PUBLIC_KEY"];
+        if (!publicKey) throw new Error("O Mercado Pago ainda não está configurado no ambiente.");
+
+        // Load the SDK while Supabase checks the session, so the checkout does
+        // not wait for two sequential network operations.
+        const [sessionResult] = await Promise.all([
+          supabase.auth.getSession(),
+          loadMercadoPagoScript(),
+        ]);
+        const sessionData = sessionResult.data;
+
         if (!sessionData.session) {
           await navigate({ to: "/login" });
           return;
         }
 
-        const publicKey = import.meta.env["VITE_MERCADOPAGO_PUBLIC_KEY"];
-        if (!publicKey) throw new Error("O Mercado Pago ainda não está configurado no ambiente.");
-
-        await loadMercadoPagoScript();
         if (cancelled || !window.MercadoPago) return;
 
         const mp = new window.MercadoPago(publicKey, { locale: "pt-BR" });
         const bricksBuilder = mp.bricks();
 
-        const brick = await Promise.race([
-          bricksBuilder.create("payment", "paymentBrick_container", {
+        const createBrickPromise = bricksBuilder.create("payment", "paymentBrick_container", {
           initialization: {
             amount: offer.totalCents / 100,
             payer: { email: sessionData.session.user.email ?? "" },
@@ -192,14 +198,32 @@ function Checkout() {
               setProcessing(false);
             },
           },
-          }),
-          new Promise<never>((_, reject) =>
-            window.setTimeout(
-              () => reject(new Error("O checkout do Mercado Pago demorou mais que o esperado para carregar.")),
-              15000,
-            ),
-          ),
-        ]);
+          });
+
+        // Do not leave the page waiting forever if the SDK or an iframe stalls.
+        // If create() finishes after the timeout, immediately destroy the late
+        // Brick instead of allowing a hidden instance to remain mounted.
+        const brick = await new Promise<Awaited<typeof createBrickPromise>>((resolve, reject) => {
+          const timeout = window.setTimeout(
+            () => reject(new Error("O checkout do Mercado Pago demorou mais que o esperado para carregar.")),
+            10000,
+          );
+
+          createBrickPromise.then(
+            (createdBrick) => {
+              window.clearTimeout(timeout);
+              if (cancelled) {
+                createdBrick.unmount();
+                return;
+              }
+              resolve(createdBrick);
+            },
+            (createError) => {
+              window.clearTimeout(timeout);
+              reject(createError);
+            },
+          );
+        });
 
         if (cancelled) {
           brick.unmount();
