@@ -25,10 +25,7 @@ function centsToAmount(cents: number) {
 function paymentType(paymentTypeId: string | undefined) {
   if (paymentTypeId === "credit_card") return "credit_card";
   if (paymentTypeId === "debit_card") return "debit_card";
-  if (paymentTypeId === "prepaid_card") return "prepaid_card";
   if (paymentTypeId === "bank_transfer") return "bank_transfer";
-  if (paymentTypeId === "ticket") return "ticket";
-  if (paymentTypeId === "account_money") return "account_money";
   return null;
 }
 
@@ -139,7 +136,7 @@ Deno.serve(async (req) => {
   };
 
   if (formData?.token) paymentMethod.token = String(formData.token);
-  if (normalizedType === "credit_card" || normalizedType === "debit_card" || normalizedType === "prepaid_card") {
+  if (normalizedType === "credit_card" || normalizedType === "debit_card") {
     paymentMethod.installments = Number(formData?.installments ?? 1);
   }
 
