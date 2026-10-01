@@ -48,6 +48,7 @@ const testerTestimonials: Testimonial[] = [
 
 export function TestimonialsCarousel() {
   const ref = useRef<HTMLDivElement>(null);
+  const trackRef = useRef<HTMLDivElement>(null);
   const [approvedItems, setApprovedItems] = useState<Testimonial[]>([]);
   const [isPaused, setIsPaused] = useState(false);
 
@@ -74,20 +75,24 @@ export function TestimonialsCarousel() {
   const loopItems = [...cards, ...cards];
 
   useEffect(() => {
-    const el = ref.current;
-    if (!el || cards.length < 2) return;
+    const viewport = ref.current;
+    const track = trackRef.current;
+    if (!viewport || !track || cards.length < 2) return;
 
     let frame = 0;
     let last = performance.now();
+    let offset = 0;
 
     const tick = (now: number) => {
       const delta = now - last;
       last = now;
 
       if (!isPaused && document.visibilityState === "visible") {
-        el.scrollLeft += delta * 0.012;
-        const loopWidth = el.scrollWidth / 2;
-        if (loopWidth > 0 && el.scrollLeft >= loopWidth) el.scrollLeft = 0;
+        // Movimento propositalmente lento: cerca de 12 px/s.
+        offset += delta * 0.012;
+        const loopWidth = track.scrollWidth / 2;
+        if (loopWidth > 0 && offset >= loopWidth) offset -= loopWidth;
+        track.style.transform = `translate3d(-${offset}px, 0, 0)`;
       }
 
       frame = requestAnimationFrame(tick);
@@ -104,6 +109,7 @@ export function TestimonialsCarousel() {
         className="flex gap-5 overflow-x-scroll pb-4 scrollbar-none overscroll-x-contain"
         aria-label="Depoimentos de usuários"
       >
+        <div ref={trackRef} className="flex w-max gap-5 will-change-transform">
         {loopItems.map((testimonial, index) => (
           <article
             key={`${testimonial.id}-${index}`}
