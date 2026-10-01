@@ -327,7 +327,7 @@ function OfferCheckoutModal({ offer }: { offer: ReturnType<typeof getOffer> }) {
           </div>
 
           <div className="mt-4 grid gap-2 sm:mt-5 sm:grid-cols-2">
-            {["Análise completa das dimensões", "Leitura organizada dos padrões", "Pontos para explorar com profissional", "Conteúdo informativo e não diagnóstico"].map((item) => (
+            {["Análise completa das dimensões", "Leitura organizada dos padrões", "Pontos para explorar com profissional"].map((item) => (
               <div key={item} className="rounded-xl border border-red-300 bg-red-50 px-3 py-2.5 text-xs font-semibold leading-5 text-red-900 shadow-sm sm:px-3 sm:py-3 sm:text-sm">
                 <span className="mr-2">✓</span>{item}
               </div>
