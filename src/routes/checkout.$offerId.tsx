@@ -1,3 +1,4 @@
+import { MERCADOPAGO_PUBLIC_KEY } from "@/lib/mercadopago";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { CheckCircle2, CreditCard, Loader2, ShieldCheck } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
@@ -108,7 +109,7 @@ function Checkout() {
       try {
         if (!supabase) return;
 
-        const publicKey = import.meta.env["VITE_MERCADOPAGO_PUBLIC_KEY"];
+        const publicKey = MERCADOPAGO_PUBLIC_KEY;
         if (!publicKey) throw new Error("O Mercado Pago ainda não está configurado no ambiente.");
 
         // Load the SDK while Supabase checks the session, so the checkout does
