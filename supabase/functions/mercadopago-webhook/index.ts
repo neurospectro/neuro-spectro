@@ -92,7 +92,13 @@ Deno.serve(async (req) => {
   const resourceResponse = await fetch(resourcePath, {
     headers: { Authorization: `Bearer ${mpToken}` },
   });
-  if (!resourceResponse.ok) return json({ error: "Não foi possível consultar o pagamento." }, 502);
+  if (!resourceResponse.ok) {
+    // O botão de simulação do Mercado Pago pode enviar um Data ID de teste
+    // que não existe na conta de produção. Nesse caso a assinatura já foi
+    // validada; devolvemos 200 para a simulação não ser marcada como falha.
+    if (body?.live_mode === false) return json({ ok: true, simulation: true });
+    return json({ error: "Não foi possível consultar o recurso no Mercado Pago.", status: resourceResponse.status }, 502);
+  }
 
   const resource = await resourceResponse.json();
   const externalReference = String(resource?.external_reference ?? "");
