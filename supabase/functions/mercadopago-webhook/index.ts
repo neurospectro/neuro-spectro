@@ -62,9 +62,16 @@ Deno.serve(async (req) => {
   const eventId = String(body?.id ?? `${body?.type ?? typeFromQuery ?? "order"}:${dataId}`);
   const eventType = String(body?.type ?? typeFromQuery ?? "order");
 
-  const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
-  const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-  const mpToken = Deno.env.get("MERCADOPAGO_ACCESS_TOKEN")!;
+  const supabaseUrl = Deno.env.get("SUPABASE_URL")?.trim();
+  const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")?.trim();
+  const mpToken = Deno.env.get("MERCADOPAGO_ACCESS_TOKEN")?.trim();
+  const webhookSecret = Deno.env.get("MERCADOPAGO_WEBHOOK_SECRET")?.trim();
+
+  if (!supabaseUrl || !serviceKey || !mpToken || !webhookSecret) {
+    console.error("MERCADOPAGO_WEBHOOK_CONFIG_ERROR: required server secrets are missing.");
+    return json({ error: "Webhook do Mercado Pago ainda não está configurado no servidor." }, 503);
+  }
+
   const admin = createClient(supabaseUrl, serviceKey);
 
   const { data: existing } = await admin
@@ -92,9 +99,17 @@ Deno.serve(async (req) => {
     ? `https://api.mercadopago.com/v1/payments/${encodeURIComponent(dataId)}`
     : `https://api.mercadopago.com/v1/orders/${encodeURIComponent(dataId)}`;
 
-  const resourceResponse = await fetch(resourcePath, {
-    headers: { Authorization: `Bearer ${mpToken}` },
-  });
+  let resourceResponse: Response;
+
+  try {
+    resourceResponse = await fetch(resourcePath, {
+      headers: { Authorization: `Bearer ${mpToken}` },
+    });
+  } catch (error) {
+    console.error("MERCADOPAGO_WEBHOOK_NETWORK_ERROR", error);
+    return json({ error: "Não foi possível consultar o Mercado Pago agora.", retryable: true }, 502);
+  }
+
   if (!resourceResponse.ok) {
     // O Mercado Pago permite testar Webhooks informando manualmente um Data ID.
     // Esse ID pode não existir na conta de produção, mesmo com a assinatura válida.
@@ -108,10 +123,21 @@ Deno.serve(async (req) => {
         .eq("event_id", eventId);
       return json({ ok: true, acknowledged: true, resource_not_found: true });
     }
-    return json({ error: "Não foi possível consultar o recurso no Mercado Pago.", status: resourceResponse.status }, 502);
+    if (resourceResponse.status === 401 || resourceResponse.status === 403) {
+      console.error("MERCADOPAGO_WEBHOOK_AUTH_ERROR", resourceResponse.status);
+      return json({ error: "A credencial do Mercado Pago não foi aceita pelo servidor." }, 503);
+    }
+
+    if (resourceResponse.status === 429 || resourceResponse.status >= 500) {
+      return json({ error: "O Mercado Pago está temporariamente indisponível.", retryable: true }, 502);
+    }
+
+    console.error("MERCADOPAGO_WEBHOOK_RESOURCE_ERROR", { status: resourceResponse.status, eventId });
+    return json({ error: "O recurso notificado pelo Mercado Pago não pôde ser consultado." }, 502);
   }
 
-  const resource = await resourceResponse.json();
+  const resource = await resourceResponse.json().catch(() => null);
+  if (!resource) return json({ error: "Resposta inválida do Mercado Pago." }, 502);
   const externalReference = String(resource?.external_reference ?? "");
   if (!externalReference.startsWith("ns_")) {
     await admin.from("webhook_events").update({ processed_at: new Date().toISOString() }).eq("provider", "mercadopago").eq("event_id", eventId);
