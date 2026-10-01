@@ -48,7 +48,6 @@ const testerTestimonials: Testimonial[] = [
 
 export function TestimonialsCarousel() {
   const viewportRef = useRef<HTMLDivElement>(null);
-  const trackRef = useRef<HTMLDivElement>(null);
   const [approvedItems, setApprovedItems] = useState<Testimonial[]>([]);
   const [isPaused, setIsPaused] = useState(false);
 
@@ -112,52 +111,50 @@ export function TestimonialsCarousel() {
         onPointerDown={() => setIsPaused(true)}
         onPointerUp={() => setIsPaused(false)}
         onPointerCancel={() => setIsPaused(false)}
-        onMouseEnter={() => setIsPaused(true)}
-        onMouseLeave={() => setIsPaused(false)}
       >
         {loopItems.map((testimonial, index) => (
-            <article
-              key={`${testimonial.id}-${index}`}
-              className="min-w-[300px] max-w-sm shrink-0 rounded-3xl border border-border bg-card p-6 shadow-soft md:min-w-[360px]"
-            >
-              <div className="flex items-center gap-3">
-                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-spectrum/20 font-display text-sm font-semibold text-primary">
-                  {testimonial.name.slice(0, 1).toUpperCase()}
-                </div>
-
-                <div className="min-w-0">
-                  <p className="text-sm font-semibold text-ink">
-                    {testimonial.name}
-                    {testimonial.age ? `, ${testimonial.age} anos` : ""}
-                  </p>
-
-                  {testimonial.profession && (
-                    <p className="text-xs text-muted-foreground">
-                      {testimonial.profession}
-                    </p>
-                  )}
-                </div>
+          <article
+            key={`${testimonial.id}-${index}`}
+            className="min-w-[300px] max-w-sm shrink-0 rounded-3xl border border-border bg-card p-6 shadow-soft md:min-w-[360px]"
+          >
+            <div className="flex items-center gap-3">
+              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-spectrum/20 font-display text-sm font-semibold text-primary">
+                {testimonial.name.slice(0, 1).toUpperCase()}
               </div>
 
-              <div
-                className="mt-4 flex items-center gap-0.5"
-                aria-label={`${testimonial.rating ?? 5} estrelas`}
-              >
-                {Array.from({ length: testimonial.rating ?? 5 }).map(
-                  (_, starIndex) => (
-                    <Star
-                      key={starIndex}
-                      className="h-4 w-4 fill-current text-primary"
-                    />
-                  ),
+              <div className="min-w-0">
+                <p className="text-sm font-semibold text-ink">
+                  {testimonial.name}
+                  {testimonial.age ? `, ${testimonial.age} anos` : ""}
+                </p>
+
+                {testimonial.profession && (
+                  <p className="text-xs text-muted-foreground">
+                    {testimonial.profession}
+                  </p>
                 )}
               </div>
+            </div>
 
-              <Quote className="mt-5 h-7 w-7 text-primary/60" />
+            <div
+              className="mt-4 flex items-center gap-0.5"
+              aria-label={`${testimonial.rating ?? 5} estrelas`}
+            >
+              {Array.from({ length: testimonial.rating ?? 5 }).map(
+                (_, starIndex) => (
+                  <Star
+                    key={starIndex}
+                    className="h-4 w-4 fill-current text-primary"
+                  />
+                ),
+              )}
+            </div>
 
-              <p className="mt-3 leading-7 text-foreground">
-                “{testimonial.text}”
-              </p>
+            <Quote className="mt-5 h-7 w-7 text-primary/60" />
+
+            <p className="mt-3 leading-7 text-foreground">
+              “{testimonial.text}”
+            </p>
           </article>
         ))}
       </div>
