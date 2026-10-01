@@ -121,13 +121,9 @@ function Checkout() {
         ]);
         const sessionData = sessionResult.data;
 
-        let checkoutSession = sessionData.session;
-        if (!checkoutSession) {
-          const anonymous = await supabase.auth.signInAnonymously();
-          if (anonymous.error || !anonymous.data.session) throw new Error("Não foi possível iniciar sua sessão de compra. Tente novamente.");
-          checkoutSession = anonymous.data.session;
-        }
-
+        // O Payment Brick pode ser renderizado sem autenticação.
+        // A sessão anônima só é criada no envio, evitando bloquear o checkout
+        // quando o projeto ainda não habilitou anonymous sign-ins no Supabase.
         if (cancelled || !window.MercadoPago) return;
 
         const mp = new window.MercadoPago(publicKey, { locale: "pt-BR" });
@@ -149,7 +145,13 @@ function Checkout() {
             onReady: () => {
               if (!cancelled) setLoading(false);
             },
-            onSubmit: async ({ formData }: { selectedPaymentMethod: string; formData: Record<string, unknown> }) => {
+            onSubmit: async ({
+              selectedPaymentMethod,
+              formData,
+            }: {
+              selectedPaymentMethod: string;
+              formData: Record<string, unknown>;
+            }) => {
               setError("");
               setSuccess("");
               setPix(null);
@@ -157,9 +159,23 @@ function Checkout() {
 
               try {
                 if (!supabase) throw new Error("O serviço de autenticação não está configurado.");
-                const { data: current } = await supabase.auth.getSession();
-                const token = current.session?.access_token;
-                if (!token) throw new Error("Sua sessão de compra expirou. Tente novamente.");
+                let { data: current } = await supabase.auth.getSession();
+                let token = current.session?.access_token;
+
+                if (!token) {
+                  const anonymous = await supabase.auth.signInAnonymously();
+                  if (anonymous.error || !anonymous.data.session) {
+                    throw new Error("Não foi possível iniciar sua sessão de compra. Tente novamente.");
+                  }
+                  current = anonymous.data;
+                  token = anonymous.data.session.access_token;
+                }
+
+                const normalizedFormData = {
+                  ...formData,
+                  payment_type_id:
+                    formData.payment_type_id ?? selectedPaymentMethod,
+                };
 
                 const response = await fetch(
                   `${import.meta.env["VITE_SUPABASE_URL"]}/functions/v1/process-payment`,
@@ -169,14 +185,14 @@ function Checkout() {
                       "Content-Type": "application/json",
                       Authorization: `Bearer ${token}`,
                     },
-                    body: JSON.stringify({ offerId: offer.id, formData }),
+                    body: JSON.stringify({ offerId: offer.id, formData: normalizedFormData }),
                   },
                 );
 
                 const result = await response.json().catch(() => ({}));
                 if (!response.ok) throw new Error(result.error ?? "Não foi possível processar o pagamento.");
 
-                const payerEmail = String((formData as { payer?: { email?: string } })?.payer?.email ?? "").trim();
+                const payerEmail = String((normalizedFormData as { payer?: { email?: string } })?.payer?.email ?? "").trim();
                 if (payerEmail) await linkCheckoutEmail(payerEmail);
 
                 if (result.pix) setPix(result.pix);
