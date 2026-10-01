@@ -25,6 +25,7 @@ export const Route = createFileRoute("/checkout/$offerId")({
 });
 
 const mpScriptId = "mercadopago-js-v2";
+const SUPABASE_URL = "https://lihduwskppoxjnuwndnp.supabase.co";
 
 function loadMercadoPagoScript() {
   return new Promise<void>((resolve, reject) => {
@@ -114,6 +115,63 @@ function Checkout() {
   const [pix, setPix] = useState<{ qrCode: string | null; qrCodeBase64: string | null; ticketUrl: string | null } | null>(null);
   const [pixEmail, setPixEmail] = useState("");
   const [pixEmailStatus, setPixEmailStatus] = useState("");
+  const [pixProcessing, setPixProcessing] = useState(false);
+
+  const generatePix = async () => {
+    const email = pixEmail.trim();
+    if (!/^\\S+@\\S+\\.\\S+$/.test(email)) {
+      setPixEmailStatus("Digite um e-mail válido para gerar o Pix.");
+      return;
+    }
+    if (!offer || !supabase) {
+      setError("Não foi possível iniciar o pagamento agora. Recarregue a página e tente novamente.");
+      return;
+    }
+    setPixProcessing(true);
+    setError("");
+    setSuccess("");
+    setPix(null);
+    setPixEmailStatus("");
+    try {
+      const { data: current } = await supabase.auth.getSession();
+      let token = current.session?.access_token;
+      if (!token) {
+        const anonymous = await supabase.auth.signInAnonymously();
+        if (anonymous.error || !anonymous.data.session) {
+          throw new Error("Não foi possível iniciar sua sessão de compra. Tente novamente.");
+        }
+        token = anonymous.data.session.access_token;
+      }
+      const response = await fetch(
+        `${SUPABASE_URL}/functions/v1/process-payment`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            offerId: offer.id,
+            formData: {
+              payment_type_id: "bank_transfer",
+              payment_method_id: "pix",
+              payer: { email },
+            },
+          }),
+        },
+      );
+      const result = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(result.error ?? "Não foi possível gerar o Pix.");
+      if (!result.pix) throw new Error("O Mercado Pago não retornou os dados do Pix. Tente novamente.");
+      setPix(result.pix);
+      setPixEmailStatus("Pix gerado. Você já pode pagar agora pelo QR Code ou Copia e Cola.");
+      setSuccess("Pix pronto para pagamento. Pague agora pelo QR Code ou Copia e Cola.");
+    } catch (submitError) {
+      setError(submitError instanceof Error ? submitError.message : "Não foi possível gerar o Pix.");
+    } finally {
+      setPixProcessing(false);
+    }
+  };
 
   useEffect(() => {
     if (!offer) return;
@@ -172,7 +230,6 @@ function Checkout() {
               },
             },
             paymentMethods: {
-              bankTransfer: "pix",
               creditCard: "all",
               debitCard: "all",
             },
@@ -223,7 +280,7 @@ function Checkout() {
                 void payerEmail;
 
                 const response = await fetch(
-                  `${import.meta.env["VITE_SUPABASE_URL"]}/functions/v1/process-payment`,
+                  `${SUPABASE_URL}/functions/v1/process-payment`,
                   {
                     method: "POST",
                     headers: {
@@ -349,9 +406,40 @@ function Checkout() {
           )}
 
           <div className="mt-4 sm:mt-6">
-            <p className="text-sm font-semibold text-ink">Escolha como pagar</p>
-            <p className="mt-1 text-xs text-muted-foreground">As opções de Pix, cartão de crédito e débito aparecem no Checkout Transparente do Mercado Pago.</p>
+            <p className="text-sm font-semibold text-ink">Pix</p>
+            <p className="mt-1 text-xs text-muted-foreground">Informe seu e-mail e gere o Pix para pagar agora, sem esperar um e-mail posterior.</p>
           </div>
+
+          {!pix && (
+            <div className="mt-4 rounded-2xl border border-primary/20 bg-white p-4 shadow-sm sm:p-5">
+              <label htmlFor="pix-email" className="text-sm font-bold text-ink">E-mail para identificar sua compra</label>
+              <input
+                id="pix-email"
+                type="email"
+                inputMode="email"
+                autoComplete="email"
+                value={pixEmail}
+                onChange={(event) => {
+                  setPixEmail(event.target.value);
+                  setPixEmailStatus("");
+                }}
+                onKeyDown={(event) => {
+                  if (event.key === "Enter") void generatePix();
+                }}
+                placeholder="seu@email.com"
+                className="mt-2 w-full rounded-xl border border-border bg-white px-4 py-3 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/15"
+              />
+              <button
+                type="button"
+                disabled={pixProcessing}
+                onClick={() => void generatePix()}
+                className="mt-3 w-full rounded-xl bg-primary px-5 py-3.5 text-sm font-bold text-primary-foreground shadow-sm transition hover:opacity-95 disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                {pixProcessing ? "Gerando Pix..." : "Gerar Pix e pagar agora"}
+              </button>
+              {pixEmailStatus && <p className="mt-2 text-xs font-medium text-primary">{pixEmailStatus}</p>}
+            </div>
+          )}
 
           <div className="mt-4 flex items-center gap-3 rounded-2xl border border-border bg-white p-4 sm:mt-5">
             <CreditCard className="h-6 w-6 shrink-0 text-primary" />
@@ -444,36 +532,11 @@ function Checkout() {
                   )}
 
                   <div className="mt-5 rounded-xl border border-primary/15 bg-primary/[0.035] p-4">
-                    <label htmlFor="pix-email" className="text-sm font-bold text-ink">
-                      E-mail para receber as informações da compra
-                    </label>
-                    <p className="mt-1 text-xs leading-5 text-muted-foreground">
-                      Você pode informar agora, sem interromper o pagamento.
+                    <p className="text-sm font-bold text-ink">E-mail da compra</p>
+                    <p className="mt-1 break-all text-sm text-muted-foreground">{pixEmail}</p>
+                    <p className="mt-2 text-xs leading-5 text-muted-foreground">
+                      O Pix já está disponível. Pague agora pelo QR Code ou Copia e Cola.
                     </p>
-                    <input
-                      id="pix-email"
-                      type="email"
-                      inputMode="email"
-                      autoComplete="email"
-                      value={pixEmail}
-                      onChange={(event) => {
-                        setPixEmail(event.target.value);
-                        setPixEmailStatus("");
-                      }}
-                      onBlur={async () => {
-                        const email = pixEmail.trim();
-                        if (!/^\S+@\S+\.\S+$/.test(email)) return;
-                        const { error: linkError } = await linkCheckoutEmail(email);
-                        setPixEmailStatus(
-                          linkError ? "Não foi possível salvar o e-mail agora." : "E-mail associado à sua compra."
-                        );
-                      }}
-                      placeholder="seu@email.com"
-                      className="mt-2 w-full rounded-xl border border-border bg-white px-4 py-3 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/15"
-                    />
-                    {pixEmailStatus && (
-                      <p className="mt-2 text-xs text-primary">{pixEmailStatus}</p>
-                    )}
                   </div>
 
                   {pix.ticketUrl && (
