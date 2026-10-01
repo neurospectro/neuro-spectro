@@ -15,6 +15,7 @@ import { Route as ComunidadeRouteImport } from './routes/comunidade'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as DepoimentoRouteImport } from './routes/depoimento'
 import { Route as LoginRouteImport } from './routes/login'
+import { Route as PosCompraRouteImport } from './routes/pos-compra'
 import { Route as RelatorioPdfRouteImport } from './routes/relatorio-pdf'
 import { Route as CheckoutOfferIdRouteImport } from './routes/checkout.$offerId'
 
@@ -48,6 +49,11 @@ const LoginRoute = LoginRouteImport.update({
   path: '/login',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PosCompraRoute = PosCompraRouteImport.update({
+  id: '/pos-compra',
+  path: '/pos-compra',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const RelatorioPdfRoute = RelatorioPdfRouteImport.update({
   id: '/relatorio-pdf',
   path: '/relatorio-pdf',
@@ -66,6 +72,7 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof DashboardRoute
   '/depoimento': typeof DepoimentoRoute
   '/login': typeof LoginRoute
+  '/pos-compra': typeof PosCompraRoute
   '/relatorio-pdf': typeof RelatorioPdfRoute
   '/checkout/$offerId': typeof CheckoutOfferIdRoute
 }
@@ -76,6 +83,7 @@ export interface FileRoutesByTo {
   '/dashboard': typeof DashboardRoute
   '/depoimento': typeof DepoimentoRoute
   '/login': typeof LoginRoute
+  '/pos-compra': typeof PosCompraRoute
   '/relatorio-pdf': typeof RelatorioPdfRoute
   '/checkout/$offerId': typeof CheckoutOfferIdRoute
 }
@@ -87,6 +95,7 @@ export interface FileRoutesById {
   '/dashboard': typeof DashboardRoute
   '/depoimento': typeof DepoimentoRoute
   '/login': typeof LoginRoute
+  '/pos-compra': typeof PosCompraRoute
   '/relatorio-pdf': typeof RelatorioPdfRoute
   '/checkout/$offerId': typeof CheckoutOfferIdRoute
 }
@@ -99,6 +108,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/depoimento'
     | '/login'
+    | '/pos-compra'
     | '/relatorio-pdf'
     | '/checkout/$offerId'
   fileRoutesByTo: FileRoutesByTo
@@ -109,6 +119,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/depoimento'
     | '/login'
+    | '/pos-compra'
     | '/relatorio-pdf'
     | '/checkout/$offerId'
   id:
@@ -119,6 +130,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/depoimento'
     | '/login'
+    | '/pos-compra'
     | '/relatorio-pdf'
     | '/checkout/$offerId'
   fileRoutesById: FileRoutesById
@@ -130,6 +142,7 @@ export interface RootRouteChildren {
   DashboardRoute: typeof DashboardRoute
   DepoimentoRoute: typeof DepoimentoRoute
   LoginRoute: typeof LoginRoute
+  PosCompraRoute: typeof PosCompraRoute
   RelatorioPdfRoute: typeof RelatorioPdfRoute
   CheckoutOfferIdRoute: typeof CheckoutOfferIdRoute
 }
@@ -178,6 +191,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LoginRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/pos-compra': {
+      id: '/pos-compra'
+      path: '/pos-compra'
+      fullPath: '/pos-compra'
+      preLoaderRoute: typeof PosCompraRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/relatorio-pdf': {
       id: '/relatorio-pdf'
       path: '/relatorio-pdf'
@@ -202,6 +222,7 @@ const rootRouteChildren: RootRouteChildren = {
   DashboardRoute: DashboardRoute,
   DepoimentoRoute: DepoimentoRoute,
   LoginRoute: LoginRoute,
+  PosCompraRoute: PosCompraRoute,
   RelatorioPdfRoute: RelatorioPdfRoute,
   CheckoutOfferIdRoute: CheckoutOfferIdRoute,
 }
