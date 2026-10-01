@@ -1,15 +1,25 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
-const cors = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
-  "Access-Control-Allow-Methods": "POST, OPTIONS",
-};
+const allowedOrigins = new Set([
+  "https://neurospectro.com.br",
+  "https://www.neurospectro.com.br",
+  "https://hello-world-maker-6497.lovable.app",
+]);
 
-const json = (body: unknown, status = 200) =>
+function corsHeaders(req: Request) {
+  const origin = req.headers.get("Origin")?.trim() ?? "";
+  return {
+    "Access-Control-Allow-Origin": allowedOrigins.has(origin) ? origin : "https://neurospectro.com.br",
+    "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+    "Access-Control-Allow-Methods": "POST, OPTIONS",
+    "Vary": "Origin",
+  };
+}
+
+const json = (req: Request, body: unknown, status = 200) =>
   new Response(JSON.stringify(body), {
     status,
-    headers: { ...cors, "Content-Type": "application/json" },
+    headers: { ...corsHeaders(req), "Content-Type": "application/json" },
   });
 
 const offers: Record<string, { product: string; total: number; installments: number; installment: number }> = {
@@ -35,7 +45,7 @@ function isProcessed(status: string | null | undefined, statusDetail: string | n
 }
 
 Deno.serve(async (req) => {
-  if (req.method === "OPTIONS") return new Response("ok", { headers: cors });
+  if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders(req) });
   if (req.method !== "POST") return json({ error: "Método não permitido." }, 405);
 
   const authHeader = req.headers.get("Authorization");
@@ -94,10 +104,21 @@ Deno.serve(async (req) => {
     return json({ error: "Não foi possível validar a verificação de segurança. Tente novamente." }, 503);
   }
 
-  if (turnstileResult.success !== true || (turnstileResult.action && turnstileResult.action !== "payment")) {
+  const turnstileHostname = String(turnstileResult.hostname ?? "").trim().toLowerCase();
+  const allowedTurnstileHostnames = new Set([
+    "neurospectro.com.br",
+    "www.neurospectro.com.br",
+    "hello-world-maker-6497.lovable.app",
+  ]);
+  if (
+    turnstileResult.success !== true ||
+    (turnstileResult.action && turnstileResult.action !== "payment") ||
+    !allowedTurnstileHostnames.has(turnstileHostname)
+  ) {
     console.warn("PROCESS_PAYMENT_TURNSTILE_REJECTED", {
       errors: turnstileResult["error-codes"] ?? [],
       action: turnstileResult.action ?? null,
+      hostname: turnstileHostname || null,
     });
     return json({ error: "A verificação de segurança expirou ou não foi concluída. Tente novamente." }, 403);
   }
@@ -117,7 +138,7 @@ Deno.serve(async (req) => {
 
   if (offerError) {
     console.error("PROCESS_PAYMENT_OFFER_ERROR", offerError);
-    return json({ error: "Não foi possível validar a oferta." }, 500);
+    return json(req, req, { error: "Não foi possível validar a oferta." }, 500);
   }
   if (!offer) return json({ error: "Oferta não disponível." }, 400);
   if (offer.total_cents !== configured.total || offer.installment_count !== configured.installments) {
@@ -151,7 +172,7 @@ Deno.serve(async (req) => {
 
   const payerEmail = String(formData?.payer?.email ?? userData.user.email ?? "").trim().toLowerCase();
   if (!payerEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(payerEmail)) {
-    return json({ error: "E-mail do pagador é obrigatório e deve ser válido." }, 400);
+    return json(req, req, { error: "E-mail do pagador é obrigatório e deve ser válido." }, 400);
   }
 
   const digest = async (value: string) => {
@@ -196,7 +217,7 @@ Deno.serve(async (req) => {
   }
 
   if (normalizedType === "credit_card" || normalizedType === "debit_card") {
-    if (!formData?.token) return json({ error: "Não foi possível validar os dados do cartão." }, 400);
+    if (!formData?.token) return json(req, req, { error: "Não foi possível validar os dados do cartão." }, 400);
 
     const selectedInstallments = Number(formData?.installments ?? 1);
     if (!Number.isInteger(selectedInstallments) || selectedInstallments < 1) {
@@ -223,7 +244,7 @@ Deno.serve(async (req) => {
     .select("id")
     .single();
 
-  if (pedidoError || !pedido) return json({ error: "Não foi possível criar o pedido." }, 500);
+  if (pedidoError || !pedido) return json(req, req, { error: "Não foi possível criar o pedido." }, 500);
 
   // Pix e cartões usam a Payments API. Para Pix, ela retorna diretamente o Copia e Cola.
   const paymentPayload: Record<string, unknown> = {
