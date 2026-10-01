@@ -155,7 +155,7 @@ function Avaliacao() {
 
   return (
     <div className="flex min-h-screen flex-col bg-background font-sans">
-      <header className="mx-auto w-full max-w-2xl px-5 pt-6">
+      <header className="mx-auto w-full max-w-2xl px-5 pt-16 sm:pt-6">
         <div className="flex items-center justify-between text-sm text-muted-foreground">
           <Link to="/" className="flex items-center gap-2"><img src={mark.url} alt="NeuroSpectro" className="h-7 w-7" /></Link>
           <span>{session.index + 1} de {questions.length}</span>
