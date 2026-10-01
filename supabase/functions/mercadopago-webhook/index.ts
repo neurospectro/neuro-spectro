@@ -80,18 +80,24 @@ Deno.serve(async (req) => {
     payload: body,
   }, { onConflict: "provider,event_id" });
 
-  if (eventType !== "order" || !dataId) {
+  if (!dataId || !["payment", "order"].includes(eventType)) {
     await admin.from("webhook_events").update({ processed_at: new Date().toISOString() }).eq("provider", "mercadopago").eq("event_id", eventId);
     return json({ ok: true });
   }
 
-  const orderResponse = await fetch(`https://api.mercadopago.com/v1/orders/${encodeURIComponent(dataId)}`, {
+  // A integração usa /v1/payments para o Payment Brick.
+  // Mantemos compatibilidade com eventos "order" antigos.
+  const resourcePath = eventType === "payment"
+    ? `https://api.mercadopago.com/v1/payments/${encodeURIComponent(dataId)}`
+    : `https://api.mercadopago.com/v1/orders/${encodeURIComponent(dataId)}`;
+
+  const resourceResponse = await fetch(resourcePath, {
     headers: { Authorization: `Bearer ${mpToken}` },
   });
-  if (!orderResponse.ok) return json({ error: "Não foi possível consultar a order." }, 502);
+  if (!resourceResponse.ok) return json({ error: "Não foi possível consultar o pagamento." }, 502);
 
-  const order = await orderResponse.json();
-  const externalReference = String(order?.external_reference ?? "");
+  const resource = await resourceResponse.json();
+  const externalReference = String(resource?.external_reference ?? "");
   if (!externalReference.startsWith("ns_")) {
     await admin.from("webhook_events").update({ processed_at: new Date().toISOString() }).eq("provider", "mercadopago").eq("event_id", eventId);
     return json({ ok: true });
@@ -106,14 +112,16 @@ Deno.serve(async (req) => {
 
   if (!pedido) return json({ error: "Pedido não encontrado." }, 404);
 
-  const payment = order?.transactions?.payments?.[0];
-  const status = payment?.status ?? order?.status ?? "pending";
-  const statusDetail = payment?.status_detail ?? order?.status_detail ?? null;
+  const payment = eventType === "payment"
+    ? resource
+    : resource?.transactions?.payments?.[0];
+  const status = payment?.status ?? resource?.status ?? "pending";
+  const statusDetail = payment?.status_detail ?? resource?.status_detail ?? null;
   const paid = status === "processed" || status === "approved";
   const failed = ["rejected", "failed", "cancelled"].includes(status);
 
   await admin.from("pedidos").update({
-    provider_order_id: order.id,
+    provider_order_id: String(resource?.id ?? dataId),
     status: paid ? "paid" : failed ? "failed" : "pending",
     paid_at: paid ? new Date().toISOString() : null,
   }).eq("id", pedido.id);
@@ -129,7 +137,7 @@ Deno.serve(async (req) => {
     const paymentPayload = {
       pedido_id: pedido.id,
       provider: "mercadopago",
-      provider_payment_id: payment.id,
+      provider_payment_id: String(payment.id),
       status,
       amount_cents: pedido.amount_cents,
       installment_number: payment?.payment_method?.installments ?? null,
