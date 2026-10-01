@@ -5,7 +5,6 @@ import { useEffect, useRef, useState } from "react";
 import { getOffer, formatBRL } from "@/lib/offers";
 import { supabase } from "@/lib/supabase";
 import "@/styles/mercadopago.css";
-import { linkCheckoutEmail } from "@/lib/checkout-account";
 
 declare global {
   interface Window {
