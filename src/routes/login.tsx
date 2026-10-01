@@ -91,7 +91,7 @@ function LoginPage() {
                 />
               </label>
 
-              <SecurityCaptcha onToken={setCaptchaToken} />
+              <SecurityCaptcha onToken={setCaptchaToken} action="login" />
               {message && <p className="text-sm text-destructive">{message}</p>}
 
               <button
