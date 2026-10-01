@@ -516,52 +516,61 @@ function Checkout() {
 
                 <div>
                   <p className="text-sm font-bold text-ink">Ou copie o código Pix</p>
-                  <div className="mt-2 rounded-xl border border-border bg-slate-50 p-3">
-                    <p className="max-h-20 overflow-hidden break-all text-xs leading-5 text-muted-foreground">
-                      {pix.qrCode || "Código Pix disponível no seu pagamento."}
-                    </p>
-                  </div>
-                  {pix.qrCode && (
-                    <button
-                      type="button"
-                      className="mt-3 w-full rounded-xl bg-primary px-5 py-3.5 text-sm font-bold text-primary-foreground shadow-sm transition hover:opacity-95"
-                      onClick={() => {
-                        const code = pix.qrCode!;
-                        const textarea = document.createElement("textarea");
-                        textarea.value = code;
-                        textarea.setAttribute("readonly", "");
-                        textarea.style.position = "fixed";
-                        textarea.style.left = "-9999px";
-                        textarea.style.top = "0";
-                        document.body.appendChild(textarea);
-                        textarea.focus();
-                        textarea.select();
-                        textarea.setSelectionRange(0, textarea.value.length);
-
-                        let copied = false;
-                        try {
-                          copied = document.execCommand("copy");
-                        } catch {
-                          copied = false;
-                        }
-                        textarea.remove();
-
-                        if (copied) {
-                          setPixEmailStatus("Código Pix copiado! Agora é só colar no aplicativo do seu banco.");
-                          return;
-                        }
-
-                        if (navigator.clipboard?.writeText) {
-                          navigator.clipboard.writeText(code)
-                            .then(() => setPixEmailStatus("Código Pix copiado! Agora é só colar no aplicativo do seu banco."))
-                            .catch(() => setPixEmailStatus("Selecione e copie o código Pix manualmente."));
-                        } else {
-                          setPixEmailStatus("Selecione e copie o código Pix manualmente.");
-                        }
-                      }}
-                    >
-                      Copiar código Pix
-                    </button>
+                  {pix.qrCode ? (
+                    <>
+                      <textarea
+                        readOnly
+                        value={pix.qrCode}
+                        aria-label="Código Pix Copia e Cola"
+                        onFocus={(event) => event.currentTarget.select()}
+                        className="mt-2 block min-h-24 w-full resize-none select-text rounded-xl border border-border bg-slate-50 p-3 text-xs leading-5 text-foreground outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+                      />
+                      <button
+                        type="button"
+                        className="relative z-20 mt-3 block w-full cursor-pointer rounded-xl bg-primary px-5 py-3.5 text-sm font-bold text-primary-foreground shadow-sm transition hover:opacity-95 active:scale-[0.99]"
+                        onPointerDown={(event) => event.stopPropagation()}
+                        onClick={async (event) => {
+                          event.preventDefault();
+                          event.stopPropagation();
+                          const code = pix.qrCode!;
+                          try {
+                            await navigator.clipboard.writeText(code);
+                            setPixEmailStatus("Código Pix copiado! Agora é só colar no aplicativo do seu banco.");
+                          } catch {
+                            const textarea = document.createElement("textarea");
+                            textarea.value = code;
+                            textarea.style.position = "fixed";
+                            textarea.style.left = "0";
+                            textarea.style.top = "0";
+                            textarea.style.width = "1px";
+                            textarea.style.height = "1px";
+                            textarea.style.opacity = "0.01";
+                            textarea.setAttribute("readonly", "");
+                            document.body.appendChild(textarea);
+                            textarea.focus();
+                            textarea.select();
+                            let copied = false;
+                            try {
+                              copied = document.execCommand("copy");
+                            } catch {
+                              copied = false;
+                            }
+                            textarea.remove();
+                            setPixEmailStatus(
+                              copied
+                                ? "Código Pix copiado! Agora é só colar no aplicativo do seu banco."
+                                : "Não foi possível copiar automaticamente. Toque no código acima, selecione tudo e copie.",
+                            );
+                          }
+                        }}
+                      >
+                        Copiar código Pix
+                      </button>
+                    </>
+                  ) : (
+                    <div className="mt-2 rounded-xl border border-border bg-slate-50 p-3 text-xs text-muted-foreground">
+                      Código Pix indisponível. Use o QR Code para pagar.
+                    </div>
                   )}
 
                   <div className="mt-5 rounded-xl border border-primary/15 bg-primary/[0.035] p-4">
