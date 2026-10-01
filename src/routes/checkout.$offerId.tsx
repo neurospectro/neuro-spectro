@@ -112,7 +112,7 @@ function Checkout() {
   const [processing, setProcessing] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
-  const [pix, setPix] = useState<{ qrCode: string | null; qrCodeBase64: string | null; ticketUrl: string | null } | null>(null);
+  const [pix, setPix] = useState<{ qrCode: string | null; qrCodeBase64: string | null; ticketUrl: string | null } | null>(null);\n  const [pixEmail, setPixEmail] = useState("");\n  const [pixEmailStatus, setPixEmailStatus] = useState("");
 
   useEffect(() => {
     if (!offer) return;
@@ -401,32 +401,90 @@ function Checkout() {
           )}
 
           {pix?.qrCodeBase64 && (
-            <div className="mt-5 rounded-2xl border border-primary/20 bg-primary/[0.035] p-5 text-center shadow-sm">
-              <p className="font-semibold text-ink">Pix gerado</p>
-              <img
-                className="mx-auto mt-4 h-52 w-52"
-                src={`data:image/png;base64,${pix.qrCodeBase64}`}
-                alt="QR Code Pix"
-              />
-              {pix.qrCode && (
-                <button
-                  type="button"
-                  className="mt-4 rounded-full bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground"
-                  onClick={() => void navigator.clipboard.writeText(pix.qrCode!)}
-                >
-                  Copiar Pix Copia e Cola
-                </button>
-              )}
-              {pix.ticketUrl && (
-                <a
-                  className="mt-3 block text-sm font-medium text-primary underline"
-                  href={pix.ticketUrl}
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  Abrir instruções do Pix
-                </a>
-              )}
+            <div className="mt-5 rounded-[1.5rem] border-2 border-primary/20 bg-white p-5 shadow-[0_18px_50px_-24px_rgba(15,118,110,0.45)] sm:p-7">
+              <div className="flex items-center justify-between gap-4 border-b border-border pb-4">
+                <div>
+                  <p className="text-xs font-bold uppercase tracking-[0.18em] text-primary">Pagamento via Pix</p>
+                  <h2 className="mt-1 text-xl font-bold text-ink sm:text-2xl">Seu Pix está pronto</h2>
+                </div>
+                <div className="rounded-full bg-primary/10 px-3 py-1.5 text-xs font-bold text-primary">Seguro</div>
+              </div>
+
+              <div className="mt-6 grid gap-6 lg:grid-cols-[minmax(220px,280px)_1fr] lg:items-center">
+                <div className="text-center">
+                  <div className="mx-auto w-fit rounded-2xl border border-border bg-white p-3 shadow-sm">
+                    <img
+                      className="h-56 w-56"
+                      src={`data:image/png;base64,${pix.qrCodeBase64}`}
+                      alt="QR Code Pix para pagamento"
+                    />
+                  </div>
+                  <p className="mt-3 text-sm font-semibold text-ink">Aponte a câmera do seu banco</p>
+                  <p className="mt-1 text-xs text-muted-foreground">O pagamento é processado pelo Mercado Pago.</p>
+                </div>
+
+                <div>
+                  <p className="text-sm font-bold text-ink">Ou copie o código Pix</p>
+                  <div className="mt-2 rounded-xl border border-border bg-slate-50 p-3">
+                    <p className="max-h-20 overflow-hidden break-all text-xs leading-5 text-muted-foreground">
+                      {pix.qrCode || "Código Pix disponível no seu pagamento."}
+                    </p>
+                  </div>
+                  {pix.qrCode && (
+                    <button
+                      type="button"
+                      className="mt-3 w-full rounded-xl bg-primary px-5 py-3.5 text-sm font-bold text-primary-foreground shadow-sm transition hover:opacity-95"
+                      onClick={() => void navigator.clipboard.writeText(pix.qrCode!)}
+                    >
+                      Copiar código Pix
+                    </button>
+                  )}
+
+                  <div className="mt-5 rounded-xl border border-primary/15 bg-primary/[0.035] p-4">
+                    <label htmlFor="pix-email" className="text-sm font-bold text-ink">
+                      E-mail para receber as informações da compra
+                    </label>
+                    <p className="mt-1 text-xs leading-5 text-muted-foreground">
+                      Você pode informar agora, sem interromper o pagamento.
+                    </p>
+                    <input
+                      id="pix-email"
+                      type="email"
+                      inputMode="email"
+                      autoComplete="email"
+                      value={pixEmail}
+                      onChange={(event) => {
+                        setPixEmail(event.target.value);
+                        setPixEmailStatus("");
+                      }}
+                      onBlur={async () => {
+                        const email = pixEmail.trim();
+                        if (!/^\S+@\S+\.\S+$/.test(email)) return;
+                        const { error: linkError } = await linkCheckoutEmail(email);
+                        setPixEmailStatus(
+                          linkError ? "Não foi possível salvar o e-mail agora." : "E-mail associado à sua compra."
+                        );
+                      }}
+                      placeholder="seu@email.com"
+                      className="mt-2 w-full rounded-xl border border-border bg-white px-4 py-3 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/15"
+                    />
+                    {pixEmailStatus && (
+                      <p className="mt-2 text-xs text-primary">{pixEmailStatus}</p>
+                    )}
+                  </div>
+
+                  {pix.ticketUrl && (
+                    <a
+                      className="mt-4 block text-center text-sm font-semibold text-primary underline underline-offset-2"
+                      href={pix.ticketUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      Ver instruções do Pix
+                    </a>
+                  )}
+                </div>
+              </div>
             </div>
           )}
 
