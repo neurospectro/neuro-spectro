@@ -163,6 +163,7 @@ function Checkout() {
           },
           body: JSON.stringify({
             offerId: offer.id,
+            captchaToken,
             formData: {
               payment_type_id: "bank_transfer",
               payment_method_id: "pix",
