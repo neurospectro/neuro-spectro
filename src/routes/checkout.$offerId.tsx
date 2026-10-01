@@ -127,9 +127,15 @@ function Checkout() {
         // O Payment Brick pode ser renderizado sem autenticação.
         // Não bloqueamos a montagem do checkout esperando uma sessão do Supabase:
         // a sessão só é necessária quando o cliente envia o pagamento.
+        const sessionPromise = supabase?.auth.getSession().catch(() => null);
         await loadMercadoPagoScript();
 
         if (cancelled || !window.MercadoPago) return;
+
+        const sessionResult = await sessionPromise;
+        const sessionUser = sessionResult?.data?.session?.user;
+        const checkoutEmail = sessionUser?.email?.trim() ||
+          `checkout-${sessionUser?.id ?? crypto.randomUUID()}@neurospectro.app`;
 
         const mp = new window.MercadoPago(publicKey, { locale: "pt-BR" });
         const bricksBuilder = mp.bricks();
@@ -137,9 +143,33 @@ function Checkout() {
         const createBrickPromise = bricksBuilder.create("payment", "paymentBrick_container", {
           initialization: {
             amount: offer.totalCents / 100,
-            
+            payer: { email: checkoutEmail },
           },
           customization: {
+            visual: {
+              style: {
+                theme: "default",
+                customVariables: {
+                  textPrimaryColor: "#18212f",
+                  textSecondaryColor: "#667085",
+                  formBackgroundColor: "#ffffff",
+                  inputBackgroundColor: "#ffffff",
+                  baseColor: "#0f766e",
+                  outlinePrimaryColor: "#0f766e",
+                  buttonTextColor: "#ffffff",
+                  fontWeightNormal: "400",
+                  fontWeightSemiBold: "600",
+                  borderRadiusSmall: "10px",
+                  borderRadiusMedium: "14px",
+                  borderRadiusLarge: "18px",
+                  formPadding: "4px",
+                },
+              },
+              texts: {
+                formTitle: "Escolha como pagar",
+                formSubmit: "Pagar com segurança",
+              },
+            },
             paymentMethods: {
               bankTransfer: "pix",
               creditCard: "all",
@@ -186,7 +216,7 @@ function Checkout() {
                   (normalizedFormData as { payer?: { email?: string } })?.payer?.email ?? "",
                 ).trim();
 
-                if (payerEmail) {
+                if (payerEmail && !payerEmail.endsWith("@neurospectro.app")) {
                   const { error: linkError } = await linkCheckoutEmail(payerEmail);
                   if (linkError) {
                     throw new Error(
@@ -302,11 +332,11 @@ function Checkout() {
   }
 
   return (
-    <main className="min-h-[100dvh] bg-background px-3 py-5 font-sans sm:px-5 sm:py-10">
-      <div className="mx-auto w-full max-w-2xl">
+    <main className="min-h-[100dvh] bg-slate-50/70 px-3 py-5 font-sans sm:px-5 sm:py-10">
+      <div className="mx-auto w-full max-w-5xl">
         <Link to="/avaliacao" className="text-sm text-muted-foreground hover:text-foreground">← Voltar</Link>
 
-        <div className="mt-4 rounded-[1.5rem] border border-border bg-card p-4 shadow-soft sm:mt-6 sm:rounded-[2rem] sm:p-7">
+        <div className="mt-4 rounded-[1.5rem] border border-border bg-card p-4 shadow-[0_20px_60px_-28px_rgba(15,23,42,0.28)] sm:mt-6 sm:rounded-[2rem] sm:p-8 lg:p-10">
           <p className="text-xs font-semibold uppercase tracking-[0.25em] text-primary">Checkout NeuroSpectro</p>
           <h1 className="mt-2 max-w-xl font-display text-[1.65rem] font-semibold leading-tight text-ink sm:mt-3 sm:text-3xl">{offer.name}</h1>
           <p className="mt-2 text-sm leading-5 text-muted-foreground sm:mt-3 sm:text-base">{offer.description}</p>
@@ -326,7 +356,7 @@ function Checkout() {
             <p className="mt-1 text-xs text-muted-foreground">As opções de Pix, cartão de crédito e débito aparecem no Checkout Transparente do Mercado Pago.</p>
           </div>
 
-          <div className="mt-4 flex items-center gap-3 rounded-2xl bg-primary/5 p-4 sm:mt-6">
+          <div className="mt-4 flex items-center gap-3 rounded-2xl border border-border bg-white p-4 sm:mt-5">
             <CreditCard className="h-6 w-6 shrink-0 text-primary" />
             <div>
               <p className="font-semibold text-ink">
@@ -338,7 +368,7 @@ function Checkout() {
             </div>
           </div>
 
-          <div className="mt-5 sm:mt-7">
+          <div className="mt-5 rounded-2xl border border-border bg-white p-3 shadow-sm sm:mt-6 sm:p-5">
             {loading && !error && (
               <div className="flex min-h-24 items-center justify-center gap-3 text-sm text-muted-foreground sm:min-h-32">
                 <Loader2 className="h-5 w-5 animate-spin text-primary" />
@@ -371,7 +401,7 @@ function Checkout() {
           )}
 
           {pix?.qrCodeBase64 && (
-            <div className="mt-5 rounded-2xl border border-border bg-white p-5 text-center">
+            <div className="mt-5 rounded-2xl border border-primary/20 bg-primary/[0.035] p-5 text-center shadow-sm">
               <p className="font-semibold text-ink">Pix gerado</p>
               <img
                 className="mx-auto mt-4 h-52 w-52"
