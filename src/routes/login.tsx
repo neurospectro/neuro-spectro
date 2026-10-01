@@ -38,7 +38,7 @@ function LoginPage() {
       return;
     }
 
-    const redirectTo = \${window.location.origin}/dashboard;
+    const redirectTo = `${window.location.origin}/dashboard`;
     const { error } = await supabase.auth.signInWithOtp({
       email: email.trim(),
       options: { emailRedirectTo: redirectTo, captchaToken },
