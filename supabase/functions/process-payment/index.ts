@@ -66,6 +66,42 @@ Deno.serve(async (req) => {
   const body = await req.json().catch(() => null);
   if (!body || typeof body !== "object") return json({ error: "Dados de pagamento inválidos." }, 400);
 
+  const turnstileSecret = Deno.env.get("TURNSTILE_SECRET_KEY")?.trim();
+  const turnstileToken = String(body?.captchaToken ?? "").trim();
+  if (!turnstileSecret || !turnstileToken || turnstileToken.length > 2048) {
+    return json({ error: "Verificação de segurança necessária. Atualize a página e tente novamente." }, 403);
+  }
+
+  const clientIp =
+    req.headers.get("CF-Connecting-IP")?.trim() ||
+    req.headers.get("X-Forwarded-For")?.split(",")[0]?.trim() ||
+    "unknown";
+
+  let turnstileResult: Record<string, unknown>;
+  try {
+    const verification = await fetch("https://challenges.cloudflare.com/turnstile/v0/siteverify", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        secret: turnstileSecret,
+        response: turnstileToken,
+        remoteip: clientIp,
+      }),
+    });
+    turnstileResult = await verification.json().catch(() => ({}));
+  } catch (error) {
+    console.error("PROCESS_PAYMENT_TURNSTILE_NETWORK_ERROR", error);
+    return json({ error: "Não foi possível validar a verificação de segurança. Tente novamente." }, 503);
+  }
+
+  if (turnstileResult.success !== true || (turnstileResult.action && turnstileResult.action !== "payment")) {
+    console.warn("PROCESS_PAYMENT_TURNSTILE_REJECTED", {
+      errors: turnstileResult["error-codes"] ?? [],
+      action: turnstileResult.action ?? null,
+    });
+    return json({ error: "A verificação de segurança expirou ou não foi concluída. Tente novamente." }, 403);
+  }
+
   const offerId = body?.offerId;
   const formData = body?.formData ?? {};
   const configured = offers[offerId];
@@ -113,9 +149,42 @@ Deno.serve(async (req) => {
     }
   }
 
-  const payerEmail = String(formData?.payer?.email ?? userData.user.email ?? "").trim();
-  if (!payerEmail || !/^\S+@\S+\.\S+$/.test(payerEmail)) {
+  const payerEmail = String(formData?.payer?.email ?? userData.user.email ?? "").trim().toLowerCase();
+  if (!payerEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(payerEmail)) {
     return json({ error: "E-mail do pagador é obrigatório e deve ser válido." }, 400);
+  }
+
+  const digest = async (value: string) => {
+    const bytes = new TextEncoder().encode(value);
+    const hash = await crypto.subtle.digest("SHA-256", bytes);
+    return Array.from(new Uint8Array(hash)).map((byte) => byte.toString(16).padStart(2, "0")).join("");
+  };
+
+  const ipKey = await digest(`ip:${clientIp}`);
+  const emailKey = await digest(`email:${payerEmail}`);
+
+  const { data: ipAllowed, error: ipLimitError } = await admin.rpc(
+    "consume_payment_rate_limit",
+    { p_key_hash: ipKey, p_window_seconds: 600, p_max_requests: 5 },
+  );
+  if (ipLimitError) {
+    console.error("PROCESS_PAYMENT_RATE_LIMIT_ERROR", ipLimitError);
+    return json({ error: "Não foi possível validar o limite de segurança. Tente novamente." }, 503);
+  }
+  if (ipAllowed !== true) {
+    return json({ error: "Muitas tentativas de pagamento. Aguarde alguns minutos e tente novamente." }, 429);
+  }
+
+  const { data: emailAllowed, error: emailLimitError } = await admin.rpc(
+    "consume_payment_rate_limit",
+    { p_key_hash: emailKey, p_window_seconds: 3600, p_max_requests: 3 },
+  );
+  if (emailLimitError) {
+    console.error("PROCESS_PAYMENT_EMAIL_RATE_LIMIT_ERROR", emailLimitError);
+    return json({ error: "Não foi possível validar o limite de segurança. Tente novamente." }, 503);
+  }
+  if (emailAllowed !== true) {
+    return json({ error: "Este e-mail atingiu o limite de tentativas de pagamento. Aguarde e tente novamente." }, 429);
   }
 
   const paymentMethodId = String(formData?.payment_method_id ?? "");
