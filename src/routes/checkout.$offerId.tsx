@@ -190,7 +190,7 @@ function Checkout() {
                 );
 
                 const result = await response.json().catch(() => ({}));
-                if (!response.ok) throw new Error(result.error ?? "Não foi possível processar o pagamento.");
+                if (!response.ok) throw new Error(result.detail ? `${result.error ?? "Não foi possível processar o pagamento."} ${result.detail}` : (result.error ?? "Não foi possível processar o pagamento."));
 
                 const payerEmail = String((normalizedFormData as { payer?: { email?: string } })?.payer?.email ?? "").trim();
                 if (payerEmail) {
