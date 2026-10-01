@@ -177,6 +177,19 @@ function Checkout() {
                     formData.payment_type_id ?? selectedPaymentMethod,
                 };
 
+                const payerEmail = String(
+                  (normalizedFormData as { payer?: { email?: string } })?.payer?.email ?? "",
+                ).trim();
+
+                if (payerEmail) {
+                  const { error: linkError } = await linkCheckoutEmail(payerEmail);
+                  if (linkError) {
+                    throw new Error(
+                      "Não foi possível vincular este e-mail à sessão de compra. Nenhum pagamento foi enviado. Verifique o e-mail ou entre na sua conta antes de tentar novamente.",
+                    );
+                  }
+                }
+
                 const response = await fetch(
                   `${import.meta.env["VITE_SUPABASE_URL"]}/functions/v1/process-payment`,
                   {
@@ -191,15 +204,6 @@ function Checkout() {
 
                 const result = await response.json().catch(() => ({}));
                 if (!response.ok) throw new Error(result.detail ? `${result.error ?? "Não foi possível processar o pagamento."} ${result.detail}` : (result.error ?? "Não foi possível processar o pagamento."));
-
-                const payerEmail = String((normalizedFormData as { payer?: { email?: string } })?.payer?.email ?? "").trim();
-                if (payerEmail) {
-                  try {
-                    await linkCheckoutEmail(payerEmail);
-                  } catch (linkError) {
-                    console.warn("Não foi possível vincular o e-mail ao acesso:", linkError);
-                  }
-                }
 
                 if (result.pix) setPix(result.pix);
 
