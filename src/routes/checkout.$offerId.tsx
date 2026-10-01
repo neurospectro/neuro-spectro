@@ -100,6 +100,7 @@ function Checkout() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [pix, setPix] = useState<{ qrCode: string | null; qrCodeBase64: string | null; ticketUrl: string | null } | null>(null);
+  const [selectedPaymentOption, setSelectedPaymentOption] = useState<"creditCardForm" | "debitCardForm" | null>(null);
 
   useEffect(() => {
     if (!offer || !supabase) return;
@@ -143,7 +144,15 @@ function Checkout() {
               bankTransfer: "all",
               creditCard: "all",
               debitCard: "all",
-              // NeuroSpectro offers only Pix, credit card and debit card.
+            },
+            visual: {
+              ...(selectedPaymentOption
+                ? {
+                    defaultPaymentOption: {
+                      [selectedPaymentOption]: true,
+                    },
+                  }
+                : {}),
             },
           },
           callbacks: {
@@ -258,7 +267,7 @@ function Checkout() {
       brickRef.current?.unmount();
       brickRef.current = null;
     };
-  }, [offer?.id, offer?.totalCents, navigate]);
+  }, [offer?.id, offer?.totalCents, navigate, selectedPaymentOption]);
 
   if (!offer) {
     return (
@@ -292,18 +301,39 @@ function Checkout() {
           )}
 
           <div className="mt-4 grid grid-cols-1 gap-2 sm:mt-6 sm:grid-cols-3 sm:gap-3">
-            <div className="rounded-xl border border-border bg-background p-3 text-center sm:rounded-2xl sm:p-4">
+            <button
+              type="button"
+              onClick={() => {
+                setSelectedPaymentOption(null);
+                window.setTimeout(() => document.getElementById("paymentBrick_container")?.scrollIntoView({ behavior: "smooth", block: "start" }), 50);
+              }}
+              className="rounded-xl border border-border bg-background p-3 text-center transition hover:border-primary/50 hover:bg-primary/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary sm:rounded-2xl sm:p-4"
+            >
               <p className="font-semibold text-ink">Pix</p>
-              <p className="mt-1 text-xs text-muted-foreground">QR Code e Copia e Cola</p>
-            </div>
-            <div className="rounded-2xl border border-border bg-background p-4 text-center">
+              <p className="mt-1 text-xs text-muted-foreground">Selecionar no Mercado Pago</p>
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setSelectedPaymentOption("creditCardForm");
+                window.setTimeout(() => document.getElementById("paymentBrick_container")?.scrollIntoView({ behavior: "smooth", block: "start" }), 50);
+              }}
+              className="rounded-2xl border border-border bg-background p-4 text-center transition hover:border-primary/50 hover:bg-primary/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+            >
               <p className="font-semibold text-ink">Cartão de crédito</p>
               <p className="mt-1 text-xs text-muted-foreground">{offer.installmentCount > 1 ? `${offer.installmentCount}x de ${formatBRL(offer.installmentCents)}` : "Pagamento único"}</p>
-            </div>
-            <div className="rounded-2xl border border-border bg-background p-4 text-center">
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setSelectedPaymentOption("debitCardForm");
+                window.setTimeout(() => document.getElementById("paymentBrick_container")?.scrollIntoView({ behavior: "smooth", block: "start" }), 50);
+              }}
+              className="rounded-2xl border border-border bg-background p-4 text-center transition hover:border-primary/50 hover:bg-primary/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+            >
               <p className="font-semibold text-ink">Cartão de débito</p>
               <p className="mt-1 text-xs text-muted-foreground">Pagamento seguro</p>
-            </div>
+            </button>
           </div>
 
           <div className="mt-4 flex items-center gap-3 rounded-2xl bg-primary/5 p-4 sm:mt-6">
