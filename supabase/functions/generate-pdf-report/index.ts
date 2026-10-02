@@ -11,7 +11,7 @@ function cors(req: Request) {
 function json(req: Request, body: unknown, status=200) {
   return new Response(JSON.stringify(body),{status,headers:{...cors(req),"Content-Type":"application/json"}});
 }
-function clean(v: unknown) { return String(v ?? "").replace(/\s+/g," ").trim(); }
+function clean(v: unknown) { return String(v ?? "").replace(/\s+/g," ").replace(/[–—]/g,"-").replace(/[“”]/g,'"').replace(/[‘’]/g,"'").trim(); }
 function arr(v: unknown) { return Array.isArray(v) ? v.map(clean).filter(Boolean).slice(0,10) : []; }
 
 function parseObject(value: unknown): Record<string,unknown>|null {
