@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowLeft, CheckCircle2, Compass, ShieldCheck, Sparkles } from "lucide-react";
+import { ArrowLeft, ArrowRight, CheckCircle2, Compass, FileText, ShieldCheck, Sparkles, Users } from "lucide-react";
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import type { AssessmentAnalysis } from "@/lib/assessment/analysis";
@@ -122,6 +122,32 @@ function OnlineReport() {
         <section className="mt-6 rounded-[2rem] border border-border bg-card p-6 shadow-soft sm:p-8">
           <Header title="Leve estas perguntas para um especialista" icon={<ShieldCheck className="h-5 w-5" />} />
           <ol className="mt-5 space-y-3">{analysis.professionalQuestions.map((q, i) => <li key={q} className="flex gap-3 rounded-2xl border border-border p-4 text-sm leading-6 text-ink"><span className="font-bold text-primary">{i + 1}.</span><span>{q}</span></li>)}</ol>
+        </section>
+
+        <section className="mt-6 rounded-[2rem] border border-primary/15 bg-card p-6 shadow-soft sm:p-8">
+          <p className="text-xs font-bold uppercase tracking-[0.2em] text-primary">Próximos passos</p>
+          <h2 className="mt-2 font-display text-2xl font-semibold text-ink">Seu relatório é um ponto de partida.</h2>
+          <p className="mt-2 max-w-3xl text-sm leading-6 text-muted-foreground">Se você quiser se preparar melhor para uma futura conversa com um profissional, existem três formas de continuar sua jornada.</p>
+          <div className="mt-6 grid gap-4 lg:grid-cols-3">
+            <Link to="/checkout/$offerId" params={{ offerId: "trajectory-reading-14990" }} className="group rounded-3xl border border-primary/20 bg-primary/5 p-5 transition hover:border-primary/40 hover:shadow-soft">
+              <Sparkles className="h-5 w-5 text-primary" />
+              <h3 className="mt-4 font-semibold text-ink">Leitura de Trajetória</h3>
+              <p className="mt-2 text-sm leading-5 text-muted-foreground">Conte sua história com suas próprias palavras e receba uma devolutiva humana de um especialista parceiro.</p>
+              <span className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-primary">Saiba mais · R$ 149,90 <ArrowRight className="h-4 w-4 transition group-hover:translate-x-1" /></span>
+            </Link>
+            <Link to="/checkout/$offerId" params={{ offerId: "pdf-report-1490" }} className="group rounded-3xl border border-border bg-background p-5 transition hover:border-primary/30 hover:shadow-soft">
+              <FileText className="h-5 w-5 text-primary" />
+              <h3 className="mt-4 font-semibold text-ink">Gerar PDF para consulta</h3>
+              <p className="mt-2 text-sm leading-5 text-muted-foreground">Leve suas informações organizadas para uma conversa com um profissional habilitado.</p>
+              <span className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-primary">Conhecer <ArrowRight className="h-4 w-4 transition group-hover:translate-x-1" /></span>
+            </Link>
+            <Link to="/checkout/$offerId" params={{ offerId: "community-6x-1490" }} className="group rounded-3xl border border-border bg-background p-5 transition hover:border-primary/30 hover:shadow-soft">
+              <Users className="h-5 w-5 text-primary" />
+              <h3 className="mt-4 font-semibold text-ink">Comunidade de Apoio</h3>
+              <p className="mt-2 text-sm leading-5 text-muted-foreground">Continue a jornada em um espaço de troca e acolhimento sobre neurodiversidade.</p>
+              <span className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-primary">Conhecer <ArrowRight className="h-4 w-4 transition group-hover:translate-x-1" /></span>
+            </Link>
+          </div>
         </section>
 
         <section className="mt-6 rounded-[2rem] border border-border bg-card p-6 sm:p-8">
