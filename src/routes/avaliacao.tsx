@@ -227,7 +227,6 @@ function Done({ session, persistError, onReview }: { session: Session; persistEr
       <h1 className="mt-6 font-display text-3xl font-semibold text-ink">Respostas concluídas</h1>
       <p className="mx-auto mt-3 max-w-md text-muted-foreground">Obrigado. Suas respostas foram salvas neste aparelho (tempo: cerca de {mins} min).</p>
       {persistError && <p className="mx-auto mt-4 max-w-md rounded-2xl border border-destructive/20 bg-destructive/5 p-4 text-sm leading-5 text-destructive">{persistError}</p>}
-      {persistError && <p className="mx-auto mt-4 max-w-md rounded-2xl border border-destructive/20 bg-destructive/5 p-4 text-sm leading-5 text-destructive">{persistError}</p>}
       <p className="mx-auto mt-2 max-w-md text-sm text-muted-foreground">Esta é uma prévia informativa da sua pontuação por dimensão. O Relatório Completo organiza essa leitura em uma experiência mais aprofundada.</p>
       <div className="mx-auto mt-8 grid max-w-md gap-3 text-left">
         {scores.map((s) => (
