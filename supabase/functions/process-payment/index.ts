@@ -77,53 +77,6 @@ Deno.serve(async (req) => {
   const body = await req.json().catch(() => null);
   if (!body || typeof body !== "object") return json(req, { error: "Dados de pagamento inválidos." }, 400);
 
-  const turnstileSecret = Deno.env.get("TURNSTILE_SECRET_KEY")?.trim();
-  const turnstileToken = String(body?.captchaToken ?? "").trim();
-  if (!turnstileSecret || !turnstileToken || turnstileToken.length > 2048) {
-    return json(req, { error: "Verificação de segurança necessária. Atualize a página e tente novamente." }, 403);
-  }
-
-  const clientIp =
-    req.headers.get("CF-Connecting-IP")?.trim() ||
-    req.headers.get("X-Forwarded-For")?.split(",")[0]?.trim() ||
-    "unknown";
-
-  let turnstileResult: Record<string, unknown>;
-  try {
-    const verification = await fetch("https://challenges.cloudflare.com/turnstile/v0/siteverify", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        secret: turnstileSecret,
-        response: turnstileToken,
-        remoteip: clientIp,
-      }),
-    });
-    turnstileResult = await verification.json().catch(() => ({}));
-  } catch (error) {
-    console.error("PROCESS_PAYMENT_TURNSTILE_NETWORK_ERROR", error);
-    return json(req, { error: "Não foi possível validar a verificação de segurança. Tente novamente." }, 503);
-  }
-
-  const turnstileHostname = String(turnstileResult.hostname ?? "").trim().toLowerCase();
-  const allowedTurnstileHostnames = new Set([
-    "neurospectro.com.br",
-    "www.neurospectro.com.br",
-    "hello-world-maker-6497.lovable.app",
-  ]);
-  if (
-    turnstileResult.success !== true ||
-    (turnstileResult.action && turnstileResult.action !== "payment") ||
-    !allowedTurnstileHostnames.has(turnstileHostname)
-  ) {
-    console.warn("PROCESS_PAYMENT_TURNSTILE_REJECTED", {
-      errors: turnstileResult["error-codes"] ?? [],
-      action: turnstileResult.action ?? null,
-      hostname: turnstileHostname || null,
-    });
-    return json(req, { error: "A verificação de segurança expirou ou não foi concluída. Tente novamente." }, 403);
-  }
-
   const offerId = body?.offerId;
   const formData = body?.formData ?? {};
   const configured = offers[offerId];
