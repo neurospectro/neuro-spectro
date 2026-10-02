@@ -129,7 +129,7 @@ function OnlineReport() {
           <h2 className="mt-2 font-display text-2xl font-semibold text-ink">Seu relatório é um ponto de partida.</h2>
           <p className="mt-2 max-w-3xl text-sm leading-6 text-muted-foreground">Se você quiser se preparar melhor para uma futura conversa com um profissional, existem três formas de continuar sua jornada.</p>
           <div className="mt-6 grid gap-4 lg:grid-cols-3">
-            <Link to="/checkout/$offerId" params={{ offerId: "trajectory-reading-14990" }} className="group rounded-3xl border border-primary/20 bg-primary/5 p-5 transition hover:border-primary/40 hover:shadow-soft">
+            <Link to="/leitura-trajetoria-oferta" className="group rounded-3xl border border-primary/20 bg-primary/5 p-5 transition hover:border-primary/40 hover:shadow-soft">
               <Sparkles className="h-5 w-5 text-primary" />
               <h3 className="mt-4 font-semibold text-ink">Leitura de Trajetória</h3>
               <p className="mt-2 text-sm leading-5 text-muted-foreground">Conte sua história com suas próprias palavras e receba uma devolutiva humana de um especialista parceiro.</p>
