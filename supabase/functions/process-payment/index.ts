@@ -171,8 +171,16 @@ Deno.serve(async (req) => {
     { p_key_hash: ipKey, p_window_seconds: 600, p_max_requests: 5 },
   );
   if (ipLimitError) {
-    console.error("PROCESS_PAYMENT_RATE_LIMIT_ERROR", ipLimitError);
-    return json(req, { error: "Não foi possível validar o limite de segurança. Tente novamente." }, 503);
+    // Backward compatibility: older Supabase projects may not have the
+    // payment-abuse migration applied yet. Do not block a valid checkout
+    // solely because the optional rate-limit RPC is missing.
+    const rpcMissing = String(ipLimitError.code ?? "") === "PGRST202";
+    if (rpcMissing) {
+      console.warn("PROCESS_PAYMENT_RATE_LIMIT_RPC_MISSING: proceeding without IP rate limit until migration is applied.");
+    } else {
+      console.error("PROCESS_PAYMENT_RATE_LIMIT_ERROR", ipLimitError);
+      return json(req, { error: "Não foi possível validar o limite de segurança. Tente novamente." }, 503);
+    }
   }
   if (ipAllowed !== true) {
     return json(req, { error: "Muitas tentativas de pagamento. Aguarde alguns minutos e tente novamente." }, 429);
@@ -183,8 +191,14 @@ Deno.serve(async (req) => {
     { p_key_hash: emailKey, p_window_seconds: 3600, p_max_requests: 3 },
   );
   if (emailLimitError) {
-    console.error("PROCESS_PAYMENT_EMAIL_RATE_LIMIT_ERROR", emailLimitError);
-    return json(req, { error: "Não foi possível validar o limite de segurança. Tente novamente." }, 503);
+    // Same compatibility behavior for the email-based limiter.
+    const rpcMissing = String(emailLimitError.code ?? "") === "PGRST202";
+    if (rpcMissing) {
+      console.warn("PROCESS_PAYMENT_EMAIL_RATE_LIMIT_RPC_MISSING: proceeding without email rate limit until migration is applied.");
+    } else {
+      console.error("PROCESS_PAYMENT_EMAIL_RATE_LIMIT_ERROR", emailLimitError);
+      return json(req, { error: "Não foi possível validar o limite de segurança. Tente novamente." }, 503);
+    }
   }
   if (emailAllowed !== true) {
     return json(req, { error: "Este e-mail atingiu o limite de tentativas de pagamento. Aguarde e tente novamente." }, 429);
