@@ -28,7 +28,11 @@ function Avaliacao() {
   const questions = useMemo(() => getVisibleQuestions(), []);
   const [session, setSession] = useState<Session | null>(null);
   const [started, setStarted] = useState(false);
-  const [hasSaved, setHasSaved] = useState(false);\n  const [leadEmail, setLeadEmail] = useState("");\n  const [marketingConsent, setMarketingConsent] = useState(false);\n  const [leadError, setLeadError] = useState("");\n  const [leadSaving, setLeadSaving] = useState(false);
+  const [hasSaved, setHasSaved] = useState(false);
+  const [leadEmail, setLeadEmail] = useState("");
+  const [marketingConsent, setMarketingConsent] = useState(false);
+  const [leadError, setLeadError] = useState("");
+  const [leadSaving, setLeadSaving] = useState(false);
 
   useEffect(() => {
     try {
