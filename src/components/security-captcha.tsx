@@ -54,7 +54,7 @@ export function SecurityCaptcha({
         sitekey: SITE_KEY,
         theme: "auto",
         action,
-        appearance: "interaction-only",
+        appearance: "always",
         callback: onToken,
         "expired-callback": () => onToken(""),
         "error-callback": () => onToken(""),
