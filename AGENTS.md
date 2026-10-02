@@ -12,3 +12,4 @@
 - Question bank + metadata lives in src/lib/assessment/questions.ts, versioned by ASSESSMENT.version; why: single source until backend DB exists.
 - Questionnaire session saved in localStorage keyed by assessment id+version; why: works without login, moves to Cloud with auth step.
 - IN_REVIEW items visible during pre-launch (VISIBLE_STATUSES); why: no clinical review yet — restrict to APPROVED before publishing.
+- Integration health checks run in a TanStack server fn (src/lib/integrations.functions.ts) with the admin's session, read-only; why: no new Supabase Edge Functions or migrations from Lovable, and private secrets live only in the external Supabase.
