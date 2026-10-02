@@ -126,15 +126,15 @@ Deno.serve(async(req)=>{
   if(userError||!userData.user) return json(req,{error:"Sessão inválida ou expirada."},401);
 
   const body=await req.json().catch(()=>null);
-  const resultId=clean(body?.resultId);
-  if(!resultId) return json(req,{error:"Resultado não informado."},400);
+  const requestedResultId=clean(body?.resultId);
 
   const {data:product}=await admin.from("produtos").select("id").eq("slug","relatorio-pdf").maybeSingle();
   if(!product) return json(req,{error:"Produto do PDF não configurado."},503);
   const {data:access}=await admin.from("acessos").select("id").eq("user_id",userData.user.id).eq("produto_id",product.id).eq("status","active").or(`expires_at.is.null,expires_at.gt.${new Date().toISOString()}`).limit(1);
   if(!access?.length) return json(req,{error:"O acesso ao PDF não está ativo."},403);
 
-  const {data:result,error:resultError}=await admin.from("resultados").select("id,user_id,created_at,scores,analysis").eq("id",resultId).eq("user_id",userData.user.id).maybeSingle();
+  const resultQuery=admin.from("resultados").select("id,user_id,created_at,scores,analysis").eq("user_id",userData.user.id).order("created_at",{ascending:false}).limit(1);
+  const {data:result,error:resultError}=requestedResultId ? await admin.from("resultados").select("id,user_id,created_at,scores,analysis").eq("id",requestedResultId).eq("user_id",userData.user.id).maybeSingle() : await resultQuery.maybeSingle();
   if(resultError||!result) return json(req,{error:"Resultado não encontrado."},404);
 
   const {data:existing}=await admin.from("pdf_report_jobs").select("id,status,storage_path,error_message").eq("user_id",userData.user.id).eq("result_id",result.id).maybeSingle();
