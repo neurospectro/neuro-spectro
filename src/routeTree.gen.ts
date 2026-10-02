@@ -101,7 +101,6 @@ export interface FileRoutesByFullPath {
   '/relatorio-pdf': typeof RelatorioPdfRoute
   '/relatorio-online': typeof RelatorioOnlineRoute
   '/leitura-trajetoria-oferta': typeof LeituraTrajetoriaOfertaRoute
-  '/leitura-trajetoria-oferta': typeof LeituraTrajetoriaOfertaRoute
   '/checkout/$offerId': typeof CheckoutOfferIdRoute
 }
 export interface FileRoutesByTo {
@@ -114,6 +113,7 @@ export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/pos-compra': typeof PosCompraRoute
   '/relatorio-pdf': typeof RelatorioPdfRoute
+  '/leitura-trajetoria-oferta': typeof LeituraTrajetoriaOfertaRoute
   '/checkout/$offerId': typeof CheckoutOfferIdRoute
 }
 export interface FileRoutesById {
@@ -127,6 +127,7 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/pos-compra': typeof PosCompraRoute
   '/relatorio-pdf': typeof RelatorioPdfRoute
+  '/leitura-trajetoria-oferta': typeof LeituraTrajetoriaOfertaRoute
   '/checkout/$offerId': typeof CheckoutOfferIdRoute
 }
 export interface FileRouteTypes {
@@ -168,6 +169,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/pos-compra'
     | '/relatorio-pdf'
+    | '/leitura-trajetoria-oferta'
     | '/checkout/$offerId'
   fileRoutesById: FileRoutesById
 }
@@ -264,6 +266,13 @@ declare module '@tanstack/react-router' {
       path: '/leitura-trajetoria'
       fullPath: '/leitura-trajetoria'
       preLoaderRoute: typeof LeituraTrajetoriaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/leitura-trajetoria-oferta': {
+      id: '/leitura-trajetoria-oferta'
+      path: '/leitura-trajetoria-oferta'
+      fullPath: '/leitura-trajetoria-oferta'
+      preLoaderRoute: typeof LeituraTrajetoriaOfertaRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/checkout/$offerId': {
