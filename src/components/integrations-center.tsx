@@ -63,7 +63,7 @@ export function IntegrationsCenter() {
       if (res.error) throw new Error(res.error);
       const map: Record<string, IntegrationCheck> = {};
       for (const c of res.checks) map[c.service] = c;
-      map.deploy = { service: "deploy", status: "ok", environment: window.location.hostname, detail: "Esta página está sendo servida agora." };
+      map["deploy"] = { service: "deploy", status: "ok", environment: window.location.hostname, detail: "Esta página está sendo servida agora." };
       const at = res.checkedAt ?? new Date().toISOString();
       setChecks(map);
       setCheckedAt(at);

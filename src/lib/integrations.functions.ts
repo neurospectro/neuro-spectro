@@ -75,7 +75,7 @@ export const runIntegrationChecks = createServerFn({ method: "POST" })
       environment: null,
       detail: `process-payment: ${live(pp) ? "publicada" : `não encontrada (${pp})`} · mercadopago-webhook: ${live(wh) ? "publicada" : `não encontrada (${wh})`} · notify-trajectory-submission: ${live(nt) ? "publicada" : `não encontrada (${nt})`}.`,
     });
-    checks.push({
+    const webhookCheck: IntegrationCheck = {
       service: "mercadopago_webhook",
       status: wh === 401 ? "ok" : live(wh) ? "warning" : "error",
       environment: null,
@@ -83,14 +83,15 @@ export const runIntegrationChecks = createServerFn({ method: "POST" })
         wh === 401
           ? "Notificação sem assinatura foi recusada (401), como deve ser. Recebimento real depende do cadastro no Mercado Pago."
           : `Resposta inesperada ao teste sem assinatura: ${wh}.`,
-    });
+    };
+    checks.push(webhookCheck);
 
     const ev = await sb.from("webhook_events").select("event_type,created_at,processed_at").order("created_at", { ascending: false }).limit(1);
-    if (!ev.error && ev.data?.[0]) {
-      const e = ev.data[0];
-      checks[checks.length - 1].detail += ` Último evento: ${e.event_type} em ${new Date(e.created_at).toLocaleString("pt-BR")} (${e.processed_at ? "processado" : "pendente"}).`;
+    const e = ev.data?.[0];
+    if (!ev.error && e) {
+      webhookCheck.detail += ` Último evento: ${e.event_type} em ${new Date(e.created_at).toLocaleString("pt-BR")} (${e.processed_at ? "processado" : "pendente"}).`;
     } else if (!ev.error) {
-      checks[checks.length - 1].detail += " Nenhum evento recebido ainda.";
+      webhookCheck.detail += " Nenhum evento recebido ainda.";
     }
 
     const pk = process.env["VITE_MERCADOPAGO_PUBLIC_KEY"] || "APP_USR-9475958e-da67-4a96-bb00-5dcb91a6900d";
