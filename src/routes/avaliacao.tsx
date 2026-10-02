@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { ArrowLeft, ArrowRight, Check, RotateCcw, Users, FileText, Clock, Zap } from "lucide-react";
+import { ArrowLeft, ArrowRight, Check, RotateCcw, Users, FileText, Clock, Zap, Mail } from "lucide-react";
 import mark from "@/assets/mark.png.asset.json";
 import { ASSESSMENT, DIMENSIONS, SCALE, getVisibleQuestions, scoreByDimension } from "@/lib/assessment/questions";
 import { persistCompletedAssessment } from "@/lib/assessment/persistence";
@@ -28,7 +28,7 @@ function Avaliacao() {
   const questions = useMemo(() => getVisibleQuestions(), []);
   const [session, setSession] = useState<Session | null>(null);
   const [started, setStarted] = useState(false);
-  const [hasSaved, setHasSaved] = useState(false);
+  const [hasSaved, setHasSaved] = useState(false);\n  const [leadEmail, setLeadEmail] = useState("");\n  const [marketingConsent, setMarketingConsent] = useState(false);\n  const [leadError, setLeadError] = useState("");\n  const [leadSaving, setLeadSaving] = useState(false);
 
   useEffect(() => {
     try {
@@ -86,18 +86,48 @@ function Avaliacao() {
         <p className="mx-auto mt-6 max-w-md rounded-2xl bg-secondary p-4 text-sm text-secondary-foreground">
           Esta é uma autoavaliação informativa e de autoconhecimento. Não é um diagnóstico e não substitui a avaliação de um profissional de saúde.
         </p>
+        <div className="mx-auto mt-7 max-w-md rounded-3xl border border-border bg-card p-5 text-left shadow-soft">
+          <div className="flex gap-3">
+            <Mail className="mt-0.5 h-5 w-5 shrink-0 text-primary" />
+            <div>
+              <p className="font-semibold text-ink">Antes de começar, deixe seu e-mail</p>
+              <p className="mt-1 text-sm leading-5 text-muted-foreground">Assim podemos enviar seu resultado, novidades e conteúdos da NeuroSpectro mesmo que você não conclua a avaliação ou o pagamento.</p>
+            </div>
+          </div>
+          <input
+            id="assessment-email"
+            type="email"
+            inputMode="email"
+            autoComplete="email"
+            value={leadEmail}
+            onChange={(event) => { setLeadEmail(event.target.value); setLeadError(""); }}
+            placeholder="seu@email.com"
+            className="mt-4 w-full rounded-xl border border-border bg-background px-4 py-3 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/15"
+          />
+          <label className="mt-3 flex cursor-pointer gap-3 text-sm text-muted-foreground">
+            <input
+              type="checkbox"
+              checked={marketingConsent}
+              onChange={(event) => { setMarketingConsent(event.target.checked); setLeadError(""); }}
+              className="mt-0.5 h-4 w-4 accent-primary"
+            />
+            <span>Quero receber por e-mail conteúdos, novidades e ofertas da NeuroSpectro. Posso cancelar quando quiser.</span>
+          </label>
+          {leadError && <p className="mt-3 text-xs font-medium text-destructive">{leadError}</p>}
+        </div>
+
         <div className="mt-8 flex flex-col items-center gap-3">
           {hasSaved ? (
             <>
-              <button onClick={() => begin(false)} className="rounded-full bg-primary px-8 py-3 font-medium text-primary-foreground shadow-soft">
+              <button onClick={() => void begin(false)} disabled={leadSaving} className="rounded-full bg-primary px-8 py-3 font-medium text-primary-foreground shadow-soft">
                 Continuar de onde parei ({count}/{questions.length})
               </button>
-              <button onClick={() => begin(true)} className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground">
+              <button onClick={() => void begin(true)} disabled={leadSaving} className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground">
                 <RotateCcw className="h-4 w-4" /> Recomeçar do zero
               </button>
             </>
           ) : (
-            <button onClick={() => begin(true)} className="rounded-full bg-primary px-8 py-3 font-medium text-primary-foreground shadow-soft">
+            <button onClick={() => void begin(true)} disabled={leadSaving} className="rounded-full bg-primary px-8 py-3 font-medium text-primary-foreground shadow-soft">
               Começar avaliação
             </button>
           )}
