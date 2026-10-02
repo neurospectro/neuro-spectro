@@ -29,6 +29,7 @@ function Avaliacao() {
   const [session, setSession] = useState<Session | null>(null);
   const [started, setStarted] = useState(false);
   const [hasSaved, setHasSaved] = useState(false);
+  const [persistError, setPersistError] = useState("");
 
   useEffect(() => {
     try {
@@ -106,7 +107,7 @@ function Avaliacao() {
     );
   }
 
-  if (session.finishedAt) return <Done session={session} onReview={() => setSession({ ...session, finishedAt: undefined, index: 0 })} />;
+  if (session.finishedAt) return <Done session={session} persistError={persistError} onReview={() => setSession({ ...session, finishedAt: undefined, index: 0 })} />;
 
   const q = questions[session.index]!;
   const answered = Object.keys(session.answers).length;
@@ -148,8 +149,9 @@ function Avaliacao() {
       assessmentVersion: ASSESSMENT.version,
       questions,
       scores: scoreByDimension(completed.answers),
-    }).catch(() => {
-      // The local session remains the source for this anonymous flow; persistence can retry after login.
+    }).catch((error) => {
+      console.error("ASSESSMENT_PERSISTENCE_ERROR", error);
+      setPersistError("Suas respostas continuam salvas neste aparelho, mas não conseguimos sincronizá-las com sua conta agora. Entre na sua conta e tente novamente antes de sair desta página.");
     });
   };
 
@@ -216,7 +218,7 @@ function Avaliacao() {
   );
 }
 
-function Done({ session, onReview }: { session: Session; onReview: () => void }) {
+function Done({ session, persistError, onReview }: { session: Session; persistError: string; onReview: () => void }) {
   const scores = scoreByDimension(session.answers);
   const mins = Math.max(1, Math.round((new Date(session.finishedAt!).getTime() - new Date(session.startedAt).getTime()) / 60000));
   return (
@@ -224,6 +226,8 @@ function Done({ session, onReview }: { session: Session; onReview: () => void })
       <div className="mx-auto h-1 w-32 rounded-full bg-spectrum" />
       <h1 className="mt-6 font-display text-3xl font-semibold text-ink">Respostas concluídas</h1>
       <p className="mx-auto mt-3 max-w-md text-muted-foreground">Obrigado. Suas respostas foram salvas neste aparelho (tempo: cerca de {mins} min).</p>
+      {persistError && <p className="mx-auto mt-4 max-w-md rounded-2xl border border-destructive/20 bg-destructive/5 p-4 text-sm leading-5 text-destructive">{persistError}</p>}
+      {persistError && <p className="mx-auto mt-4 max-w-md rounded-2xl border border-destructive/20 bg-destructive/5 p-4 text-sm leading-5 text-destructive">{persistError}</p>}
       <p className="mx-auto mt-2 max-w-md text-sm text-muted-foreground">Esta é uma prévia informativa da sua pontuação por dimensão. O Relatório Completo organiza essa leitura em uma experiência mais aprofundada.</p>
       <div className="mx-auto mt-8 grid max-w-md gap-3 text-left">
         {scores.map((s) => (
