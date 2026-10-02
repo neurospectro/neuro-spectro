@@ -50,7 +50,7 @@ function RelatorioPdf() {
     const accessRow = access as { status: string; expires_at: string | null; produtos?: { slug: string } | null } | null;
     const validAccess = Boolean(
       accessRow?.status === "active" &&
-      accessRow?.produtos?.slug === "relatorio-completo" &&
+      accessRow?.produtos?.slug === "relatorio-pdf" &&
       (!accessRow.expires_at || new Date(accessRow.expires_at).getTime() > Date.now()),
     );
     if (!validAccess) {
