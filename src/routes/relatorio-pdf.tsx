@@ -6,6 +6,7 @@ import { ASSESSMENT, DIMENSIONS } from "@/lib/assessment/questions";
 import type { AssessmentAnalysis } from "@/lib/assessment/analysis";
 import { supabase } from "@/lib/supabase";
 import "@/styles/report-print.css";
+import { getSecureResult } from "@/lib/assessment/secure-result";
 
 type Score = { id: string; label: string; raw: number; max: number };
 type Result = {
@@ -58,13 +59,13 @@ function RelatorioPdf() {
       return;
     }
 
-    const { data } = await supabase
-      .from("resultados")
-      .select("id,created_at,total_raw,max_raw,scores,analysis")
-      .order("created_at", { ascending: false })
-      .limit(1)
-      .maybeSingle();
-    setResult((data ?? null) as Result | null);
+    try {
+      const data = await getSecureResult("relatorio-pdf");
+      setResult((data ?? null) as Result | null);
+    } catch (error) {
+      console.error("RELATORIO_PDF_SECURE_RESULT_ERROR", error);
+      setResult(null);
+    }
     setLoading(false);
   }
 
