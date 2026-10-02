@@ -38,7 +38,7 @@ function dimensionSummary(dimension: Dimension, level: DimensionAnalysis["level"
     moderado: "Há intensidade intermediária dos comportamentos e experiências investigados nesta dimensão, que pode variar bastante conforme contexto, ambiente e demanda.",
     elevado: "Há maior intensidade relativa dos comportamentos e experiências investigados nesta dimensão. Isso indica um tema relevante para exploração, mas não estabelece uma condição clínica.",
   };
-  return `\${base[level]} A interpretação deve considerar frequência, esforço envolvido, sofrimento e impacto funcional, aspectos que este questionário não mede de forma clínica.`;
+  return `${base[level]} A interpretação deve considerar frequência, esforço envolvido, sofrimento e impacto funcional, aspectos que este questionário não mede de forma clínica.`;
 }
 
 function interpretationFor(dimension: Dimension, level: DimensionAnalysis["level"]) {
@@ -52,7 +52,7 @@ function interpretationFor(dimension: Dimension, level: DimensionAnalysis["level
     personalidade: "Camuflagem social, compensação e ensaio de comportamentos são descritos em adultos autistas, mas também podem ocorrer por ansiedade social, experiências de rejeição ou outras razões. Este domínio deve ser tratado como pista contextual, não como marcador diagnóstico.",
     cotidiano: "Energia social, sobrecarga e esforço para tarefas podem revelar impacto funcional. Para uma avaliação clínica, é importante verificar em quais ambientes isso ocorre, desde quando e quanto interfere em trabalho, estudo, relações, autonomia e bem-estar.",
   };
-  return `\${map[dimension.id]} \${level === "elevado" ? "Como esta dimensão aparece com maior intensidade relativa, vale documentar exemplos concretos do cotidiano para levar à consulta." : ""}`.trim();
+  return `${map[dimension.id]} ${level === "elevado" ? "Como esta dimensão aparece com maior intensidade relativa, vale documentar exemplos concretos do cotidiano para levar à consulta." : ""}`.trim();
 }
 
 function supportsFor(id: DimensionId): string[] {
@@ -111,8 +111,8 @@ export function generateAssessmentAnalysis(args: {
   const ranked = dimensions.slice().sort((a, b) => b.percentage - a.percentage);
   const highlights = ranked.slice(0, 3).map((d) =>
     d.signals.length
-      ? `\${d.label}: maior intensidade relativa, com destaque para \${d.signals.join(", ")}.`
-      : `\${d.label}: maior intensidade relativa entre as dimensões avaliadas.`,
+      ? `${d.label}: maior intensidade relativa, com destaque para ${d.signals.join(", ")}.`
+      : `${d.label}: maior intensidade relativa entre as dimensões avaliadas.`,
   );
 
   const patterns = [
@@ -125,8 +125,8 @@ export function generateAssessmentAnalysis(args: {
 
   const explore = ranked.slice(0, 4).map((d) =>
     d.signals.length
-      ? `Explore \${d.label.toLowerCase()}: observe quando \${d.signals.join(", ")} aparecem, o esforço necessário para lidar com isso e o que ajuda ou piora.`
-      : `Explore \${d.label.toLowerCase()}: registre situações em que essa dimensão muda de intensidade conforme o contexto.`,
+      ? `Explore ${d.label.toLowerCase()}: observe quando ${d.signals.join(", ")} aparecem, o esforço necessário para lidar com isso e o que ajuda ou piora.`
+      : `Explore ${d.label.toLowerCase()}: registre situações em que essa dimensão muda de intensidade conforme o contexto.`,
   );
 
   const practicalSupports = Array.from(new Set(ranked.slice(0, 4).flatMap((d) => d.practicalSupports))).slice(0, 8);
