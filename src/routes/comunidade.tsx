@@ -110,12 +110,17 @@ function Comunidade() {
         </section>
 
         <div className="mt-8 text-center">
-          <Link
-            to="/avaliacao"
+          <a
+            href="https://chat.whatsapp.com/HOQHLS3XgpbLaStkLlU1yC"
+            target="_blank"
+            rel="noreferrer"
             className="inline-flex rounded-full bg-primary px-8 py-4 font-semibold text-primary-foreground shadow-soft"
           >
-            Conhecer a NeuroSpectro
-          </Link>
+            Entrar na Comunidade pelo WhatsApp
+          </a>
+          <div className="mt-3">
+            <Link to="/dashboard" className="text-sm text-muted-foreground hover:text-foreground">Voltar para minha área</Link>
+          </div>
           <p className="mt-4 text-xs text-muted-foreground">
             A comunidade não substitui acompanhamento médico ou psicológico.
           </p>
