@@ -1,4 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
+import { supabase } from "@/lib/supabase";
 import { CheckCircle2, HeartHandshake, LockKeyhole, Users } from "lucide-react";
 import mark from "@/assets/mark.png.asset.json";
 import { COMMUNITY, COMMUNITY_CONTENT } from "@/lib/community";
@@ -18,6 +20,41 @@ export const Route = createFileRoute("/comunidade")({
 });
 
 function Comunidade() {
+  const [loading, setLoading] = useState(true);
+  const [hasAccess, setHasAccess] = useState(false);
+
+  useEffect(() => { void loadAccess(); }, []);
+
+  async function loadAccess() {
+    if (!supabase) { setLoading(false); return; }
+    const { data: auth } = await supabase.auth.getUser();
+    if (!auth.user) { setLoading(false); return; }
+    const { data } = await supabase
+      .from("acessos")
+      .select("status,expires_at,produtos(slug)")
+      .eq("status", "active")
+      .eq("produtos.slug", "comunidade-apoio")
+      .limit(1)
+      .maybeSingle();
+    const row = data as { status: string; expires_at: string | null; produtos?: { slug: string } | null } | null;
+    setHasAccess(Boolean(row?.status === "active" && row?.produtos?.slug === "comunidade-apoio" && (!row.expires_at || new Date(row.expires_at).getTime() > Date.now())));
+    setLoading(false);
+  }
+
+  if (loading) return <main className="flex min-h-screen items-center justify-center bg-background p-6 text-muted-foreground">Verificando seu acesso...</main>;
+
+  if (!hasAccess) return (
+    <main className="min-h-screen bg-background px-5 py-12 font-sans">
+      <div className="mx-auto max-w-xl rounded-[2rem] border border-border bg-card p-8 text-center shadow-soft">
+        <Users className="mx-auto h-8 w-8 text-primary" />
+        <h1 className="mt-5 font-display text-3xl font-semibold text-ink">Comunidade de Apoio</h1>
+        <p className="mt-3 leading-6 text-muted-foreground">Um espaço adicional para troca, acolhimento e experiências sobre neurodiversidade.</p>
+        <Link to="/checkout/$offerId" params={{ offerId: "community-6x-1490" }} className="mt-6 inline-flex rounded-full bg-primary px-7 py-3.5 font-semibold text-primary-foreground">Conhecer a comunidade · 6x de R$ 14,90</Link>
+        <div className="mt-4"><Link to="/dashboard" className="text-sm text-muted-foreground hover:text-foreground">Voltar para minha área</Link></div>
+      </div>
+    </main>
+  );
+
   return (
     <main className="min-h-screen bg-background px-5 py-12 font-sans">
       <div className="mx-auto max-w-2xl">
