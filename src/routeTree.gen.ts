@@ -20,6 +20,7 @@ import { Route as PosCompraRouteImport } from './routes/pos-compra'
 import { Route as RelatorioPdfRouteImport } from './routes/relatorio-pdf'
 import { Route as RelatorioOnlineRouteImport } from './routes/relatorio-online'
 import { Route as LeituraTrajetoriaRouteImport } from './routes/leitura-trajetoria'
+import { Route as LeituraTrajetoriaOfertaRouteImport } from './routes/leitura-trajetoria-oferta'
 import { Route as CheckoutOfferIdRouteImport } from './routes/checkout.$offerId'
 
 const AdminRoute = AdminRouteImport.update({
@@ -77,6 +78,11 @@ const LeituraTrajetoriaRoute = LeituraTrajetoriaRouteImport.update({
   path: '/leitura-trajetoria',
   getParentRoute: () => rootRouteImport,
 } as any)
+const LeituraTrajetoriaOfertaRoute = LeituraTrajetoriaOfertaRouteImport.update({
+  id: '/leitura-trajetoria-oferta',
+  path: '/leitura-trajetoria-oferta',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const CheckoutOfferIdRoute = CheckoutOfferIdRouteImport.update({
   id: '/checkout/$offerId',
   path: '/checkout/$offerId',
@@ -94,6 +100,8 @@ export interface FileRoutesByFullPath {
   '/pos-compra': typeof PosCompraRoute
   '/relatorio-pdf': typeof RelatorioPdfRoute
   '/relatorio-online': typeof RelatorioOnlineRoute
+  '/leitura-trajetoria-oferta': typeof LeituraTrajetoriaOfertaRoute
+  '/leitura-trajetoria-oferta': typeof LeituraTrajetoriaOfertaRoute
   '/checkout/$offerId': typeof CheckoutOfferIdRoute
 }
 export interface FileRoutesByTo {
@@ -134,6 +142,7 @@ export interface FileRouteTypes {
     | '/pos-compra'
     | '/relatorio-pdf'
     | '/relatorio-online'
+    | '/leitura-trajetoria-oferta'
     | '/checkout/$offerId'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -146,6 +155,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/pos-compra'
     | '/relatorio-pdf'
+    | '/leitura-trajetoria-oferta'
     | '/checkout/$offerId'
   id:
     | '__root__'
@@ -173,6 +183,7 @@ export interface RootRouteChildren {
   RelatorioPdfRoute: typeof RelatorioPdfRoute
   RelatorioOnlineRoute: typeof RelatorioOnlineRoute
   LeituraTrajetoriaRoute: typeof LeituraTrajetoriaRoute
+  LeituraTrajetoriaOfertaRoute: typeof LeituraTrajetoriaOfertaRoute
   CheckoutOfferIdRoute: typeof CheckoutOfferIdRoute
 }
 
@@ -277,6 +288,7 @@ const rootRouteChildren: RootRouteChildren = {
   RelatorioPdfRoute: RelatorioPdfRoute,
   RelatorioOnlineRoute: RelatorioOnlineRoute,
   LeituraTrajetoriaRoute: LeituraTrajetoriaRoute,
+  LeituraTrajetoriaOfertaRoute: LeituraTrajetoriaOfertaRoute,
   CheckoutOfferIdRoute: CheckoutOfferIdRoute,
 }
 export const routeTree = rootRouteImport
