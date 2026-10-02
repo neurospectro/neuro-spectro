@@ -1,5 +1,5 @@
 import { supabase } from "@/lib/supabase";
-import type { Question } from "@/lib/assessment/questions";
+import type { Dimension, Question } from "@/lib/assessment/questions";
 import { generateAssessmentAnalysis } from "@/lib/assessment/analysis";
 
 export async function persistCompletedAssessment(args: {
