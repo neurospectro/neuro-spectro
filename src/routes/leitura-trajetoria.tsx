@@ -49,7 +49,7 @@ function TrajectoryReading() {
 
     const { data } = await supabase
       .from("leituras_trajetoria")
-      .select("id,status,story,development_notes,current_context,specialist_response,submitted_at,response_sent_at")
+      .select("id,status,story,development_notes,current_context,specialist_response,submitted_at,response_sent_at,notification_sent_at")
       .order("created_at", { ascending: false })
       .limit(1)
       .maybeSingle();
@@ -81,8 +81,8 @@ function TrajectoryReading() {
     };
 
     const result = reading
-      ? await supabase.from("leituras_trajetoria").update(payload).eq("id", reading.id).select("id,status,story,development_notes,current_context,specialist_response,submitted_at,response_sent_at").single()
-      : await supabase.from("leituras_trajetoria").insert(payload).select("id,status,story,development_notes,current_context,specialist_response,submitted_at,response_sent_at").single();
+      ? await supabase.from("leituras_trajetoria").update(payload).eq("id", reading.id).select("id,status,story,development_notes,current_context,specialist_response,submitted_at,response_sent_at,notification_sent_at").single()
+      : await supabase.from("leituras_trajetoria").insert(payload).select("id,status,story,development_notes,current_context,specialist_response,submitted_at,response_sent_at,notification_sent_at").single();
 
     if (result.error) setMessage(result.error.message);
     else {
@@ -115,13 +115,24 @@ function TrajectoryReading() {
     };
 
     const result = reading
-      ? await supabase.from("leituras_trajetoria").update(payload).eq("id", reading.id).eq("status", "draft").select("id,status,story,development_notes,current_context,specialist_response,submitted_at,response_sent_at").single()
-      : await supabase.from("leituras_trajetoria").insert(payload).select("id,status,story,development_notes,current_context,specialist_response,submitted_at,response_sent_at").single();
+      ? await supabase.from("leituras_trajetoria").update(payload).eq("id", reading.id).eq("status", "draft").select("id,status,story,development_notes,current_context,specialist_response,submitted_at,response_sent_at,notification_sent_at").single()
+      : await supabase.from("leituras_trajetoria").insert(payload).select("id,status,story,development_notes,current_context,specialist_response,submitted_at,response_sent_at,notification_sent_at").single();
 
     if (result.error) setMessage(result.error.message);
     else {
-      setReading(result.data as Reading);
-      setMessage("Sua história foi enviada para a fila de análise.");
+      const submittedReading = result.data as Reading;
+      setReading(submittedReading);
+      setMessage("Sua história foi enviada. Você receberá uma confirmação por e-mail e a devolutiva será disponibilizada em até 3 dias.");
+
+      const { error: notificationError } = await supabase.functions.invoke("notify-trajectory-submission", {
+        body: { readingId: submittedReading.id },
+      });
+      if (notificationError) {
+        console.error("TRAJECTORY_NOTIFICATION_ERROR", notificationError);
+        setMessage("Sua história foi recebida e já está na fila. A confirmação por e-mail será processada em seguida.");
+      } else {
+        setReading({ ...submittedReading, notification_sent_at: new Date().toISOString() });
+      }
     }
     setSaving(false);
   }
@@ -175,7 +186,7 @@ function TrajectoryReading() {
           <div className="mt-6 grid gap-3 sm:grid-cols-3">
             <Info icon={<Sparkles className="h-5 w-5" />} title="Sua história" text="Você não precisa encontrar as palavras certas. Conte do seu jeito." />
             <Info icon={<Clock3 className="h-5 w-5" />} title="Leitura humana" text="Seu relato entra em uma fila para análise individual." />
-            <Info icon={<Mail className="h-5 w-5" />} title="Devolutiva" text="A resposta será disponibilizada na sua área e preparada para envio por e-mail." />
+            <Info icon={<Mail className="h-5 w-5" />} title="Prazo" text="A devolutiva será disponibilizada em até 3 dias após o envio." />
           </div>
         </section>
 
@@ -185,7 +196,7 @@ function TrajectoryReading() {
               <Clock3 className="h-6 w-6 shrink-0 text-primary" />
               <div>
                 <h2 className="font-display text-2xl font-semibold text-ink">História enviada</h2>
-                <p className="mt-2 text-sm leading-6 text-muted-foreground">Seu relato está na fila para leitura. Quando a devolutiva estiver pronta, ela aparecerá aqui.</p>
+                <p className="mt-2 text-sm leading-6 text-muted-foreground">Seu relato está na fila para leitura. A devolutiva será disponibilizada em até 3 dias após o envio.</p>
               </div>
             </div>
           </section>
