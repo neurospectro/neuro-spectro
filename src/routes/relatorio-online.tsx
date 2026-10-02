@@ -3,6 +3,7 @@ import { ArrowLeft, ArrowRight, CheckCircle2, Compass, FileText, ShieldCheck, Sp
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import type { AssessmentAnalysis } from "@/lib/assessment/analysis";
+import { getSecureResult } from "@/lib/assessment/secure-result";
 
 type Score = { id: string; label: string; raw: number; max: number };
 type Result = { id: string; created_at: string; total_raw: number; max_raw: number; scores: Score[]; analysis: AssessmentAnalysis | null };
@@ -36,14 +37,13 @@ function OnlineReport() {
     const valid = Boolean(row?.status === "active" && row?.produtos?.slug === "relatorio-completo" && (!row.expires_at || new Date(row.expires_at).getTime() > Date.now()));
     if (!valid) { setLocked(true); setLoading(false); return; }
 
-    const { data } = await supabase
-      .from("resultados")
-      .select("id,created_at,total_raw,max_raw,scores,analysis")
-      .order("created_at", { ascending: false })
-      .limit(1)
-      .maybeSingle();
-
-    setResult((data ?? null) as Result | null);
+    try {
+      const data = await getSecureResult("relatorio-completo");
+      setResult((data ?? null) as Result | null);
+    } catch (error) {
+      console.error("RELATORIO_ONLINE_SECURE_RESULT_ERROR", error);
+      setResult(null);
+    }
     setLoading(false);
   }
 
