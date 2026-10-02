@@ -147,6 +147,11 @@ Deno.serve(async (req) => {
     }
   }
 
+  const clientIp =
+    req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
+    req.headers.get("x-real-ip")?.trim() ||
+    "unknown";
+
   const payerEmail = String(formData?.payer?.email ?? userData.user.email ?? "").trim().toLowerCase();
   if (!payerEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(payerEmail)) {
     return json(req, { error: "E-mail do pagador é obrigatório e deve ser válido." }, 400);
