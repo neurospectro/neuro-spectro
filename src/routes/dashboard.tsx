@@ -3,6 +3,7 @@ import { useEffect, useMemo, useState } from "react";
 import { ArrowRight, ClipboardCheck, FileText, LogOut, ShieldCheck, Sparkles, Users } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { formatBRL } from "@/lib/offers";
+import { getSecureResult } from "@/lib/assessment/secure-result";
 
 type ResultRow = {
   id: string;
@@ -57,15 +58,21 @@ function Dashboard() {
 
     setEmail(auth.user.email ?? "");
 
-    const [resultQuery, accessQuery, orderQuery] = await Promise.all([
-      supabase.from("resultados").select("id,created_at,total_raw,max_raw,scores").order("created_at", { ascending: false }),
+    const [secureResult, accessQuery, orderQuery] = await Promise.all([
+      getSecureResult(),
       supabase.from("acessos").select("id,status,starts_at,expires_at,produto_id,produtos(slug)").order("created_at", { ascending: false }),
       supabase.from("pedidos").select("id,status,amount_cents,installments,created_at").order("created_at", { ascending: false }),
     ]);
 
-    const firstError = resultQuery.error ?? accessQuery.error ?? orderQuery.error;
-    if (firstError) setError(firstError.message);
-    setResults((resultQuery.data ?? []) as ResultRow[]);
+    if (accessQuery.error) setError(accessQuery.error.message);
+    if (orderQuery.error) setError((current) => current || orderQuery.error?.message || "Não foi possível carregar seus pedidos.");
+    setResults(secureResult ? [{
+      id: secureResult.id,
+      created_at: secureResult.created_at,
+      total_raw: secureResult.total_raw,
+      max_raw: secureResult.max_raw,
+      scores: secureResult.scores,
+    }] : []);
     setAccesses((accessQuery.data ?? []) as unknown as AccessRow[]);
     setOrders((orderQuery.data ?? []) as OrderRow[]);
     setLoading(false);
