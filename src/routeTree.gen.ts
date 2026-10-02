@@ -19,6 +19,7 @@ import { Route as LoginRouteImport } from './routes/login'
 import { Route as PosCompraRouteImport } from './routes/pos-compra'
 import { Route as RelatorioPdfRouteImport } from './routes/relatorio-pdf'
 import { Route as RelatorioOnlineRouteImport } from './routes/relatorio-online'
+import { Route as LeituraTrajetoriaRouteImport } from './routes/leitura-trajetoria'
 import { Route as CheckoutOfferIdRouteImport } from './routes/checkout.$offerId'
 
 const AdminRoute = AdminRouteImport.update({
@@ -69,6 +70,11 @@ const RelatorioPdfRoute = RelatorioPdfRouteImport.update({
 const RelatorioOnlineRoute = RelatorioOnlineRouteImport.update({
   id: '/relatorio-online',
   path: '/relatorio-online',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LeituraTrajetoriaRoute = LeituraTrajetoriaRouteImport.update({
+  id: '/leitura-trajetoria',
+  path: '/leitura-trajetoria',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CheckoutOfferIdRoute = CheckoutOfferIdRouteImport.update({
@@ -166,6 +172,7 @@ export interface RootRouteChildren {
   PosCompraRoute: typeof PosCompraRoute
   RelatorioPdfRoute: typeof RelatorioPdfRoute
   RelatorioOnlineRoute: typeof RelatorioOnlineRoute
+  LeituraTrajetoriaRoute: typeof LeituraTrajetoriaRoute
   CheckoutOfferIdRoute: typeof CheckoutOfferIdRoute
 }
 
@@ -241,6 +248,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof RelatorioOnlineRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/leitura-trajetoria': {
+      id: '/leitura-trajetoria'
+      path: '/leitura-trajetoria'
+      fullPath: '/leitura-trajetoria'
+      preLoaderRoute: typeof LeituraTrajetoriaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/checkout/$offerId': {
       id: '/checkout/$offerId'
       path: '/checkout/$offerId'
@@ -262,6 +276,7 @@ const rootRouteChildren: RootRouteChildren = {
   PosCompraRoute: PosCompraRoute,
   RelatorioPdfRoute: RelatorioPdfRoute,
   RelatorioOnlineRoute: RelatorioOnlineRoute,
+  LeituraTrajetoriaRoute: LeituraTrajetoriaRoute,
   CheckoutOfferIdRoute: CheckoutOfferIdRoute,
 }
 export const routeTree = rootRouteImport
