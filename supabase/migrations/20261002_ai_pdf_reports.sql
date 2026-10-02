@@ -35,5 +35,3 @@ drop policy if exists "users read own private reports" on storage.objects;
 create policy "users read own private reports" on storage.objects
   for select to authenticated
   using (bucket_id = 'private-reports' and (storage.foldername(name))[1] = auth.uid()::text);
-
-revoke all on storage.objects from anon;
