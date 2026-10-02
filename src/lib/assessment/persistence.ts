@@ -7,7 +7,7 @@ export async function persistCompletedAssessment(args: {
   assessmentId: string;
   assessmentVersion: string;
   questions: Question[];
-  scores: Array<{ dimension: { id: string; label: string }; raw: number; max: number; answered: number; total: number }>;
+  scores: Array<{ dimension: Dimension; raw: number; max: number; answered: number; total: number }>;
 }) {
   if (!supabase || !args.session.finishedAt) return null;
 
