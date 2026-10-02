@@ -13,6 +13,7 @@ function OnlineReport() {
   const [result, setResult] = useState<Result | null>(null);
   const [loading, setLoading] = useState(true);
   const [locked, setLocked] = useState(false);
+  const [firstName, setFirstName] = useState("");
 
   useEffect(() => { void load(); }, []);
 
@@ -20,6 +21,8 @@ function OnlineReport() {
     if (!supabase) { setLoading(false); return; }
     const { data: auth } = await supabase.auth.getUser();
     if (!auth.user) { setLoading(false); return; }
+    const metadataName = String(auth.user.user_metadata?.full_name ?? auth.user.user_metadata?.name ?? "").trim();
+    setFirstName((metadataName || auth.user.email?.split("@")[0] || "").split(/\s+/)[0]);
 
     const { data: access } = await supabase
       .from("acessos")
@@ -79,7 +82,7 @@ function OnlineReport() {
 
         <section className="mt-6 rounded-[2rem] border border-primary/15 bg-card p-6 shadow-soft sm:p-9">
           <p className="text-xs font-bold uppercase tracking-[0.22em] text-primary">NeuroSpectro · leitura personalizada</p>
-          <h1 className="mt-3 font-display text-3xl font-semibold leading-tight text-ink sm:text-4xl">O que suas respostas mostram</h1>
+          <h1 className="mt-3 font-display text-3xl font-semibold leading-tight text-ink sm:text-4xl">{firstName ? `${firstName}, este é o seu resultado NeuroSpectro` : "Este é o seu resultado NeuroSpectro"}</h1>
           <p className="mt-4 max-w-3xl text-base leading-7 text-muted-foreground">{analysis.overview}</p>
           <div className="mt-6 rounded-2xl border border-primary/15 bg-primary/5 p-5 text-sm leading-6 text-muted-foreground">
             <strong className="text-ink">Contexto clínico:</strong> {analysis.clinicalContext}
@@ -109,7 +112,17 @@ function OnlineReport() {
         </section>
 
         <section className="mt-6 grid gap-6 lg:grid-cols-2">
-          <Panel title="Padrões para observar">{analysis.patterns.map((x) => <Bullet key={x} text={x} />)}</Panel>
+          <Panel title="Padrões para observar">
+            {analysis.patternDetails?.length
+              ? analysis.patternDetails.map((pattern) => (
+                  <article key={pattern.id} className="rounded-2xl border border-primary/15 bg-primary/5 p-4">
+                    <h3 className="font-semibold text-ink">{pattern.title}</h3>
+                    <p className="mt-2 text-sm leading-6 text-muted-foreground">{pattern.description}</p>
+                    <p className="mt-2 text-xs text-muted-foreground">Baseado nas dimensões: {pattern.evidence.join(" · ")}</p>
+                  </article>
+                ))
+              : analysis.patterns.map((x) => <Bullet key={x} text={x} />)}
+          </Panel>
           <Panel title="Pontos para explorar">{analysis.explore.map((x) => <Bullet key={x} text={x} />)}</Panel>
         </section>
 

@@ -1,4 +1,5 @@
 import type { Dimension, DimensionId, Question } from "@/lib/assessment/questions";
+import { identifyAnalysisPatterns, type AnalysisPattern } from "@/lib/assessment/patterns";
 
 export type DimensionAnalysis = {
   id: DimensionId;
@@ -20,6 +21,7 @@ export type AssessmentAnalysis = {
   highlights: string[];
   dimensions: DimensionAnalysis[];
   patterns: string[];
+  patternDetails: AnalysisPattern[];
   explore: string[];
   practicalSupports: string[];
   professionalQuestions: string[];
@@ -115,7 +117,10 @@ export function generateAssessmentAnalysis(args: {
       : `${d.label}: maior intensidade relativa entre as dimensões avaliadas.`,
   );
 
+  const patternDetails = identifyAnalysisPatterns(dimensions);
+
   const patterns = [
+    ...patternDetails.map((pattern) => `${pattern.title}: ${pattern.description}`),
     "O resultado mostra um perfil de características relativas, não uma classificação de pessoa em um espectro.",
     "Características semelhantes podem surgir por razões diferentes. Contexto, desenvolvimento, saúde mental, ambiente e estratégias de adaptação precisam ser considerados.",
     ...(ranked.filter((d) => d.level === "elevado").length
@@ -140,6 +145,7 @@ export function generateAssessmentAnalysis(args: {
     highlights,
     dimensions,
     patterns,
+    patternDetails,
     explore,
     practicalSupports,
     professionalQuestions: [
