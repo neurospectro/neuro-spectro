@@ -282,7 +282,7 @@ function Checkout() {
                 const normalizedFormData = {
                   ...formData,
                   payment_type_id:
-                    formData.payment_type_id ?? selectedPaymentMethod,
+                    formData["payment_type_id"] ?? selectedPaymentMethod,
                 };
 
                 const payerEmail = String(

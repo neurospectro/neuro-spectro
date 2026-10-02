@@ -197,7 +197,7 @@ function Dashboard() {
   );
 }
 
-function AccessCard({ icon, title, active, description, href, params }: { icon: React.ReactNode; title: string; active: boolean; description: string; href?: "/checkout/$offerId" | "/comunidade"; params?: { offerId: string } }) {
+function AccessCard({ icon, title, active, description, href, params }: { icon: React.ReactNode; title: string; active: boolean; description: string; href?: "/checkout/$offerId" | "/comunidade" | "/relatorio-online" | "/relatorio-pdf" | "/leitura-trajetoria" | "/leitura-trajetoria-oferta"; params?: { offerId: string } | undefined }) {
   const content = (
     <div className="h-full rounded-3xl border border-border bg-card p-5 shadow-soft transition hover:border-primary/30 hover:shadow-md">
       <div className="flex items-start justify-between gap-3">

@@ -73,7 +73,8 @@ function buildSignals(questions: Question[], answers: Record<string, number>): s
   return questions
     .filter((q) => answers[q.question_id] !== undefined)
     .map((q) => {
-      const value = q.reverse_scored ? 3 - answers[q.question_id] : answers[q.question_id];
+      const raw = answers[q.question_id] ?? 0;
+      const value = q.reverse_scored ? 3 - raw : raw;
       return value >= 2 ? q.construct : null;
     })
     .filter((value): value is string => Boolean(value))
