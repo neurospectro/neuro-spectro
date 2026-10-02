@@ -3,7 +3,7 @@ export type OfferBilling = "one_time_installments" | "recurring";
 export interface Offer {
   id: string;
   name: string;
-  product: "report" | "pdf" | "community";
+  product: "report" | "pdf" | "community" | "trajectory";
   billing: OfferBilling;
   totalCents: number;
   installmentCount: number;
@@ -44,6 +44,19 @@ export const OFFERS: Record<string, Offer> = {
     autoRenew: false,
     lifetimeAccess: true,
     description: "Relatório PDF profissional em papel timbrado · pagamento único · acesso por tempo indeterminado.",
+  },
+  "trajectory-reading-14990": {
+    id: "trajectory-reading-14990",
+    name: "Leitura de Trajetória NeuroSpectro",
+    product: "trajectory",
+    billing: "one_time_installments",
+    totalCents: 14990,
+    installmentCount: 1,
+    installmentCents: 14990,
+    accessDays: null,
+    autoRenew: false,
+    lifetimeAccess: true,
+    description: "Leitura individual da sua trajetória por especialista parceiro · pagamento único · acesso por tempo indeterminado.",
   },
   "community-6x-1490": {
     id: "community-6x-1490",
