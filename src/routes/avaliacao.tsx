@@ -49,9 +49,44 @@ function Avaliacao() {
     if (session) localStorage.setItem(KEY, JSON.stringify(session));
   }, [session]);
 
-  const begin = (fresh: boolean) => {
-    if (fresh || !session) setSession({ answers: {}, index: 0, startedAt: new Date().toISOString() });
-    setStarted(true);
+  const begin = async (fresh: boolean) => {
+    setLeadError("");
+    const email = leadEmail.trim().toLowerCase();
+
+    if (!email || !/^\S+@\S+\.\S+$/.test(email)) {
+      setLeadError("Digite um e-mail válido para continuar.");
+      return;
+    }
+
+    if (!marketingConsent) {
+      setLeadError("Marque a opção para receber novidades e conteúdos da NeuroSpectro.");
+      return;
+    }
+
+    if (!supabase) {
+      setLeadError("Não foi possível conectar agora. Tente novamente.");
+      return;
+    }
+
+    setLeadSaving(true);
+    try {
+      const { error } = await supabase.from("marketing_leads").upsert(
+        { email, marketing_consent: true, source: "assessment" },
+        { onConflict: "email", ignoreDuplicates: true },
+      );
+
+      if (error) throw error;
+
+      if (fresh || !session) {
+        setSession({ answers: {}, index: 0, startedAt: new Date().toISOString() });
+      }
+      setStarted(true);
+    } catch (error) {
+      console.error("MARKETING_LEAD_SAVE_FAILED", error);
+      setLeadError("Não foi possível salvar seu e-mail. Tente novamente.");
+    } finally {
+      setLeadSaving(false);
+    }
   };
 
   if (!started || !session) {
@@ -95,7 +130,7 @@ function Avaliacao() {
             <Mail className="mt-0.5 h-5 w-5 shrink-0 text-primary" />
             <div>
               <p className="font-semibold text-ink">Antes de começar, deixe seu e-mail</p>
-              <p className="mt-1 text-sm leading-5 text-muted-foreground">Assim podemos enviar seu resultado, novidades e conteúdos da NeuroSpectro mesmo que você não conclua a avaliação ou o pagamento.</p>
+              <p className="mt-1 text-sm leading-5 text-muted-foreground">Assim podemos enviar seu resultado, novidades e conteúdos da NeuroSpectro para você acompanhar sua jornada mesmo depois de concluir a avaliação.</p>
             </div>
           </div>
           <input
