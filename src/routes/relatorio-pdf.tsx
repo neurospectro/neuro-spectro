@@ -1,285 +1,132 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowLeft, Download, ShieldCheck } from "lucide-react";
+import { ArrowLeft, CheckCircle2, Download, FileText, Loader2, ShieldCheck } from "lucide-react";
 import { useEffect, useState } from "react";
-import mark from "@/assets/mark.png.asset.json";
-import { ASSESSMENT, DIMENSIONS } from "@/lib/assessment/questions";
-import type { AssessmentAnalysis } from "@/lib/assessment/analysis";
 import { supabase } from "@/lib/supabase";
-import "@/styles/report-print.css";
-
-type Score = { id: string; label: string; raw: number; max: number };
-type Result = {
-  id: string;
-  created_at: string;
-  total_raw: number;
-  max_raw: number;
-  scores: Score[];
-  analysis: AssessmentAnalysis | null;
-};
 
 export const Route = createFileRoute("/relatorio-pdf")({ component: RelatorioPdf });
 
 function RelatorioPdf() {
-  const [result, setResult] = useState<Result | null>(null);
-  const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(true);
+  const [generating, setGenerating] = useState(false);
+  const [signedUrl, setSignedUrl] = useState("");
+  const [error, setError] = useState("");
 
   useEffect(() => {
-    void load();
+    void loadExisting();
   }, []);
 
-  async function load() {
+  async function loadExisting() {
     if (!supabase) {
+      setError("O serviço não está configurado.");
       setLoading(false);
       return;
     }
-    const { data: auth } = await supabase.auth.getUser();
-    if (!auth.user) {
-      setLoading(false);
-      return;
-    }
-    setEmail(auth.user.email ?? "");
-    const { data: access } = await supabase
-      .from("acessos")
-      .select("status,expires_at,produtos(slug)")
-      .eq("status", "active")
-      .eq("produtos.slug", "relatorio-pdf")
-      .limit(1)
-      .maybeSingle();
+    try {
+      const { data: session } = await supabase.auth.getSession();
+      if (!session.session) {
+        setError("Entre na sua conta para acessar o relatório.");
+        return;
+      }
+      const { data: job } = await supabase
+        .from("pdf_report_jobs")
+        .select("status,storage_path")
+        .eq("user_id", session.session.user.id)
+        .eq("status", "completed")
+        .order("completed_at", { ascending: false })
+        .limit(1)
+        .maybeSingle();
 
-    const accessRow = access as { status: string; expires_at: string | null; produtos?: { slug: string } | null } | null;
-    const validAccess = Boolean(
-      accessRow?.status === "active" &&
-      accessRow?.produtos?.slug === "relatorio-pdf" &&
-      (!accessRow.expires_at || new Date(accessRow.expires_at).getTime() > Date.now()),
-    );
-    if (!validAccess) {
+      if (job?.storage_path) {
+        const { data } = await supabase.storage.from("private-reports").createSignedUrl(job.storage_path, 3600);
+        if (data?.signedUrl) setSignedUrl(data.signedUrl);
+      }
+    } catch (e) {
+      console.error("PDF_LOAD_ERROR", e);
+    } finally {
       setLoading(false);
-      return;
     }
+  }
 
-    const { data } = await supabase
-      .from("resultados")
-      .select("id,created_at,total_raw,max_raw,scores,analysis")
-      .order("created_at", { ascending: false })
-      .limit(1)
-      .maybeSingle();
-    setResult((data ?? null) as Result | null);
-    setLoading(false);
+  async function generate() {
+    if (!supabase) return;
+    setGenerating(true);
+    setError("");
+    try {
+      const { data, error: invokeError } = await supabase.functions.invoke("generate-pdf-report", {
+        body: {},
+      });
+      if (invokeError) throw invokeError;
+      if (!data?.signedUrl) throw new Error(data?.error ?? "Não foi possível gerar o PDF.");
+      setSignedUrl(data.signedUrl);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Não foi possível gerar o PDF agora.");
+    } finally {
+      setGenerating(false);
+    }
   }
 
   if (loading) {
-    return <main className="flex min-h-screen items-center justify-center bg-background p-6 text-muted-foreground">Preparando seu relatório...</main>;
+    return <main className="flex min-h-screen items-center justify-center bg-background p-6 text-muted-foreground">Verificando seu acesso...</main>;
   }
-
-  if (!result) {
-    return (
-      <main className="flex min-h-screen items-center justify-center bg-background px-5">
-        <div className="text-center">
-          <h1 className="font-display text-2xl font-semibold text-ink">Relatório indisponível</h1>
-          <p className="mt-2 text-sm text-muted-foreground">Faça uma avaliação e entre na sua conta para visualizar o relatório.</p>
-          <Link to="/dashboard" className="mt-5 inline-block text-primary">Voltar para minha área</Link>
-        </div>
-      </main>
-    );
-  }
-
-  const generatedAt = new Date(result.created_at);
-  const date = generatedAt.toLocaleDateString("pt-BR");
-  const reportId = `NS-${result.id.slice(0, 8).toUpperCase()}`;
 
   return (
-    <main className="min-h-screen bg-secondary/40 px-4 py-8 font-sans print:bg-white print:p-0">
-      <div className="mx-auto mb-5 flex max-w-[210mm] items-center justify-between print:hidden">
+    <main className="min-h-screen bg-secondary/40 px-4 py-8 font-sans sm:py-12">
+      <div className="mx-auto max-w-2xl">
         <Link to="/dashboard" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground">
           <ArrowLeft className="h-4 w-4" /> Minha área
         </Link>
-        <button
-          type="button"
-          onClick={() => window.print()}
-          className="inline-flex items-center gap-2 rounded-full bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground shadow-soft"
-        >
-          <Download className="h-4 w-4" /> Salvar como PDF
-        </button>
+
+        <section className="mt-6 rounded-[2rem] border border-border bg-card p-6 shadow-soft sm:p-10">
+          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-primary/10 text-primary">
+            <FileText className="h-6 w-6" />
+          </div>
+
+          <p className="mt-6 text-xs font-semibold uppercase tracking-[0.22em] text-primary">Relatório PDF individual</p>
+          <h1 className="mt-2 font-display text-3xl font-semibold text-ink">Seu relatório aprofundado, sob demanda</h1>
+          <p className="mt-4 leading-7 text-muted-foreground">
+            O conteúdo é personalizado a partir do seu resultado e revisado pelas regras editoriais do NeuroSpectro. A geração acontece no servidor e o arquivo fica protegido em armazenamento privado.
+          </p>
+
+          <div className="mt-6 rounded-2xl border border-border bg-secondary/30 p-4">
+            <div className="flex gap-3">
+              <ShieldCheck className="mt-0.5 h-5 w-5 shrink-0 text-primary" />
+              <p className="text-sm leading-6 text-muted-foreground">
+                Este material é informativo e foi elaborado a partir das respostas fornecidas na avaliação NeuroSpectro. Não constitui diagnóstico, laudo, consulta ou avaliação psicológica e não substitui uma avaliação realizada por profissional habilitado.
+              </p>
+            </div>
+          </div>
+
+          {error && <p className="mt-5 rounded-xl border border-destructive/20 bg-destructive/5 p-4 text-sm text-destructive">{error}</p>}
+
+          {signedUrl ? (
+            <div className="mt-7">
+              <div className="flex items-center gap-2 text-sm font-semibold text-primary">
+                <CheckCircle2 className="h-5 w-5" /> PDF pronto
+              </div>
+              <a
+                href={signedUrl}
+                target="_blank"
+                rel="noreferrer"
+                className="mt-4 inline-flex items-center gap-2 rounded-full bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground shadow-soft"
+              >
+                <Download className="h-4 w-4" /> Abrir / baixar PDF
+              </a>
+              <button type="button" onClick={() => void generate()} disabled={generating} className="ml-3 text-sm text-muted-foreground underline">
+                Gerar novamente
+              </button>
+            </div>
+          ) : (
+            <button
+              type="button"
+              onClick={() => void generate()}
+              disabled={generating}
+              className="mt-7 inline-flex items-center gap-2 rounded-full bg-primary px-6 py-3.5 text-sm font-semibold text-primary-foreground shadow-soft disabled:opacity-60"
+            >
+              {generating ? <><Loader2 className="h-4 w-4 animate-spin" /> Gerando seu PDF...</> : <><FileText className="h-4 w-4" /> Gerar meu PDF</>}
+            </button>
+          )}
+        </section>
       </div>
-
-      <article className="report-paper mx-auto min-h-[297mm] w-full max-w-[210mm] bg-white text-slate-800 shadow-xl print:min-h-0 print:max-w-none print:shadow-none">
-        <div className="report-header">
-          <div className="flex items-start justify-between gap-8">
-            <div className="flex items-center gap-4">
-              <img src={mark.url} alt="NeuroSpectro" className="h-14 w-14" />
-              <div>
-                <p className="font-display text-xl font-semibold tracking-tight">NeuroSpectro</p>
-                <p className="text-xs tracking-wide text-slate-500">Entenda seu perfil. Descubra novas perspectivas.</p>
-              </div>
-            </div>
-            <div className="text-right text-[10px] text-slate-500">
-              <p className="font-semibold uppercase tracking-[0.18em]">Relatório de Autoavaliação</p>
-              <p className="mt-1">ID {reportId}</p>
-              <p>{date}</p>
-            </div>
-          </div>
-          <div className="mt-7 h-1 rounded-full bg-spectrum" />
-        </div>
-
-        <div className="report-body">
-          <section className="report-cover">
-            <p className="text-xs font-semibold uppercase tracking-[0.24em] text-primary">NeuroSpectro · Relatório Completo</p>
-            <h1 className="mt-5 font-display text-4xl font-semibold leading-tight text-slate-900">
-              Uma leitura organizada das suas respostas
-            </h1>
-            <p className="mt-5 max-w-2xl text-base leading-7 text-slate-600">
-              Este documento reúne os resultados informativos da sua autoavaliação, organizados por dimensões para facilitar o autoconhecimento e uma eventual conversa com um profissional qualificado.
-            </p>
-
-            <div className="mt-10 grid gap-4 sm:grid-cols-2">
-              <InfoCard label="Titular" value={email || "Conta NeuroSpectro"} />
-              <InfoCard label="Data da avaliação" value={date} />
-              <InfoCard label="Avaliação" value={ASSESSMENT.name} />
-              <InfoCard label="Versão" value={ASSESSMENT.version} />
-            </div>
-          </section>
-
-          <section className="report-section">
-            <SectionTitle eyebrow="01" title="Sobre esta avaliação" />
-            <p>{ASSESSMENT.description} O objetivo é oferecer um ponto de partida para reflexão sobre características e experiências pessoais.</p>
-            {result.analysis?.clinicalContext && (
-              <div className="report-note mt-5"><strong>Contexto de interpretação:</strong> {result.analysis.clinicalContext}</div>
-            )}
-            <div className="report-note mt-5">
-              <strong>Importante:</strong> este relatório é informativo e de autoconhecimento. Ele não constitui diagnóstico, não estabelece ponto de corte clínico e não substitui avaliação realizada por profissional qualificado.
-            </div>
-          </section>
-
-          <section className="report-section">
-            <SectionTitle eyebrow="02" title="Perfil por dimensões" />
-            <div className="grid gap-5">
-              {result.scores.map((score) => {
-                const pct = score.max ? Math.round((score.raw / score.max) * 100) : 0;
-                const dimension = DIMENSIONS.find((d) => d.id === score.id);
-                return (
-                  <div key={score.id} className="rounded-2xl border border-slate-200 p-5">
-                    <div className="flex items-end justify-between gap-4">
-                      <div>
-                        <h3 className="font-semibold text-slate-900">{score.label}</h3>
-                        {dimension && <p className="mt-1 text-xs leading-5 text-slate-500">{dimension.description}</p>}
-                      </div>
-                      <span className="text-sm font-semibold text-slate-700">{score.raw}/{score.max}</span>
-                    </div>
-                    <div className="mt-4 h-2 overflow-hidden rounded-full bg-slate-100">
-                      <div className="h-full rounded-full bg-primary" style={{ width: `${pct}%` }} />
-                    </div>
-                    <p className="mt-2 text-xs text-slate-500">{pct}% da pontuação possível nesta dimensão, sem interpretação clínica ou ponto de corte.</p>
-                  </div>
-                );
-              })}
-            </div>
-          </section>
-
-          <section className="report-section">
-            <SectionTitle eyebrow="03" title="Leitura personalizada" />
-            {result.analysis ? (
-              <>
-                <p>{result.analysis.overview}</p>
-                <div className="report-note mt-5"><strong>Principais pontos:</strong></div>
-                <ul className="mt-3 space-y-2">{result.analysis.highlights.map((item) => <li key={item} className="rounded-2xl bg-slate-50 p-4 text-sm leading-6">{item}</li>)}</ul>
-              </>
-            ) : (
-              <p>A análise detalhada desta avaliação ainda não está disponível.</p>
-            )}
-          </section>
-
-          <section className="report-section">
-            <SectionTitle eyebrow="04" title="Interpretação por dimensão" />
-            {result.analysis ? (
-              <div className="grid gap-4">
-                {result.analysis.dimensions.map((dimension) => (
-                  <div key={dimension.id} className="rounded-2xl border border-slate-200 p-5">
-                    <div className="flex items-end justify-between gap-4">
-                      <div><h3 className="font-semibold text-slate-900">{dimension.label}</h3><p className="mt-1 text-xs text-slate-500">{dimension.level} · {dimension.percentage}%</p></div>
-                      <span className="text-xs font-semibold text-slate-600">{dimension.signals.join(" · ")}</span>
-                    </div>
-                    <p className="mt-3 text-sm leading-6 text-slate-600">{dimension.summary}</p>
-                    <p className="mt-3 text-sm leading-6 text-slate-600">{dimension.interpretation}</p>
-                    <p className="mt-3 text-xs leading-5 text-slate-500"><strong>Estratégias:</strong> {dimension.practicalSupports.join(" ")}</p>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <p>As pontuações permanecem disponíveis acima; a interpretação detalhada não foi gerada para esta avaliação.</p>
-            )}
-          </section>
-
-          <section className="report-section">
-            <SectionTitle eyebrow="05" title="Padrões, próximos passos e conversa profissional" />
-            {result.analysis && (
-              <>
-                <h3 className="font-semibold text-slate-900">Padrões para observar</h3>
-                <ul className="mt-3 space-y-2">{result.analysis.patterns.map((item) => <li key={item} className="rounded-2xl bg-slate-50 p-4 text-sm leading-6">{item}</li>)}</ul>
-                <h3 className="mt-6 font-semibold text-slate-900">Pontos para explorar</h3>
-                <ul className="mt-3 space-y-2">{result.analysis.explore.map((item) => <li key={item} className="rounded-2xl bg-slate-50 p-4 text-sm leading-6">{item}</li>)}</ul>
-                <h3 className="mt-6 font-semibold text-slate-900">Perguntas para o especialista</h3>
-                <ol className="mt-3 space-y-2">{result.analysis.professionalQuestions.map((item, index) => <li key={item} className="flex gap-3 rounded-2xl border border-slate-200 p-4 text-sm leading-6"><span className="font-semibold text-primary">{index + 1}.</span><span>{item}</span></li>)}</ol>
-              </>
-            )}
-          </section>
-
-          <section className="report-section">
-            <SectionTitle eyebrow="06" title="Metodologia, evidências e limites" />
-            <p>{ASSESSMENT.methodological_notes}</p>
-            {result.analysis && <ul className="mt-4 list-disc space-y-2 pl-5 text-sm leading-6 text-slate-600">{result.analysis.limitations.map((item) => <li key={item}>{item}</li>)}</ul>}
-            <div className="mt-5 rounded-2xl border border-slate-200 p-5 text-xs leading-6 text-slate-600">
-              <p className="font-semibold text-slate-800">Referências metodológicas</p>
-              <ul className="mt-2 list-disc space-y-1 pl-5">{ASSESSMENT.scientific_references.map((reference) => <li key={reference}>{reference}</li>)}</ul>
-            </div>
-            {result.analysis?.disclaimer && <div className="report-note mt-5"><strong>Aviso:</strong> {result.analysis.disclaimer}</div>}
-          </section>
-
-          <section className="report-section report-final">
-            <div className="rounded-3xl bg-slate-50 p-7">
-              <div className="flex gap-4">
-                <ShieldCheck className="h-6 w-6 shrink-0 text-primary" />
-                <div>
-                  <h2 className="font-display text-xl font-semibold text-slate-900">Uma descoberta é um ponto de partida</h2>
-                  <p className="mt-2 text-sm leading-6 text-slate-600">
-                    Use este relatório para entender melhor suas próprias experiências, formular perguntas e decidir quais próximos passos fazem sentido para você.
-                  </p>
-                </div>
-              </div>
-            </div>
-          </section>
-        </div>
-
-        <footer className="report-footer">
-          <div>
-            <p className="font-semibold">NeuroSpectro</p>
-            <p>Entenda seu perfil. Descubra novas perspectivas.</p>
-          </div>
-          <div className="text-right">
-            <p>Material informativo e de autoconhecimento.</p>
-            <p>Não constitui diagnóstico ou avaliação clínica.</p>
-          </div>
-        </footer>
-      </article>
     </main>
   );
 }
-
-function InfoCard({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
-      <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-500">{label}</p>
-      <p className="mt-2 text-sm font-medium leading-5 text-slate-800">{value}</p>
-    </div>
-  );
-}
-
-function SectionTitle({ eyebrow, title }: { eyebrow: string; title: string }) {
-  return (
-    <div className="mb-5">
-      <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-primary">{eyebrow}</p>
-      <h2 className="mt-2 font-display text-2xl font-semibold text-slate-900">{title}</h2>
-    </div>
-  );
-}
-
