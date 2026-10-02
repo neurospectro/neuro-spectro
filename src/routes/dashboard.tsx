@@ -84,9 +84,10 @@ function Dashboard() {
   const hasReport = accesses.some((a) => a.status === "active" && a.produtos?.slug === "relatorio-completo");
   const hasPdf = accesses.some((a) => a.status === "active" && a.produtos?.slug === "relatorio-pdf");
   const hasCommunity = accesses.some((a) => a.status === "active" && a.produtos?.slug === "comunidade-apoio");
+  const hasTrajectory = accesses.some((a) => a.status === "active" && a.produtos?.slug === "leitura-trajetoria");
 
   const completionLabel = useMemo(() => {
-    if (hasReport && hasPdf && hasCommunity) return "Experiência completa";
+    if (hasReport && hasPdf && hasCommunity && hasTrajectory) return "Experiência completa";
     if (hasReport) return "Relatório completo liberado";
     if (latest) return "Avaliação concluída";
     return "Comece sua jornada";
@@ -129,8 +130,9 @@ function Dashboard() {
 
         {error && <div className="mt-5 rounded-2xl border border-destructive/20 bg-destructive/5 p-4 text-sm text-destructive">{error}</div>}
 
-        <section className="mt-6 grid gap-4 md:grid-cols-3">
+        <section className="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
           <AccessCard icon={<FileText className="h-5 w-5" />} title="Relatório online" active={hasReport} description={hasReport ? "Sua análise completa está liberada." : "Transforme sua prévia em uma leitura mais completa."} href={hasReport ? "/relatorio-online" : "/checkout/$offerId"} params={hasReport ? undefined : { offerId: "report-full-2490" }} />
+          <AccessCard icon={<Sparkles className="h-5 w-5" />} title="Leitura de Trajetória" active={hasTrajectory} description={hasTrajectory ? "Conte sua história e acompanhe a devolutiva do especialista." : "Uma leitura humana da sua trajetória para organizar melhor o que você vive."} href={hasTrajectory ? "/leitura-trajetoria" : "/checkout/$offerId"} params={hasTrajectory ? undefined : { offerId: "trajectory-reading-14990" }} />
           <AccessCard icon={<FileText className="h-5 w-5" />} title="Gerar PDF para consulta" active={hasPdf} description={hasPdf ? "Seu documento para levar ao especialista está disponível." : "Gere uma versão organizada para guardar e levar à consulta."} href={hasPdf ? "/relatorio-pdf" : "/checkout/$offerId"} params={hasPdf ? undefined : { offerId: "pdf-report-1490" }} />
           <AccessCard icon={<Users className="h-5 w-5" />} title="Comunidade de Apoio" active={hasCommunity} description={hasCommunity ? "Seu acesso está registrado." : "Trocas, conteúdos e conversas sobre neurodiversidade."} href={!hasCommunity ? "/checkout/$offerId" : "/comunidade"} params={!hasCommunity ? { offerId: "community-6x-1490" } : undefined} />
         </section>
