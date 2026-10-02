@@ -63,11 +63,6 @@ Deno.serve(async (req) => {
     return json(req, { error: "O servidor ainda não está configurado corretamente." }, 503);
   }
 
-  if (!mpToken) {
-    console.error("PROCESS_PAYMENT_CONFIG_ERROR: Mercado Pago Access Token is missing.");
-    return json(req, { error: "Mercado Pago ainda não está configurado no servidor." }, 503);
-  }
-
   const authClient = createClient(supabaseUrl, anonKey);
   const admin = createClient(supabaseUrl, serviceKey);
 
@@ -76,6 +71,75 @@ Deno.serve(async (req) => {
 
   const body = await req.json().catch(() => null);
   if (!body || typeof body !== "object") return json(req, { error: "Dados de pagamento inválidos." }, 400);
+
+  // Secure result reads are intentionally served by this existing authenticated
+  // Edge Function so paid analysis is never exposed through direct PostgREST reads.
+  // This does not require a new Edge Function.
+  if (body.action === "get_result") {
+    const requiredProductSlug = typeof body.requiredProductSlug === "string"
+      ? body.requiredProductSlug.trim()
+      : "";
+
+    if (requiredProductSlug) {
+      const { data: product, error: productError } = await admin
+        .from("produtos")
+        .select("id,slug")
+        .eq("slug", requiredProductSlug)
+        .maybeSingle();
+      if (productError || !product) return json(req, { error: "Produto não encontrado." }, 404);
+
+      const { data: access, error: accessError } = await admin
+        .from("acessos")
+        .select("id")
+        .eq("user_id", userData.user.id)
+        .eq("produto_id", product.id)
+        .eq("status", "active")
+        .or(`expires_at.is.null,expires_at.gt.${new Date().toISOString()}`)
+        .limit(1)
+        .maybeSingle();
+
+      if (accessError) {
+        console.error("PROCESS_PAYMENT_RESULT_ACCESS_ERROR", accessError);
+        return json(req, { error: "Não foi possível verificar seu acesso." }, 503);
+      }
+      if (!access) return json(req, { error: "Você ainda não possui acesso a este conteúdo." }, 403);
+    }
+
+    const { data: result, error: resultError } = await admin
+      .from("resultados")
+      .select("id,created_at,total_raw,max_raw,scores,analysis")
+      .eq("user_id", userData.user.id)
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+
+    if (resultError) {
+      console.error("PROCESS_PAYMENT_RESULT_READ_ERROR", resultError);
+      return json(req, { error: "Não foi possível carregar seu resultado." }, 500);
+    }
+
+    if (!result) return json(req, { result: null });
+
+    // Without a paid-product authorization, return only the free score summary.
+    if (!requiredProductSlug) {
+      return json(req, {
+        result: {
+          id: result.id,
+          created_at: result.created_at,
+          total_raw: result.total_raw,
+          max_raw: result.max_raw,
+          scores: result.scores,
+        },
+      });
+    }
+
+    return json(req, { result });
+  }
+
+  if (!mpToken) {
+    console.error("PROCESS_PAYMENT_CONFIG_ERROR: Mercado Pago Access Token is missing.");
+    return json(req, { error: "Mercado Pago ainda não está configurado no servidor." }, 503);
+  }
 
   const turnstileSecret = Deno.env.get("TURNSTILE_SECRET_KEY")?.trim();
   const turnstileToken = String(body?.captchaToken ?? "").trim();
