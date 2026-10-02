@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Brain, Target, MessageCircle, Heart, Infinity as InfinityIcon, Sun, User, Star, ShieldCheck, FileText, Lock, Users } from "lucide-react";
+import { Brain, Target, MessageCircle, Heart, Infinity as InfinityIcon, Sun, User, Star, ShieldCheck, FileText, Lock, Users, Instagram } from "lucide-react";
 import { TestimonialsCarousel } from "@/components/testimonials-carousel";
 import logo from "@/assets/logo.png.asset.json";
 import mark from "@/assets/mark.png.asset.json";
@@ -204,8 +204,20 @@ function Index() {
         </section>
       </main>
 
-      <footer className="border-t border-border py-8 text-center text-sm text-muted-foreground">
-        © {new Date().getFullYear()} NeuroSpectro · Rastreio, não diagnóstico.
+      <footer className="border-t border-border py-6 text-center text-sm text-muted-foreground">
+        <div className="mx-auto flex max-w-6xl items-center justify-center gap-4 px-5">
+          <span>© {new Date().getFullYear()} NeuroSpectro · Rastreio, não diagnóstico.</span>
+          <a
+            href="https://www.instagram.com/neurospectro"
+            target="_blank"
+            rel="noreferrer"
+            aria-label="Instagram da NeuroSpectro"
+            title="Instagram da NeuroSpectro"
+            className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-border text-muted-foreground transition hover:border-primary/40 hover:text-primary"
+          >
+            <Instagram className="h-4 w-4" />
+          </a>
+        </div>
       </footer>
     </div>
   );
