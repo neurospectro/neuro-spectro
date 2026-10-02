@@ -26,6 +26,7 @@ const offers: Record<string, { product: string; total: number; installments: num
   "report-full-2490": { product: "relatorio-completo", total: 2490, installments: 1, installment: 2490 },
   "pdf-report-1490": { product: "relatorio-pdf", total: 1490, installments: 1, installment: 1490 },
   "community-6x-1490": { product: "comunidade-apoio", total: 8940, installments: 6, installment: 1490 },
+  "trajectory-reading-14990": { product: "leitura-trajetoria", total: 14990, installments: 1, installment: 14990 },
 };
 
 function centsToAmount(cents: number) {
@@ -146,6 +147,29 @@ Deno.serve(async (req) => {
   }
 
   const productSlug = String(offer?.produtos?.slug ?? configured.product);
+
+  if (productSlug === "leitura-trajetoria") {
+    const { data: reportProduct } = await admin
+      .from("produtos")
+      .select("id")
+      .eq("slug", "relatorio-completo")
+      .maybeSingle();
+
+    const { data: reportAccess } = reportProduct
+      ? await admin
+          .from("acessos")
+          .select("id")
+          .eq("user_id", userData.user.id)
+          .eq("produto_id", reportProduct.id)
+          .eq("status", "active")
+          .or(`expires_at.is.null,expires_at.gt.${new Date().toISOString()}`)
+          .limit(1)
+      : { data: [] };
+
+    if (!reportAccess?.length) {
+      return json(req, { error: "A Leitura de Trajetória é um complemento do Relatório Completo." }, 403);
+    }
+  }
 
   if (productSlug === "relatorio-pdf") {
     const { data: reportProduct } = await admin
