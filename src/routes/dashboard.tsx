@@ -197,7 +197,7 @@ function Dashboard() {
   );
 }
 
-function AccessCard({ icon, title, active, description, href, params }: { icon: React.ReactNode; title: string; active: boolean; description: string; href?: "/checkout/$offerId" | "/comunidade"; params?: { offerId: string } }) {
+function AccessCard({ icon, title, active, description, href, params }: { icon: React.ReactNode; title: string; active: boolean; description: string; href?: "/checkout/$offerId" | "/comunidade" | "/leitura-trajetoria-oferta"; params?: { offerId: string } }) {
   const content = (
     <div className="h-full rounded-3xl border border-border bg-card p-5 shadow-soft transition hover:border-primary/30 hover:shadow-md">
       <div className="flex items-start justify-between gap-3">
@@ -206,7 +206,7 @@ function AccessCard({ icon, title, active, description, href, params }: { icon: 
       </div>
       <h2 className="mt-4 font-semibold text-ink">{title}</h2>
       <p className="mt-1 text-sm leading-5 text-muted-foreground">{description}</p>
-      {!active && href && <span className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-primary">Conhecer <ArrowRight className="h-4 w-4" /></span>}
+      {!active && href && <span className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-primary">Saiba mais <ArrowRight className="h-4 w-4" /></span>}
     </div>
   );
 
