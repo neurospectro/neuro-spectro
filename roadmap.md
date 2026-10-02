@@ -8,4 +8,5 @@
 - [ ] 7. Admin panel
 - [ ] 8. Meta Pixel/CAPI/GA
 - [ ] 9. SEO/performance/a11y
+- [x] Fase 01/05 auditoria + Central de Integrações (histórico persistente pendente: requer migration no Supabase)
 - [ ] 10. Security + QA

@@ -2,6 +2,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { ArrowLeft, Download, LogOut, RefreshCw, ShieldCheck, ShoppingBag, Users, WalletCards, Webhook } from "lucide-react";
 import { supabase } from "@/lib/supabase";
+import { IntegrationsCenter } from "@/components/integrations-center";
 
 type Customer = {
   id: string;
@@ -246,6 +247,8 @@ function AdminPage() {
             </div>
           </Panel>
         </section>
+
+        <IntegrationsCenter />
 
         <div className="mt-6 flex items-center gap-3 text-sm text-muted-foreground"><Link to="/dashboard" className="inline-flex items-center gap-2 hover:text-ink"><ArrowLeft className="h-4 w-4" /> Dashboard do cliente</Link><span>•</span><span>Admin protegido por allowlist no Supabase.</span></div>
       </div>

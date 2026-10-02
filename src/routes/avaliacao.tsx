@@ -148,8 +148,14 @@ function Avaliacao() {
       assessmentVersion: ASSESSMENT.version,
       questions,
       scores: scoreByDimension(completed.answers),
-    }).catch(() => {
-      // The local session remains the source for this anonymous flow; persistence can retry after login.
+    }).catch((error) => {
+      // Local session stays the source for the anonymous flow; record the failure so it is detectable.
+      console.error("ASSESSMENT_PERSIST_FAILED", error);
+      try {
+        localStorage.setItem("ns-persist-failed", JSON.stringify({ at: new Date().toISOString(), message: String(error?.message ?? error) }));
+      } catch {
+        /* storage unavailable */
+      }
     });
   };
 
