@@ -138,6 +138,11 @@ export interface FileRoutesByFullPath {
   '/sobre': typeof SobreRoute
   '/ajuda': typeof AjudaRoute
   '/proposito': typeof PropositoRoute
+  '/conta': typeof ContaRoute
+  '/conteudos': typeof ConteudosRoute
+  '/sobre': typeof SobreRoute
+  '/ajuda': typeof AjudaRoute
+  '/proposito': typeof PropositoRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
