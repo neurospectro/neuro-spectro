@@ -213,6 +213,7 @@ function Avaliacao() {
     setSession(completed);
     void persistCompletedAssessment({
       session: completed,
+      leadEmail,
       assessmentId: ASSESSMENT.assessment_id,
       assessmentVersion: ASSESSMENT.version,
       questions,
