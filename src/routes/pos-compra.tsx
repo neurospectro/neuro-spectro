@@ -44,10 +44,10 @@ function PostPurchasePage() {
           </div>
 
           <Link
-            to="/dashboard"
+            to="/login"
             className="mt-6 flex w-full items-center justify-center rounded-full bg-primary px-7 py-4 font-semibold text-primary-foreground shadow-soft transition hover:opacity-90"
           >
-            Acessar minha área
+            Entrar com meu e-mail
           </Link>
 
           <Link
