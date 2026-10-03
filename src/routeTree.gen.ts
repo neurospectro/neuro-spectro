@@ -22,6 +22,11 @@ import { Route as PosCompraRouteImport } from './routes/pos-compra'
 import { Route as RelatorioOnlineRouteImport } from './routes/relatorio-online'
 import { Route as RelatorioPdfRouteImport } from './routes/relatorio-pdf'
 import { Route as CheckoutOfferIdRouteImport } from './routes/checkout.$offerId'
+import { Route as ContaRouteImport } from './routes/conta'
+import { Route as ConteudosRouteImport } from './routes/conteudos'
+import { Route as VideosRouteImport } from './routes/videos'
+import { Route as SobreRouteImport } from './routes/sobre'
+import { Route as AjudaRouteImport } from './routes/ajuda'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -83,6 +88,31 @@ const RelatorioPdfRoute = RelatorioPdfRouteImport.update({
   path: '/relatorio-pdf',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ContaRoute = ContaRouteImport.update({
+  id: '/conta',
+  path: '/conta',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ConteudosRoute = ConteudosRouteImport.update({
+  id: '/conteudos',
+  path: '/conteudos',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const VideosRoute = VideosRouteImport.update({
+  id: '/videos',
+  path: '/videos',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SobreRoute = SobreRouteImport.update({
+  id: '/sobre',
+  path: '/sobre',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AjudaRoute = AjudaRouteImport.update({
+  id: '/ajuda',
+  path: '/ajuda',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const CheckoutOfferIdRoute = CheckoutOfferIdRouteImport.update({
   id: '/checkout/$offerId',
   path: '/checkout/$offerId',
@@ -103,6 +133,11 @@ export interface FileRoutesByFullPath {
   '/relatorio-online': typeof RelatorioOnlineRoute
   '/relatorio-pdf': typeof RelatorioPdfRoute
   '/checkout/$offerId': typeof CheckoutOfferIdRoute
+  '/conta': typeof ContaRoute
+  '/conteudos': typeof ConteudosRoute
+  '/videos': typeof VideosRoute
+  '/sobre': typeof SobreRoute
+  '/ajuda': typeof AjudaRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -118,6 +153,11 @@ export interface FileRoutesByTo {
   '/relatorio-online': typeof RelatorioOnlineRoute
   '/relatorio-pdf': typeof RelatorioPdfRoute
   '/checkout/$offerId': typeof CheckoutOfferIdRoute
+  '/conta': typeof ContaRoute
+  '/conteudos': typeof ConteudosRoute
+  '/videos': typeof VideosRoute
+  '/sobre': typeof SobreRoute
+  '/ajuda': typeof AjudaRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
