@@ -4,7 +4,8 @@ import { useEffect, useState } from "react";
 import { isSupabaseConfigured, supabase } from "@/lib/supabase";
 import { SecurityCaptcha, isTurnstileConfigured } from "@/components/security-captcha";
 
-export const Route = createFileRoute("/login")({ component: LoginPage });
+export const Route = createFileRoute("/login")({
+  head: () => ({ meta: [{ name: "robots", content: "noindex,nofollow,noarchive" }] }), component: LoginPage });
 
 function LoginPage() {
   const navigate = useNavigate();
