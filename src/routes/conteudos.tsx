@@ -1,11 +1,11 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowRight, BookOpen, ExternalLink, Heart, Lightbulb, MessageCircle, PlayCircle, Sparkles, Users } from "lucide-react";
+import { ArrowRight, BookOpen, ExternalLink, Heart, Lightbulb, MessageCircle, Sparkles } from "lucide-react";
 
 export const Route = createFileRoute("/conteudos")({
   head: () => ({
     meta: [
       { title: "Conteúdos sobre neurodivergência — NeuroSpectro" },
-      { name: "description", content: "Artigos, notícias, textos e vídeos selecionados sobre neurodivergência, autoconhecimento e inclusão." },
+      { name: "description", content: "Artigos, notícias, textos e referências selecionadas sobre neurodivergência, autoconhecimento e inclusão." },
     ],
   }),
   component: Conteudos,
@@ -34,13 +34,6 @@ const curated = [
     href: "https://www.gov.br/saude/pt-br/assuntos/saude-de-a-a-z/a/autismo/redes-de-atuacao",
   },
   {
-    category: "Ciência e educação",
-    title: "TDAH: tudo o que você precisa saber",
-    source: "Nunca vi 1 cientista",
-    text: "Uma explicação baseada em referências científicas, incluindo os limites de conteúdos de redes sociais para autodiagnóstico.",
-    href: "https://www.youtube.com/watch?v=6u74QhTyYos",
-  },
-  {
     category: "TDAH adulto",
     title: "TDAH na vida adulta e funcionamento executivo",
     source: "TDAH Brasil",
@@ -53,13 +46,6 @@ const curated = [
     source: "@autismoerealidade",
     text: "Cartilhas, direitos, perguntas frequentes e materiais educativos sobre TEA.",
     href: "https://linktr.ee/autismoerealidade",
-  },
-  {
-    category: "Saúde e comportamento",
-    title: "TDAH pode surgir na infância e não some na vida adulta",
-    source: "Drauzio Varella",
-    text: "Conteúdo introdutório sobre TDAH e a continuidade das dificuldades na vida adulta.",
-    href: "https://drauziovarella.uol.com.br/videos/coluna/tdah-pode-surgir-na-infancia-e-nao-some-na-vida-adulta/",
   },
 ];
 
@@ -84,11 +70,6 @@ function Conteudos() {
             <BookOpen className="h-7 w-7 text-primary" />
             <h2 className="mt-4 font-display text-2xl font-semibold text-ink">Artigos, notícias e textos</h2>
             <p className="mt-3 leading-7 text-muted-foreground">Leituras acessíveis, referências científicas, direitos e notícias para entender melhor neurodiversidade, TDAH, autismo e inclusão.</p>
-          </article>
-          <article className="rounded-[2rem] border border-border bg-card p-6 shadow-soft">
-            <PlayCircle className="h-7 w-7 text-primary" />
-            <h2 className="mt-4 font-display text-2xl font-semibold text-ink">Vídeos e redes sociais</h2>
-            <p className="mt-3 leading-7 text-muted-foreground">Vídeos e perfis selecionados para ampliar a conversa com diferentes vozes, sempre preservando o acesso ao conteúdo original.</p>
           </article>
         </section>
 
@@ -127,34 +108,6 @@ function Conteudos() {
           </div>
         </section>
 
-        <section className="mt-10 rounded-[2rem] border border-border bg-card p-6">
-          <div className="flex items-center gap-3">
-            <Users className="h-6 w-6 text-primary" />
-            <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">Curadoria social</p>
-              <h2 className="font-display text-xl font-semibold text-ink">Perspectivas da comunidade</h2>
-            </div>
-          </div>
-          <p className="mt-3 leading-7 text-muted-foreground">
-            A NeuroSpectro pode ampliar este espaço com uma rolagem contínua de posts e vídeos selecionados.
-            A proposta é dar visibilidade a fontes relevantes sem reproduzir seu conteúdo: cada card leva à publicação original.
-          </p>
-          <div className="mt-5 flex snap-x gap-3 overflow-x-auto pb-2">
-            {[
-              { label: "@autismoerealidade", text: "Materiais, direitos e informação sobre TEA.", href: "https://linktr.ee/autismoerealidade" },
-              { label: "@carlosalmada", text: "Conteúdo educativo sobre TDAH adulto, autonomia e funcionamento executivo.", href: "https://www.tdahbrasil.com.br/sobre-nos/" },
-              { label: "TDAH Descomplicado", text: "Conteúdo e vídeos sobre TDAH e neurodiversidade.", href: "https://www.youtube.com/tdahdescomplicado" },
-              { label: "Nunca vi 1 cientista", text: "Divulgação científica com referências e cuidado contra autodiagnóstico.", href: "https://www.youtube.com/watch?v=6u74QhTyYos" },
-            ].map((item) => (
-              <a key={item.label} href={item.href} target="_blank" rel="noreferrer" className="min-w-[82%] snap-start rounded-2xl border border-border bg-background p-5 hover:border-primary/40 sm:min-w-[48%]">
-                <p className="font-semibold text-ink">{item.label}</p>
-                <p className="mt-2 text-sm leading-6 text-muted-foreground">{item.text}</p>
-                <span className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-primary">Explorar <ExternalLink className="h-4 w-4" /></span>
-              </a>
-            ))}
-          </div>
-        </section>
-
         <section className="mt-8 rounded-[2rem] border border-primary/15 bg-primary/5 p-6">
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">Uma leitura importante</p>
           <h2 className="mt-2 font-display text-xl font-semibold text-ink">Diferença não significa ausência de desafios</h2>
@@ -163,7 +116,7 @@ function Conteudos() {
 
         <section className="mt-8 rounded-[2rem] border border-border bg-card p-6">
           <h2 className="font-display text-lg font-semibold text-ink">Como fazemos a curadoria?</h2>
-          <p className="mt-3 leading-7 text-muted-foreground">Priorizamos fontes públicas, científicas, profissionais e organizações com materiais educativos. Conteúdo externo é identificado como tal e deve ser lido no contexto original. A curadoria não significa endosso de todas as opiniões do autor.</p>
+          <p className="mt-3 leading-7 text-muted-foreground">Priorizamos fontes públicas, científicas, profissionais e organizações com materiais educativos. Cada referência externa é identificada e leva ao conteúdo original. A curadoria não significa endosso de todas as opiniões do autor.</p>
           <div className="mt-4 space-y-3 text-sm leading-6 text-muted-foreground">
             <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC11319857/" target="_blank" rel="noreferrer" className="flex items-center justify-between gap-4 rounded-xl border border-border p-4 hover:border-primary/40"><span>Revisão sistemática sobre linguagem neuroafirmativa no autismo</span><ArrowRight className="h-4 w-4 shrink-0 text-primary" /></a>
             <a href="https://pubmed.ncbi.nlm.nih.gov/42137527/" target="_blank" rel="noreferrer" className="flex items-center justify-between gap-4 rounded-xl border border-border p-4 hover:border-primary/40"><span>Revisão sistemática sobre estigma em adultos com TDAH</span><ArrowRight className="h-4 w-4 shrink-0 text-primary" /></a>
