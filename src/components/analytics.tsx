@@ -28,7 +28,7 @@ function loadMetaPixel() {
   const script = document.createElement("script");
   script.async = true;
   script.src = "https://connect.facebook.net/en_US/fbevents.js";
-  script.dataset.neuroSpectro = "meta-pixel";
+  script.dataset["neuroSpectro"] = "meta-pixel";
   document.head.appendChild(script);
 }
 
@@ -46,7 +46,7 @@ function loadGoogleAnalytics() {
   const script = document.createElement("script");
   script.async = true;
   script.src = `https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(GA_ID)}`;
-  script.dataset.neuroSpectro = "ga4";
+  script.dataset["neuroSpectro"] = "ga4";
   document.head.appendChild(script);
 }
 
