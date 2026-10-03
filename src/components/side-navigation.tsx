@@ -9,7 +9,6 @@ import {
   X,
   BookOpen,
   Compass,
-  Newspaper,
 } from "lucide-react";
 
 const groups = [
