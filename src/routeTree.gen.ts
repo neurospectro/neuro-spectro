@@ -27,6 +27,7 @@ import { Route as ConteudosRouteImport } from './routes/conteudos'
 import { Route as VideosRouteImport } from './routes/videos'
 import { Route as SobreRouteImport } from './routes/sobre'
 import { Route as AjudaRouteImport } from './routes/ajuda'
+import { Route as PropositoRouteImport } from './routes/proposito'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -113,6 +114,11 @@ const AjudaRoute = AjudaRouteImport.update({
   path: '/ajuda',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PropositoRoute = PropositoRouteImport.update({
+  id: '/proposito',
+  path: '/proposito',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const CheckoutOfferIdRoute = CheckoutOfferIdRouteImport.update({
   id: '/checkout/$offerId',
   path: '/checkout/$offerId',
@@ -138,6 +144,7 @@ export interface FileRoutesByFullPath {
   '/videos': typeof VideosRoute
   '/sobre': typeof SobreRoute
   '/ajuda': typeof AjudaRoute
+  '/proposito': typeof PropositoRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -211,6 +218,7 @@ export interface FileRouteTypes {
     | '/videos'
     | '/sobre'
     | '/ajuda'
+    | '/proposito'
   id:
     | '__root__'
     | '/'
@@ -231,6 +239,7 @@ export interface FileRouteTypes {
     | '/videos'
     | '/sobre'
     | '/ajuda'
+    | '/proposito'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -382,6 +391,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AjudaRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/proposito': {
+      id: '/proposito'
+      path: '/proposito'
+      fullPath: '/proposito'
+      preLoaderRoute: typeof PropositoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -404,6 +420,7 @@ const rootRouteChildren: RootRouteChildren = {
   VideosRoute: VideosRoute,
   SobreRoute: SobreRoute,
   AjudaRoute: AjudaRoute,
+  PropositoRoute: PropositoRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
