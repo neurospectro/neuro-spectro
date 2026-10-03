@@ -190,6 +190,9 @@ Deno.serve(async (req) => {
   }
 
   const amount = centsToAmount(configured.total);
+  // Keep the order insert compatible with the currently deployed billing schema.
+  // The payer email is still validated and sent to Mercado Pago below. Once the
+  // identity-claim migration is applied, payer_email can be persisted here too.
   const pedidoInsert = {
     user_id: userData.user.id,
     oferta_id: offer.id,
@@ -197,7 +200,6 @@ Deno.serve(async (req) => {
     provider: "mercadopago",
     amount_cents: configured.total,
     installments: Number(formData?.installments ?? 1),
-    payer_email: payerEmail,
   };
 
   const { data: pedido, error: pedidoError } = await admin
@@ -206,7 +208,10 @@ Deno.serve(async (req) => {
     .select("id")
     .single();
 
-  if (pedidoError || !pedido) return json(req, { error: "Não foi possível criar o pedido." }, 500);
+  if (pedidoError || !pedido) {
+    console.error("PROCESS_PAYMENT_ORDER_DB_ERROR", pedidoError);
+    return json(req, { error: "Não foi possível criar o pedido.", retryable: true }, 500);
+  }
 
   // Pix e cartões usam a Payments API. Para Pix, ela retorna diretamente o Copia e Cola.
   const paymentPayload: Record<string, unknown> = {
