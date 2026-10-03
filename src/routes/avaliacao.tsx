@@ -58,11 +58,6 @@ function Avaliacao() {
       return;
     }
 
-    if (!marketingConsent) {
-      setLeadError("Marque a opção para receber novidades e conteúdos da NeuroSpectro.");
-      return;
-    }
-
     if (!supabase) {
       setLeadError("Não foi possível conectar agora. Tente novamente.");
       return;
@@ -70,12 +65,14 @@ function Avaliacao() {
 
     setLeadSaving(true);
     try {
-      const { error } = await supabase.from("marketing_leads").upsert(
-        { email, marketing_consent: true, source: "assessment" },
-        { onConflict: "email", ignoreDuplicates: true },
-      );
+      const { error } = await supabase.from("marketing_leads").insert({
+        email,
+        marketing_consent: marketingConsent,
+        source: "assessment",
+      });
 
-      if (error) throw error;
+      // E-mail já cadastrado é uma entrada válida: não bloqueie o início da avaliação.
+      if (error && error.code !== "23505") throw error;
 
       if (fresh || !session) {
         setSession({ answers: {}, index: 0, startedAt: new Date().toISOString() });
@@ -94,11 +91,14 @@ function Avaliacao() {
     return (
       <Shell>
         <img src={mark.url} alt="" className="mx-auto h-16 w-16" />
-        <h1 className="mt-6 font-display text-3xl font-semibold text-ink md:text-4xl">Antes de começar</h1>
+        <h1 className="mt-6 font-display text-3xl font-semibold leading-tight text-ink md:text-4xl">Talvez exista uma parte de você que ainda não conseguiu colocar em palavras.</h1>
+        <p className="mx-auto mt-4 max-w-md text-base leading-7 text-muted-foreground">
+          Esta avaliação foi criada para ajudar você a olhar para alguns padrões do seu jeito de pensar, sentir e viver com mais clareza — sem pressa e sem respostas certas ou erradas.
+        </p>
         <ul className="mx-auto mt-6 max-w-md space-y-3 text-left text-muted-foreground">
           <li>• São {questions.length} afirmações, uma por tela.</li>
           <li>• Responda pensando em como você costuma ser na maior parte da vida.</li>
-          <li>• Não há respostas certas ou erradas. Você pode voltar e mudar qualquer resposta.</li>
+          <li>• Você pode voltar e mudar qualquer resposta.</li>
           <li>• Seu progresso fica salvo neste aparelho.</li>
         </ul>
 
@@ -129,8 +129,8 @@ function Avaliacao() {
           <div className="flex gap-3">
             <Mail className="mt-0.5 h-5 w-5 shrink-0 text-primary" />
             <div>
-              <p className="font-semibold text-ink">Antes de começar, deixe seu e-mail</p>
-              <p className="mt-1 text-sm leading-5 text-muted-foreground">Assim podemos enviar seu resultado, novidades e conteúdos da NeuroSpectro para você acompanhar sua jornada mesmo depois de concluir a avaliação.</p>
+              <p className="font-semibold text-ink">Antes de descobrir mais sobre você, deixe seu e-mail</p>
+              <p className="mt-1 text-sm leading-5 text-muted-foreground">Queremos conseguir encontrar você depois desta experiência — para enviar seu resultado e, se você quiser, continuar essa jornada com conteúdos da NeuroSpectro.</p>
             </div>
           </div>
           <input
@@ -150,7 +150,7 @@ function Avaliacao() {
               onChange={(event) => { setMarketingConsent(event.target.checked); setLeadError(""); }}
               className="mt-0.5 h-4 w-4 accent-primary"
             />
-            <span>Quero receber por e-mail conteúdos, novidades e ofertas da NeuroSpectro. Posso cancelar quando quiser.</span>
+            <span>Quero também receber conteúdos, novidades e ofertas da NeuroSpectro. Posso cancelar quando quiser.</span>
           </label>
           {leadError && <p className="mt-3 text-xs font-medium text-destructive">{leadError}</p>}
         </div>
@@ -159,7 +159,7 @@ function Avaliacao() {
           {hasSaved ? (
             <>
               <button onClick={() => void begin(false)} disabled={leadSaving} className="rounded-full bg-primary px-8 py-3 font-medium text-primary-foreground shadow-soft">
-                Continuar de onde parei ({count}/{questions.length})
+                Continuar minha jornada ({count}/{questions.length})
               </button>
               <button onClick={() => void begin(true)} disabled={leadSaving} className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground">
                 <RotateCcw className="h-4 w-4" /> Recomeçar do zero
@@ -167,7 +167,7 @@ function Avaliacao() {
             </>
           ) : (
             <button onClick={() => void begin(true)} disabled={leadSaving} className="rounded-full bg-primary px-8 py-3 font-medium text-primary-foreground shadow-soft">
-              Começar avaliação
+              Quero descobrir mais
             </button>
           )}
         </div>
