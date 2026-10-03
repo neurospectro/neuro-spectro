@@ -170,12 +170,13 @@ Deno.serve(async (req) => {
     return Array.from(new Uint8Array(hash)).map((byte) => byte.toString(16).padStart(2, "0")).join("");
   };
 
-  const ipKey = await digest(`ip:${clientIp}`);
-  const emailKey = await digest(`email:${payerEmail}`);
+  const rateLimitVersion = "v2";
+  const ipKey = await digest(`payment:${rateLimitVersion}:ip:${clientIp}`);
+  const emailKey = await digest(`payment:${rateLimitVersion}:email:${payerEmail}`);
 
   const { data: ipAllowed, error: ipLimitError } = await admin.rpc(
     "consume_payment_rate_limit",
-    { p_key_hash: ipKey, p_window_seconds: 600, p_max_requests: 5 },
+    { p_key_hash: ipKey, p_window_seconds: 600, p_max_requests: 10 },
   );
   if (ipLimitError) {
     // Backward compatibility: older Supabase projects may not have the
@@ -195,7 +196,7 @@ Deno.serve(async (req) => {
 
   const { data: emailAllowed, error: emailLimitError } = await admin.rpc(
     "consume_payment_rate_limit",
-    { p_key_hash: emailKey, p_window_seconds: 3600, p_max_requests: 3 },
+    { p_key_hash: emailKey, p_window_seconds: 3600, p_max_requests: 5 },
   );
   if (emailLimitError) {
     // Same compatibility behavior for the email-based limiter.
