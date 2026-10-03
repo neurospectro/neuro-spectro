@@ -49,3 +49,6 @@ jobs:
 
       - name: Deploy generate-pdf-report
         run: supabase functions deploy generate-pdf-report --project-ref "$SUPABASE_PROJECT_ID" --use-api
+
+      - name: Deploy notify-trajectory-submission
+        run: supabase functions deploy notify-trajectory-submission --project-ref "$SUPABASE_PROJECT_ID" --use-api
