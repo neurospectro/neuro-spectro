@@ -33,14 +33,11 @@ function OnlineReport() {
     const valid = Boolean(row?.status === "active" && row?.produtos?.slug === "relatorio-completo" && (!row.expires_at || new Date(row.expires_at).getTime() > Date.now()));
     if (!valid) { setLocked(true); setLoading(false); return; }
 
-    const { data } = await supabase
-      .from("resultados")
-      .select("id,created_at,total_raw,max_raw,scores,analysis")
-      .order("created_at", { ascending: false })
-      .limit(1)
-      .maybeSingle();
-
-    setResult((data ?? null) as Result | null);
+    // Server-side entitlement check: the RPC only returns the analysis with active paid access.
+    const { data, error } = await supabase.rpc("get_full_report" as never);
+    if (error) console.error("FULL_REPORT_LOAD_ERROR", error);
+    const rows = (data ?? []) as unknown as Result[];
+    setResult(rows[0] ?? null);
     setLoading(false);
   }
 
