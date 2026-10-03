@@ -2,24 +2,33 @@ import { useState } from "react";
 import { Link } from "@tanstack/react-router";
 import {
   HelpCircle,
-  Info,
   Instagram,
   Menu,
   UserCircle,
   Users,
-  Video,
   X,
   BookOpen,
+  Compass,
+  Newspaper,
 } from "lucide-react";
 
-const items = [
-  { label: "Minha avaliação", to: "/avaliacao", icon: BookOpen },
-  { label: "Minha conta", to: "/conta", icon: UserCircle },
-  { label: "Conteúdos", to: "/conteudos", icon: BookOpen },
-  { label: "Vídeos", to: "/videos", icon: Video },
-  { label: "Comunidade", to: "/comunidade", icon: Users },
-  { label: "Sobre", to: "/sobre", icon: Info },
-  { label: "Ajuda", to: "/ajuda", icon: HelpCircle },
+const groups = [
+  {
+    title: "NEUROSPECTRO",
+    items: [
+      { label: "Nosso propósito", to: "/proposito", icon: Compass },
+      { label: "Conteúdos", to: "/conteudos", icon: BookOpen },
+      { label: "Comunidade", to: "/comunidade", icon: Users },
+      { label: "Ajuda", to: "/ajuda", icon: HelpCircle },
+    ],
+  },
+  {
+    title: "MINHA JORNADA",
+    items: [
+      { label: "Minha avaliação", to: "/avaliacao", icon: BookOpen },
+      { label: "Minha conta", to: "/conta", icon: UserCircle },
+    ],
+  },
 ];
 
 export function SideNavigation() {
@@ -48,7 +57,9 @@ export function SideNavigation() {
           <aside className="absolute left-0 top-0 flex h-full w-[min(92vw,360px)] flex-col border-r border-border bg-card p-5 shadow-2xl">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-xs font-semibold uppercase tracking-[0.25em] text-primary">NeuroSpectro</p>
+                <p className="text-xs font-semibold uppercase tracking-[0.25em] text-primary">
+                  NeuroSpectro
+                </p>
                 <p className="mt-1 text-sm text-muted-foreground">Explore sua jornada</p>
               </div>
               <button
@@ -61,17 +72,26 @@ export function SideNavigation() {
               </button>
             </div>
 
-            <nav className="mt-8 space-y-1" aria-label="Navegação secundária">
-              {items.map(({ label, to, icon: Icon }) => (
-                <Link
-                  key={to}
-                  to={to}
-                  onClick={() => setOpen(false)}
-                  className="flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium text-foreground transition hover:bg-secondary hover:text-primary"
-                >
-                  <Icon className="h-4 w-4 shrink-0" />
-                  {label}
-                </Link>
+            <nav className="mt-8 space-y-6 overflow-y-auto" aria-label="Navegação secundária">
+              {groups.map((group) => (
+                <div key={group.title}>
+                  <p className="mb-2 px-3 text-[10px] font-bold tracking-[0.2em] text-muted-foreground">
+                    {group.title}
+                  </p>
+                  <div className="space-y-1">
+                    {group.items.map(({ label, to, icon: Icon }) => (
+                      <Link
+                        key={to}
+                        to={to}
+                        onClick={() => setOpen(false)}
+                        className="flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium text-foreground transition hover:bg-secondary hover:text-primary"
+                      >
+                        <Icon className="h-4 w-4 shrink-0" />
+                        {label}
+                      </Link>
+                    ))}
+                  </div>
+                </div>
               ))}
 
               <a
