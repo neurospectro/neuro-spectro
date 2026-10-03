@@ -152,7 +152,8 @@ Deno.serve(async (req) => {
     req.headers.get("x-real-ip")?.trim() ||
     "unknown";
 
-  const payerEmail = String(formData?.payer?.email ?? userData.user.email ?? "").trim().toLowerCase();
+  // Always use the verified account email; never trust a client-supplied payer email.
+  const payerEmail = String(userData.user.email ?? "").trim().toLowerCase();
   if (!payerEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(payerEmail)) {
     return json(req, { error: "E-mail do pagador é obrigatório e deve ser válido." }, 400);
   }

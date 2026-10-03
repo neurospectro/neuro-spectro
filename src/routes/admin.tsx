@@ -150,7 +150,13 @@ function AdminPage() {
         new Date(order.created_at).toLocaleString("pt-BR"),
       ];
     });
-    const csv = [header, ...rows].map((row) => row.map((value) => `"${String(value).replaceAll('"', '""')}"`).join(",")).join("\n");
+    const safeCell = (value: unknown) => {
+      let text = String(value);
+      // Neutralize spreadsheet formula injection (=, +, -, @, tab, CR).
+      if (/^[=+\-@\t\r]/.test(text)) text = `'${text}`;
+      return `"${text.replaceAll('"', '""')}"`;
+    };
+    const csv = [header, ...rows].map((row) => row.map(safeCell).join(",")).join("\n");
     const blob = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8;" });
     const url = URL.createObjectURL(blob);
     const anchor = document.createElement("a");
