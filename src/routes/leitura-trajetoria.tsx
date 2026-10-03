@@ -14,7 +14,8 @@ type Reading = {
   response_sent_at: string | null;
 };
 
-export const Route = createFileRoute("/leitura-trajetoria")({ component: TrajectoryReading });
+export const Route = createFileRoute("/leitura-trajetoria")({
+  head: () => ({ meta: [{ name: "robots", content: "noindex,nofollow,noarchive" }] }), component: TrajectoryReading });
 
 function TrajectoryReading() {
   const [reading, setReading] = useState<Reading | null>(null);
