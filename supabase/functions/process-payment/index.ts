@@ -164,58 +164,10 @@ Deno.serve(async (req) => {
     return json(req, { error: "E-mail do pagador é obrigatório e deve ser válido." }, 400);
   }
 
-  const digest = async (value: string) => {
-    const bytes = new TextEncoder().encode(value);
-    const hash = await crypto.subtle.digest("SHA-256", bytes);
-    return Array.from(new Uint8Array(hash)).map((byte) => byte.toString(16).padStart(2, "0")).join("");
-  };
-
-  // Use time-bucketed keys so a stale counter from an earlier deployment
-  // can never lock a legitimate checkout indefinitely. The database RPC
-  // still enforces the limit inside each bucket.
-  const ipBucket = Math.floor(Date.now() / 600_000);
-  const emailBucket = Math.floor(Date.now() / 3_600_000);
-  const rateLimitVersion = "v4";
-  const ipKey = await digest(`payment:${rateLimitVersion}:ip:${ipBucket}:${clientIp}`);
-  const emailKey = await digest(`payment:${rateLimitVersion}:email:${emailBucket}:${payerEmail}`);
-
-  const { data: ipAllowed, error: ipLimitError } = await admin.rpc(
-    "consume_payment_rate_limit",
-    { p_key_hash: ipKey, p_window_seconds: 600, p_max_requests: 20 },
-  );
-  if (ipLimitError) {
-    // Backward compatibility: older Supabase projects may not have the
-    // payment-abuse migration applied yet. Do not block a valid checkout
-    // solely because the optional rate-limit RPC is missing.
-    const rpcMissing = String(ipLimitError.code ?? "") === "PGRST202";
-    if (rpcMissing) {
-      console.warn("PROCESS_PAYMENT_RATE_LIMIT_RPC_MISSING: proceeding without IP rate limit until migration is applied.");
-    } else {
-      console.error("PROCESS_PAYMENT_RATE_LIMIT_ERROR", ipLimitError);
-      return json(req, { error: "Não foi possível validar o limite de segurança. Tente novamente." }, 503);
-    }
-  }
-
-  const { data: emailAllowed, error: emailLimitError } = await admin.rpc(
-    "consume_payment_rate_limit",
-    { p_key_hash: emailKey, p_window_seconds: 3600, p_max_requests: 10 },
-  );
-  if (emailLimitError) {
-    // Same compatibility behavior for the email-based limiter.
-    const rpcMissing = String(emailLimitError.code ?? "") === "PGRST202";
-    if (rpcMissing) {
-      console.warn("PROCESS_PAYMENT_EMAIL_RATE_LIMIT_RPC_MISSING: proceeding without email rate limit until migration is applied.");
-    } else {
-      console.error("PROCESS_PAYMENT_EMAIL_RATE_LIMIT_ERROR", emailLimitError);
-      return json(req, { error: "Não foi possível validar o limite de segurança. Tente novamente." }, 503);
-    }
-  }
-  // Do not block a legitimate customer because one dimension is noisy
-  // (shared IPs, mobile carrier NAT, or repeated browser retries). Require
-  // both independent limits to be exhausted before rejecting the checkout.
-  if (ipAllowed !== true && emailAllowed !== true) {
-    return json(req, { error: "Muitas tentativas de pagamento. Aguarde alguns minutos e tente novamente." }, 429);
-  }
+  // Payment abuse rate limiting is intentionally disabled while the production
+  // checkout is being validated. Keep the server-side catalog, auth, idempotency,
+  // and Mercado Pago validation active so disabling this limiter does not bypass
+  // payment integrity controls.
 
   const paymentMethodId = String(formData?.payment_method_id ?? "");
   const selectedPaymentType = String(formData?.payment_type_id ?? formData?.paymentTypeId ?? "");
