@@ -45,7 +45,8 @@ type WebhookEvent = {
   created_at: string;
 };
 
-export const Route = createFileRoute("/admin")({ component: AdminPage });
+export const Route = createFileRoute("/admin")({
+  head: () => ({ meta: [{ name: "robots", content: "noindex,nofollow,noarchive" }] }), component: AdminPage });
 
 function AdminPage() {
   const navigate = useNavigate();
