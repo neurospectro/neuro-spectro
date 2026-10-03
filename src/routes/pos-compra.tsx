@@ -1,7 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowLeft, CheckCircle2, MailCheck } from "lucide-react";
 
-export const Route = createFileRoute("/pos-compra")({ component: PostPurchasePage });
+export const Route = createFileRoute("/pos-compra")({
+  head: () => ({ meta: [{ name: "robots", content: "noindex,nofollow,noarchive" }] }), component: PostPurchasePage });
 
 function PostPurchasePage() {
   return (
