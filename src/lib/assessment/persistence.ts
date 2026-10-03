@@ -4,6 +4,7 @@ import { generateAssessmentAnalysis } from "@/lib/assessment/analysis";
 
 export async function persistCompletedAssessment(args: {
   session: { answers: Record<string, number>; startedAt: string; finishedAt?: string };
+  leadEmail?: string;
   assessmentId: string;
   assessmentVersion: string;
   questions: Question[];
@@ -32,6 +33,7 @@ export async function persistCompletedAssessment(args: {
       started_at: args.session.startedAt,
       finished_at: args.session.finishedAt,
       status: "completed",
+      lead_email: args.leadEmail?.trim().toLowerCase() || null,
     })
     .select("id")
     .single();
@@ -66,6 +68,7 @@ export async function persistCompletedAssessment(args: {
     total_raw: totalRaw,
     max_raw: maxRaw,
     analysis,
+    lead_email: args.leadEmail?.trim().toLowerCase() || null,
     scores: args.scores.map((item) => ({
       id: item.dimension.id,
       label: item.dimension.label,
