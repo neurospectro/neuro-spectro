@@ -138,32 +138,8 @@ export interface FileRoutesByFullPath {
   '/sobre': typeof SobreRoute
   '/ajuda': typeof AjudaRoute
   '/proposito': typeof PropositoRoute
-  '/conta': typeof ContaRoute
-  '/conteudos': typeof ConteudosRoute
-  '/sobre': typeof SobreRoute
-  '/ajuda': typeof AjudaRoute
-  '/proposito': typeof PropositoRoute
 }
-export interface FileRoutesByTo {
-  '/': typeof IndexRoute
-  '/admin': typeof AdminRoute
-  '/avaliacao': typeof AvaliacaoRoute
-  '/comunidade': typeof ComunidadeRoute
-  '/dashboard': typeof DashboardRoute
-  '/depoimento': typeof DepoimentoRoute
-  '/leitura-trajetoria': typeof LeituraTrajetoriaRoute
-  '/leitura-trajetoria-oferta': typeof LeituraTrajetoriaOfertaRoute
-  '/login': typeof LoginRoute
-  '/pos-compra': typeof PosCompraRoute
-  '/relatorio-online': typeof RelatorioOnlineRoute
-  '/relatorio-pdf': typeof RelatorioPdfRoute
-  '/checkout/$offerId': typeof CheckoutOfferIdRoute
-  '/conta': typeof ContaRoute
-  '/conteudos': typeof ConteudosRoute
-  '/videos': typeof VideosRoute
-  '/sobre': typeof SobreRoute
-  '/ajuda': typeof AjudaRoute
-}
+export interface FileRoutesByTo extends FileRoutesByFullPath {}
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
@@ -179,65 +155,18 @@ export interface FileRoutesById {
   '/relatorio-online': typeof RelatorioOnlineRoute
   '/relatorio-pdf': typeof RelatorioPdfRoute
   '/checkout/$offerId': typeof CheckoutOfferIdRoute
+  '/conta': typeof ContaRoute
+  '/conteudos': typeof ConteudosRoute
+  '/sobre': typeof SobreRoute
+  '/ajuda': typeof AjudaRoute
+  '/proposito': typeof PropositoRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths:
-    | '/'
-    | '/admin'
-    | '/avaliacao'
-    | '/comunidade'
-    | '/dashboard'
-    | '/depoimento'
-    | '/leitura-trajetoria'
-    | '/leitura-trajetoria-oferta'
-    | '/login'
-    | '/pos-compra'
-    | '/relatorio-online'
-    | '/relatorio-pdf'
-    | '/checkout/$offerId'
+  fullPaths: keyof FileRoutesByFullPath
   fileRoutesByTo: FileRoutesByTo
-  to:
-    | '/'
-    | '/admin'
-    | '/avaliacao'
-    | '/comunidade'
-    | '/dashboard'
-    | '/depoimento'
-    | '/leitura-trajetoria'
-    | '/leitura-trajetoria-oferta'
-    | '/login'
-    | '/pos-compra'
-    | '/relatorio-online'
-    | '/relatorio-pdf'
-    | '/checkout/$offerId'
-    | '/conta'
-    | '/conteudos'
-    | '/videos'
-    | '/sobre'
-    | '/ajuda'
-    | '/proposito'
-  id:
-    | '__root__'
-    | '/'
-    | '/admin'
-    | '/avaliacao'
-    | '/comunidade'
-    | '/dashboard'
-    | '/depoimento'
-    | '/leitura-trajetoria'
-    | '/leitura-trajetoria-oferta'
-    | '/login'
-    | '/pos-compra'
-    | '/relatorio-online'
-    | '/relatorio-pdf'
-    | '/checkout/$offerId'
-    | '/conta'
-    | '/conteudos'
-    | '/videos'
-    | '/sobre'
-    | '/ajuda'
-    | '/proposito'
+  to: keyof FileRoutesByFullPath
+  id: keyof FileRoutesById
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -258,6 +187,7 @@ export interface RootRouteChildren {
   ConteudosRoute: typeof ConteudosRoute
   SobreRoute: typeof SobreRoute
   AjudaRoute: typeof AjudaRoute
+  PropositoRoute: typeof PropositoRoute
 }
 
 declare module '@tanstack/react-router' {
