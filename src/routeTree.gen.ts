@@ -206,6 +206,11 @@ export interface FileRouteTypes {
     | '/relatorio-online'
     | '/relatorio-pdf'
     | '/checkout/$offerId'
+    | '/conta'
+    | '/conteudos'
+    | '/videos'
+    | '/sobre'
+    | '/ajuda'
   id:
     | '__root__'
     | '/'
@@ -221,6 +226,11 @@ export interface FileRouteTypes {
     | '/relatorio-online'
     | '/relatorio-pdf'
     | '/checkout/$offerId'
+    | '/conta'
+    | '/conteudos'
+    | '/videos'
+    | '/sobre'
+    | '/ajuda'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -237,6 +247,11 @@ export interface RootRouteChildren {
   RelatorioOnlineRoute: typeof RelatorioOnlineRoute
   RelatorioPdfRoute: typeof RelatorioPdfRoute
   CheckoutOfferIdRoute: typeof CheckoutOfferIdRoute
+  ContaRoute: typeof ContaRoute
+  ConteudosRoute: typeof ConteudosRoute
+  VideosRoute: typeof VideosRoute
+  SobreRoute: typeof SobreRoute
+  AjudaRoute: typeof AjudaRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -332,6 +347,41 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CheckoutOfferIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/conta': {
+      id: '/conta'
+      path: '/conta'
+      fullPath: '/conta'
+      preLoaderRoute: typeof ContaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/conteudos': {
+      id: '/conteudos'
+      path: '/conteudos'
+      fullPath: '/conteudos'
+      preLoaderRoute: typeof ConteudosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/videos': {
+      id: '/videos'
+      path: '/videos'
+      fullPath: '/videos'
+      preLoaderRoute: typeof VideosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sobre': {
+      id: '/sobre'
+      path: '/sobre'
+      fullPath: '/sobre'
+      preLoaderRoute: typeof SobreRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/ajuda': {
+      id: '/ajuda'
+      path: '/ajuda'
+      fullPath: '/ajuda'
+      preLoaderRoute: typeof AjudaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -349,6 +399,11 @@ const rootRouteChildren: RootRouteChildren = {
   RelatorioOnlineRoute: RelatorioOnlineRoute,
   RelatorioPdfRoute: RelatorioPdfRoute,
   CheckoutOfferIdRoute: CheckoutOfferIdRoute,
+  ContaRoute: ContaRoute,
+  ConteudosRoute: ConteudosRoute,
+  VideosRoute: VideosRoute,
+  SobreRoute: SobreRoute,
+  AjudaRoute: AjudaRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
