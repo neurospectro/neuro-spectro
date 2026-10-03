@@ -132,7 +132,7 @@ function Dashboard() {
 
         <section className="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
           <AccessCard icon={<FileText className="h-5 w-5" />} title="Relatório online" active={hasReport} description={hasReport ? "Sua análise completa está liberada." : "Transforme sua prévia em uma leitura mais completa."} href={hasReport ? "/relatorio-online" : "/checkout/$offerId"} params={hasReport ? undefined : { offerId: "report-full-2490" }} />
-          <AccessCard icon={<Sparkles className="h-5 w-5" />} title="Leitura de Trajetória" active={hasTrajectory} description={hasTrajectory ? "Conte sua história e acompanhe a devolutiva do especialista." : "Uma leitura humana da sua trajetória para organizar melhor o que você vive."} href={hasTrajectory ? "/leitura-trajetoria" : "/leitura-trajetoria-oferta"} params={undefined} />
+          <AccessCard icon={<Sparkles className="h-5 w-5" />} title="Leitura de Trajetória" active={hasTrajectory} description={hasTrajectory ? "Sua história merece ser ouvida e acompanhada. Veja a devolutiva do especialista." : "Talvez existam partes da sua história que você nunca conseguiu explicar. Aqui, você pode contá-las com suas próprias palavras e receber uma leitura humana."} href={hasTrajectory ? "/leitura-trajetoria" : "/leitura-trajetoria-oferta"} params={undefined} />
           <AccessCard icon={<FileText className="h-5 w-5" />} title="Gerar PDF para consulta" active={hasPdf} description={hasPdf ? "Seu documento para levar ao especialista está disponível." : "Gere uma versão organizada para guardar e levar à consulta."} href={hasPdf ? "/relatorio-pdf" : "/checkout/$offerId"} params={hasPdf ? undefined : { offerId: "pdf-report-1490" }} />
           <AccessCard icon={<Users className="h-5 w-5" />} title="Comunidade de Apoio" active={hasCommunity} description={hasCommunity ? "Seu acesso está registrado." : "Trocas, conteúdos e conversas sobre neurodiversidade."} href={!hasCommunity ? "/checkout/$offerId" : "/comunidade"} params={!hasCommunity ? { offerId: "community-6x-1490" } : undefined} />
         </section>
@@ -165,8 +165,8 @@ function Dashboard() {
               <div className="rounded-2xl bg-primary p-3 text-primary-foreground"><Sparkles className="h-5 w-5" /></div>
               <div className="flex-1">
                 <p className="text-xs font-bold uppercase tracking-[0.2em] text-primary">Próximo passo</p>
-                <h2 className="mt-2 font-display text-2xl font-semibold text-ink">Leve sua avaliação além da prévia.</h2>
-                <p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">O Relatório Completo organiza suas dimensões, padrões observados e pontos que podem orientar novas reflexões.</p>
+                <h2 className="mt-2 font-display text-2xl font-semibold text-ink">Você descobriu alguns padrões. E se agora pudesse entender a história por trás deles?</h2>
+                <p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">O Relatório Completo ajuda a transformar respostas soltas em uma visão mais organizada de você: suas dimensões, padrões observados e pontos que podem abrir novas perguntas sobre sua própria história.</p>
                 <Link to="/checkout/$offerId" params={{ offerId: "report-full-2490" }} className="mt-5 inline-flex items-center gap-2 rounded-full bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground shadow-soft">Ver Relatório Completo · {formatBRL(2490)} <ArrowRight className="h-4 w-4" /></Link>
               </div>
             </div>
@@ -206,7 +206,7 @@ function AccessCard({ icon, title, active, description, href, params }: { icon: 
       </div>
       <h2 className="mt-4 font-semibold text-ink">{title}</h2>
       <p className="mt-1 text-sm leading-5 text-muted-foreground">{description}</p>
-      {!active && href && <span className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-primary">Conhecer <ArrowRight className="h-4 w-4" /></span>}
+      {!active && href && <span className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-primary">Saiba mais <ArrowRight className="h-4 w-4" /></span>}
     </div>
   );
 
