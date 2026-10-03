@@ -170,13 +170,13 @@ Deno.serve(async (req) => {
     return Array.from(new Uint8Array(hash)).map((byte) => byte.toString(16).padStart(2, "0")).join("");
   };
 
-  const rateLimitVersion = "v2";
+  const rateLimitVersion = "v3";
   const ipKey = await digest(`payment:${rateLimitVersion}:ip:${clientIp}`);
   const emailKey = await digest(`payment:${rateLimitVersion}:email:${payerEmail}`);
 
   const { data: ipAllowed, error: ipLimitError } = await admin.rpc(
     "consume_payment_rate_limit",
-    { p_key_hash: ipKey, p_window_seconds: 600, p_max_requests: 10 },
+    { p_key_hash: ipKey, p_window_seconds: 600, p_max_requests: 20 },
   );
   if (ipLimitError) {
     // Backward compatibility: older Supabase projects may not have the
@@ -190,13 +190,10 @@ Deno.serve(async (req) => {
       return json(req, { error: "Não foi possível validar o limite de segurança. Tente novamente." }, 503);
     }
   }
-  if (ipAllowed !== true) {
-    return json(req, { error: "Muitas tentativas de pagamento. Aguarde alguns minutos e tente novamente." }, 429);
-  }
 
   const { data: emailAllowed, error: emailLimitError } = await admin.rpc(
     "consume_payment_rate_limit",
-    { p_key_hash: emailKey, p_window_seconds: 3600, p_max_requests: 5 },
+    { p_key_hash: emailKey, p_window_seconds: 3600, p_max_requests: 10 },
   );
   if (emailLimitError) {
     // Same compatibility behavior for the email-based limiter.
@@ -208,8 +205,11 @@ Deno.serve(async (req) => {
       return json(req, { error: "Não foi possível validar o limite de segurança. Tente novamente." }, 503);
     }
   }
-  if (emailAllowed !== true) {
-    return json(req, { error: "Este e-mail atingiu o limite de tentativas de pagamento. Aguarde e tente novamente." }, 429);
+  // Do not block a legitimate customer because one dimension is noisy
+  // (shared IPs, mobile carrier NAT, or repeated browser retries). Require
+  // both independent limits to be exhausted before rejecting the checkout.
+  if (ipAllowed !== true && emailAllowed !== true) {
+    return json(req, { error: "Muitas tentativas de pagamento. Aguarde alguns minutos e tente novamente." }, 429);
   }
 
   const paymentMethodId = String(formData?.payment_method_id ?? "");
