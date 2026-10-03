@@ -70,7 +70,12 @@ export function SideNavigation() {
             className="absolute inset-0 bg-ink/25 backdrop-blur-[2px]"
             onClick={() => setOpen(false)}
           />
-          <aside\n            role="dialog"\n            aria-modal="true"\n            aria-label="Menu NeuroSpectro"\n            className="absolute left-0 top-0 flex h-full w-[min(92vw,360px)] flex-col border-r border-border bg-card p-5 shadow-2xl"\n          >
+          <aside
+            role="dialog"
+            aria-modal="true"
+            aria-label="Menu NeuroSpectro"
+            className="absolute left-0 top-0 flex h-full w-[min(92vw,360px)] flex-col border-r border-border bg-card p-5 shadow-2xl"
+          >
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-xs font-semibold uppercase tracking-[0.25em] text-primary">
