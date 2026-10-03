@@ -3,7 +3,8 @@ import { ArrowLeft, CheckCircle2, Download, FileText, Loader2, ShieldCheck } fro
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 
-export const Route = createFileRoute("/relatorio-pdf")({ component: RelatorioPdf });
+export const Route = createFileRoute("/relatorio-pdf")({
+  head: () => ({ meta: [{ name: "robots", content: "noindex,nofollow,noarchive" }] }), component: RelatorioPdf });
 
 function RelatorioPdf() {
   const [loading, setLoading] = useState(true);
