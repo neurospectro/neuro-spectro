@@ -21,6 +21,7 @@ declare global {
 }
 
 export const Route = createFileRoute("/checkout/$offerId")({
+  head: () => ({ meta: [{ name: "robots", content: "noindex,nofollow,noarchive" }] }),
   component: Checkout,
 });
 
