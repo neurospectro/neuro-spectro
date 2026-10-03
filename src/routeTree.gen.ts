@@ -24,7 +24,6 @@ import { Route as RelatorioPdfRouteImport } from './routes/relatorio-pdf'
 import { Route as CheckoutOfferIdRouteImport } from './routes/checkout.$offerId'
 import { Route as ContaRouteImport } from './routes/conta'
 import { Route as ConteudosRouteImport } from './routes/conteudos'
-import { Route as VideosRouteImport } from './routes/videos'
 import { Route as SobreRouteImport } from './routes/sobre'
 import { Route as AjudaRouteImport } from './routes/ajuda'
 import { Route as PropositoRouteImport } from './routes/proposito'
@@ -99,11 +98,6 @@ const ConteudosRoute = ConteudosRouteImport.update({
   path: '/conteudos',
   getParentRoute: () => rootRouteImport,
 } as any)
-const VideosRoute = VideosRouteImport.update({
-  id: '/videos',
-  path: '/videos',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const SobreRoute = SobreRouteImport.update({
   id: '/sobre',
   path: '/sobre',
@@ -141,7 +135,6 @@ export interface FileRoutesByFullPath {
   '/checkout/$offerId': typeof CheckoutOfferIdRoute
   '/conta': typeof ContaRoute
   '/conteudos': typeof ConteudosRoute
-  '/videos': typeof VideosRoute
   '/sobre': typeof SobreRoute
   '/ajuda': typeof AjudaRoute
   '/proposito': typeof PropositoRoute
@@ -258,7 +251,6 @@ export interface RootRouteChildren {
   CheckoutOfferIdRoute: typeof CheckoutOfferIdRoute
   ContaRoute: typeof ContaRoute
   ConteudosRoute: typeof ConteudosRoute
-  VideosRoute: typeof VideosRoute
   SobreRoute: typeof SobreRoute
   AjudaRoute: typeof AjudaRoute
 }
@@ -370,13 +362,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ConteudosRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/videos': {
-      id: '/videos'
-      path: '/videos'
-      fullPath: '/videos'
-      preLoaderRoute: typeof VideosRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/sobre': {
       id: '/sobre'
       path: '/sobre'
@@ -417,7 +402,6 @@ const rootRouteChildren: RootRouteChildren = {
   CheckoutOfferIdRoute: CheckoutOfferIdRoute,
   ContaRoute: ContaRoute,
   ConteudosRoute: ConteudosRoute,
-  VideosRoute: VideosRoute,
   SobreRoute: SobreRoute,
   AjudaRoute: AjudaRoute,
   PropositoRoute: PropositoRoute,
