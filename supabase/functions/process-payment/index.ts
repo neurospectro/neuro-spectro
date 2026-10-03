@@ -170,9 +170,14 @@ Deno.serve(async (req) => {
     return Array.from(new Uint8Array(hash)).map((byte) => byte.toString(16).padStart(2, "0")).join("");
   };
 
-  const rateLimitVersion = "v3";
-  const ipKey = await digest(`payment:${rateLimitVersion}:ip:${clientIp}`);
-  const emailKey = await digest(`payment:${rateLimitVersion}:email:${payerEmail}`);
+  // Use time-bucketed keys so a stale counter from an earlier deployment
+  // can never lock a legitimate checkout indefinitely. The database RPC
+  // still enforces the limit inside each bucket.
+  const ipBucket = Math.floor(Date.now() / 600_000);
+  const emailBucket = Math.floor(Date.now() / 3_600_000);
+  const rateLimitVersion = "v4";
+  const ipKey = await digest(`payment:${rateLimitVersion}:ip:${ipBucket}:${clientIp}`);
+  const emailKey = await digest(`payment:${rateLimitVersion}:email:${emailBucket}:${payerEmail}`);
 
   const { data: ipAllowed, error: ipLimitError } = await admin.rpc(
     "consume_payment_rate_limit",
