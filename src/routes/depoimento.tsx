@@ -12,6 +12,7 @@ type TestimonialRow = {
 };
 
 export const Route = createFileRoute("/depoimento")({
+  head: () => ({ meta: [{ name: "robots", content: "noindex,nofollow,noarchive" }] }),
   component: TestimonialPage,
 });
 
