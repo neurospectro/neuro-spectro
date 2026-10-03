@@ -11,22 +11,22 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminRouteImport } from './routes/admin'
+import { Route as AjudaRouteImport } from './routes/ajuda'
 import { Route as AvaliacaoRouteImport } from './routes/avaliacao'
 import { Route as ComunidadeRouteImport } from './routes/comunidade'
+import { Route as ContaRouteImport } from './routes/conta'
+import { Route as ConteudosRouteImport } from './routes/conteudos'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as DepoimentoRouteImport } from './routes/depoimento'
 import { Route as LeituraTrajetoriaRouteImport } from './routes/leitura-trajetoria'
 import { Route as LeituraTrajetoriaOfertaRouteImport } from './routes/leitura-trajetoria-oferta'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as PosCompraRouteImport } from './routes/pos-compra'
+import { Route as PropositoRouteImport } from './routes/proposito'
 import { Route as RelatorioOnlineRouteImport } from './routes/relatorio-online'
 import { Route as RelatorioPdfRouteImport } from './routes/relatorio-pdf'
-import { Route as CheckoutOfferIdRouteImport } from './routes/checkout.$offerId'
-import { Route as ContaRouteImport } from './routes/conta'
-import { Route as ConteudosRouteImport } from './routes/conteudos'
 import { Route as SobreRouteImport } from './routes/sobre'
-import { Route as AjudaRouteImport } from './routes/ajuda'
-import { Route as PropositoRouteImport } from './routes/proposito'
+import { Route as CheckoutOfferIdRouteImport } from './routes/checkout.$offerId'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -38,6 +38,11 @@ const AdminRoute = AdminRouteImport.update({
   path: '/admin',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AjudaRoute = AjudaRouteImport.update({
+  id: '/ajuda',
+  path: '/ajuda',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AvaliacaoRoute = AvaliacaoRouteImport.update({
   id: '/avaliacao',
   path: '/avaliacao',
@@ -46,6 +51,16 @@ const AvaliacaoRoute = AvaliacaoRouteImport.update({
 const ComunidadeRoute = ComunidadeRouteImport.update({
   id: '/comunidade',
   path: '/comunidade',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ContaRoute = ContaRouteImport.update({
+  id: '/conta',
+  path: '/conta',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ConteudosRoute = ConteudosRouteImport.update({
+  id: '/conteudos',
+  path: '/conteudos',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DashboardRoute = DashboardRouteImport.update({
@@ -78,6 +93,11 @@ const PosCompraRoute = PosCompraRouteImport.update({
   path: '/pos-compra',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PropositoRoute = PropositoRouteImport.update({
+  id: '/proposito',
+  path: '/proposito',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const RelatorioOnlineRoute = RelatorioOnlineRouteImport.update({
   id: '/relatorio-online',
   path: '/relatorio-online',
@@ -88,29 +108,9 @@ const RelatorioPdfRoute = RelatorioPdfRouteImport.update({
   path: '/relatorio-pdf',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ContaRoute = ContaRouteImport.update({
-  id: '/conta',
-  path: '/conta',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ConteudosRoute = ConteudosRouteImport.update({
-  id: '/conteudos',
-  path: '/conteudos',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const SobreRoute = SobreRouteImport.update({
   id: '/sobre',
   path: '/sobre',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AjudaRoute = AjudaRouteImport.update({
-  id: '/ajuda',
-  path: '/ajuda',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const PropositoRoute = PropositoRouteImport.update({
-  id: '/proposito',
-  path: '/proposito',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CheckoutOfferIdRoute = CheckoutOfferIdRouteImport.update({
@@ -122,72 +122,146 @@ const CheckoutOfferIdRoute = CheckoutOfferIdRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
+  '/ajuda': typeof AjudaRoute
   '/avaliacao': typeof AvaliacaoRoute
   '/comunidade': typeof ComunidadeRoute
+  '/conta': typeof ContaRoute
+  '/conteudos': typeof ConteudosRoute
   '/dashboard': typeof DashboardRoute
   '/depoimento': typeof DepoimentoRoute
   '/leitura-trajetoria': typeof LeituraTrajetoriaRoute
   '/leitura-trajetoria-oferta': typeof LeituraTrajetoriaOfertaRoute
   '/login': typeof LoginRoute
   '/pos-compra': typeof PosCompraRoute
+  '/proposito': typeof PropositoRoute
   '/relatorio-online': typeof RelatorioOnlineRoute
   '/relatorio-pdf': typeof RelatorioPdfRoute
+  '/sobre': typeof SobreRoute
   '/checkout/$offerId': typeof CheckoutOfferIdRoute
+}
+export interface FileRoutesByTo {
+  '/': typeof IndexRoute
+  '/admin': typeof AdminRoute
+  '/ajuda': typeof AjudaRoute
+  '/avaliacao': typeof AvaliacaoRoute
+  '/comunidade': typeof ComunidadeRoute
   '/conta': typeof ContaRoute
   '/conteudos': typeof ConteudosRoute
-  '/sobre': typeof SobreRoute
-  '/ajuda': typeof AjudaRoute
+  '/dashboard': typeof DashboardRoute
+  '/depoimento': typeof DepoimentoRoute
+  '/leitura-trajetoria': typeof LeituraTrajetoriaRoute
+  '/leitura-trajetoria-oferta': typeof LeituraTrajetoriaOfertaRoute
+  '/login': typeof LoginRoute
+  '/pos-compra': typeof PosCompraRoute
   '/proposito': typeof PropositoRoute
+  '/relatorio-online': typeof RelatorioOnlineRoute
+  '/relatorio-pdf': typeof RelatorioPdfRoute
+  '/sobre': typeof SobreRoute
+  '/checkout/$offerId': typeof CheckoutOfferIdRoute
 }
-export interface FileRoutesByTo extends FileRoutesByFullPath {}
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
+  '/ajuda': typeof AjudaRoute
   '/avaliacao': typeof AvaliacaoRoute
   '/comunidade': typeof ComunidadeRoute
+  '/conta': typeof ContaRoute
+  '/conteudos': typeof ConteudosRoute
   '/dashboard': typeof DashboardRoute
   '/depoimento': typeof DepoimentoRoute
   '/leitura-trajetoria': typeof LeituraTrajetoriaRoute
   '/leitura-trajetoria-oferta': typeof LeituraTrajetoriaOfertaRoute
   '/login': typeof LoginRoute
   '/pos-compra': typeof PosCompraRoute
+  '/proposito': typeof PropositoRoute
   '/relatorio-online': typeof RelatorioOnlineRoute
   '/relatorio-pdf': typeof RelatorioPdfRoute
-  '/checkout/$offerId': typeof CheckoutOfferIdRoute
-  '/conta': typeof ContaRoute
-  '/conteudos': typeof ConteudosRoute
   '/sobre': typeof SobreRoute
-  '/ajuda': typeof AjudaRoute
-  '/proposito': typeof PropositoRoute
+  '/checkout/$offerId': typeof CheckoutOfferIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: keyof FileRoutesByFullPath
+  fullPaths:
+    | '/'
+    | '/admin'
+    | '/ajuda'
+    | '/avaliacao'
+    | '/comunidade'
+    | '/conta'
+    | '/conteudos'
+    | '/dashboard'
+    | '/depoimento'
+    | '/leitura-trajetoria'
+    | '/leitura-trajetoria-oferta'
+    | '/login'
+    | '/pos-compra'
+    | '/proposito'
+    | '/relatorio-online'
+    | '/relatorio-pdf'
+    | '/sobre'
+    | '/checkout/$offerId'
   fileRoutesByTo: FileRoutesByTo
-  to: keyof FileRoutesByFullPath
-  id: keyof FileRoutesById
+  to:
+    | '/'
+    | '/admin'
+    | '/ajuda'
+    | '/avaliacao'
+    | '/comunidade'
+    | '/conta'
+    | '/conteudos'
+    | '/dashboard'
+    | '/depoimento'
+    | '/leitura-trajetoria'
+    | '/leitura-trajetoria-oferta'
+    | '/login'
+    | '/pos-compra'
+    | '/proposito'
+    | '/relatorio-online'
+    | '/relatorio-pdf'
+    | '/sobre'
+    | '/checkout/$offerId'
+  id:
+    | '__root__'
+    | '/'
+    | '/admin'
+    | '/ajuda'
+    | '/avaliacao'
+    | '/comunidade'
+    | '/conta'
+    | '/conteudos'
+    | '/dashboard'
+    | '/depoimento'
+    | '/leitura-trajetoria'
+    | '/leitura-trajetoria-oferta'
+    | '/login'
+    | '/pos-compra'
+    | '/proposito'
+    | '/relatorio-online'
+    | '/relatorio-pdf'
+    | '/sobre'
+    | '/checkout/$offerId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AdminRoute: typeof AdminRoute
+  AjudaRoute: typeof AjudaRoute
   AvaliacaoRoute: typeof AvaliacaoRoute
   ComunidadeRoute: typeof ComunidadeRoute
+  ContaRoute: typeof ContaRoute
+  ConteudosRoute: typeof ConteudosRoute
   DashboardRoute: typeof DashboardRoute
   DepoimentoRoute: typeof DepoimentoRoute
   LeituraTrajetoriaRoute: typeof LeituraTrajetoriaRoute
   LeituraTrajetoriaOfertaRoute: typeof LeituraTrajetoriaOfertaRoute
   LoginRoute: typeof LoginRoute
   PosCompraRoute: typeof PosCompraRoute
+  PropositoRoute: typeof PropositoRoute
   RelatorioOnlineRoute: typeof RelatorioOnlineRoute
   RelatorioPdfRoute: typeof RelatorioPdfRoute
-  CheckoutOfferIdRoute: typeof CheckoutOfferIdRoute
-  ContaRoute: typeof ContaRoute
-  ConteudosRoute: typeof ConteudosRoute
   SobreRoute: typeof SobreRoute
-  AjudaRoute: typeof AjudaRoute
-  PropositoRoute: typeof PropositoRoute
+  CheckoutOfferIdRoute: typeof CheckoutOfferIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -206,6 +280,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/ajuda': {
+      id: '/ajuda'
+      path: '/ajuda'
+      fullPath: '/ajuda'
+      preLoaderRoute: typeof AjudaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/avaliacao': {
       id: '/avaliacao'
       path: '/avaliacao'
@@ -218,6 +299,20 @@ declare module '@tanstack/react-router' {
       path: '/comunidade'
       fullPath: '/comunidade'
       preLoaderRoute: typeof ComunidadeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/conta': {
+      id: '/conta'
+      path: '/conta'
+      fullPath: '/conta'
+      preLoaderRoute: typeof ContaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/conteudos': {
+      id: '/conteudos'
+      path: '/conteudos'
+      fullPath: '/conteudos'
+      preLoaderRoute: typeof ConteudosRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/dashboard': {
@@ -262,6 +357,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PosCompraRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/proposito': {
+      id: '/proposito'
+      path: '/proposito'
+      fullPath: '/proposito'
+      preLoaderRoute: typeof PropositoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/relatorio-online': {
       id: '/relatorio-online'
       path: '/relatorio-online'
@@ -276,27 +378,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof RelatorioPdfRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/checkout/$offerId': {
-      id: '/checkout/$offerId'
-      path: '/checkout/$offerId'
-      fullPath: '/checkout/$offerId'
-      preLoaderRoute: typeof CheckoutOfferIdRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/conta': {
-      id: '/conta'
-      path: '/conta'
-      fullPath: '/conta'
-      preLoaderRoute: typeof ContaRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/conteudos': {
-      id: '/conteudos'
-      path: '/conteudos'
-      fullPath: '/conteudos'
-      preLoaderRoute: typeof ConteudosRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/sobre': {
       id: '/sobre'
       path: '/sobre'
@@ -304,18 +385,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SobreRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/ajuda': {
-      id: '/ajuda'
-      path: '/ajuda'
-      fullPath: '/ajuda'
-      preLoaderRoute: typeof AjudaRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/proposito': {
-      id: '/proposito'
-      path: '/proposito'
-      fullPath: '/proposito'
-      preLoaderRoute: typeof PropositoRouteImport
+    '/checkout/$offerId': {
+      id: '/checkout/$offerId'
+      path: '/checkout/$offerId'
+      fullPath: '/checkout/$offerId'
+      preLoaderRoute: typeof CheckoutOfferIdRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
@@ -324,22 +398,22 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AdminRoute: AdminRoute,
+  AjudaRoute: AjudaRoute,
   AvaliacaoRoute: AvaliacaoRoute,
   ComunidadeRoute: ComunidadeRoute,
+  ContaRoute: ContaRoute,
+  ConteudosRoute: ConteudosRoute,
   DashboardRoute: DashboardRoute,
   DepoimentoRoute: DepoimentoRoute,
   LeituraTrajetoriaRoute: LeituraTrajetoriaRoute,
   LeituraTrajetoriaOfertaRoute: LeituraTrajetoriaOfertaRoute,
   LoginRoute: LoginRoute,
   PosCompraRoute: PosCompraRoute,
+  PropositoRoute: PropositoRoute,
   RelatorioOnlineRoute: RelatorioOnlineRoute,
   RelatorioPdfRoute: RelatorioPdfRoute,
-  CheckoutOfferIdRoute: CheckoutOfferIdRoute,
-  ContaRoute: ContaRoute,
-  ConteudosRoute: ConteudosRoute,
   SobreRoute: SobreRoute,
-  AjudaRoute: AjudaRoute,
-  PropositoRoute: PropositoRoute,
+  CheckoutOfferIdRoute: CheckoutOfferIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
