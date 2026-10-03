@@ -32,7 +32,7 @@ export function SideNavigation() {
         onClick={() => setOpen(true)}
         aria-label="Abrir menu"
         title="Menu"
-        className="fixed bottom-5 left-5 z-40 flex h-11 w-11 items-center justify-center rounded-full border border-border bg-card/95 text-foreground shadow-soft backdrop-blur transition hover:border-primary/40 hover:text-primary"
+        className="fixed bottom-4 left-4 z-40 flex h-12 w-12 items-center justify-center rounded-full border border-border bg-card/95 text-foreground shadow-soft backdrop-blur transition hover:border-primary/40 hover:text-primary"
       >
         <Menu className="h-5 w-5" />
       </button>
@@ -45,7 +45,7 @@ export function SideNavigation() {
             className="absolute inset-0 bg-ink/25 backdrop-blur-[2px]"
             onClick={() => setOpen(false)}
           />
-          <aside className="absolute left-0 top-0 flex h-full w-[min(88vw,360px)] flex-col border-r border-border bg-card p-6 shadow-2xl">
+          <aside className="absolute left-0 top-0 flex h-full w-[min(92vw,360px)] flex-col border-r border-border bg-card p-5 shadow-2xl">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-xs font-semibold uppercase tracking-[0.25em] text-primary">NeuroSpectro</p>
