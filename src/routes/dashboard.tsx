@@ -29,7 +29,8 @@ type OrderRow = {
   created_at: string;
 };
 
-export const Route = createFileRoute("/dashboard")({ component: Dashboard });
+export const Route = createFileRoute("/dashboard")({
+  head: () => ({ meta: [{ name: "robots", content: "noindex,nofollow,noarchive" }] }), component: Dashboard });
 
 function Dashboard() {
   const navigate = useNavigate();
