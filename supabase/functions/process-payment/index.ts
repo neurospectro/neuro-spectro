@@ -232,6 +232,7 @@ Deno.serve(async (req) => {
     provider: "mercadopago",
     amount_cents: configured.total,
     installments: Number(formData?.installments ?? 1),
+    payer_email: payerEmail,
   };
 
   const { data: pedido, error: pedidoError } = await admin
