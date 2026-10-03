@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import {
   HelpCircle,
@@ -33,6 +33,23 @@ const groups = [
 export function SideNavigation() {
   const [open, setOpen] = useState(false);
 
+  useEffect(() => {
+    if (!open) return;
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setOpen(false);
+    };
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [open]);
+
   return (
     <>
       <button
@@ -53,7 +70,7 @@ export function SideNavigation() {
             className="absolute inset-0 bg-ink/25 backdrop-blur-[2px]"
             onClick={() => setOpen(false)}
           />
-          <aside className="absolute left-0 top-0 flex h-full w-[min(92vw,360px)] flex-col border-r border-border bg-card p-5 shadow-2xl">
+          <aside\n            role="dialog"\n            aria-modal="true"\n            aria-label="Menu NeuroSpectro"\n            className="absolute left-0 top-0 flex h-full w-[min(92vw,360px)] flex-col border-r border-border bg-card p-5 shadow-2xl"\n          >
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-xs font-semibold uppercase tracking-[0.25em] text-primary">
