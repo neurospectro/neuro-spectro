@@ -152,8 +152,14 @@ Deno.serve(async (req) => {
     req.headers.get("x-real-ip")?.trim() ||
     "unknown";
 
-  // Always use the verified account email; never trust a client-supplied payer email.
-  const payerEmail = String(userData.user.email ?? "").trim().toLowerCase();
+  // Permanent users have a verified/authenticated email. Anonymous checkout
+  // users do not, so their payer email must come from the payment form.
+  // In both cases the email is validated server-side before reaching Mercado Pago.
+  const authenticatedEmail = String(userData.user.email ?? "").trim().toLowerCase();
+  const submittedPayerEmail = String(formData?.payer?.email ?? "").trim().toLowerCase();
+  const isAnonymous = userData.user.is_anonymous === true;
+  const payerEmail = (isAnonymous ? submittedPayerEmail : authenticatedEmail).trim();
+
   if (!payerEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(payerEmail)) {
     return json(req, { error: "E-mail do pagador é obrigatório e deve ser válido." }, 400);
   }
