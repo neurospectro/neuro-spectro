@@ -27,52 +27,40 @@ function Conta() {
   }
 
   return (
-    <main className="min-h-screen bg-[#f7f9fb] px-4 py-6 font-sans text-[#172033] sm:px-6 sm:py-10">
-      <div className="mx-auto w-full max-w-lg">
-        <Link to="/" className="inline-flex items-center gap-2 text-sm font-semibold text-[#526174] hover:text-[#00769f]">
-          <ArrowLeft className="h-4 w-4" /> Voltar
+    <main style={{ minHeight: "100vh", background: "#f7f9fb", padding: "24px 16px", fontFamily: "Inter, ui-sans-serif, system-ui, sans-serif", color: "#172033" }}>
+      <div style={{ width: "100%", maxWidth: 520, margin: "0 auto" }}>
+        <Link to="/" style={{ display: "inline-flex", alignItems: "center", gap: 8, color: "#526174", textDecoration: "none", fontSize: 14, fontWeight: 600, marginBottom: 20 }}>
+          <ArrowLeft size={17} /> Voltar
         </Link>
 
-        <section className="mt-5 overflow-hidden rounded-3xl border border-[#dce5eb] bg-white shadow-[0_16px_50px_rgba(22,50,70,.07)]">
-          <div className="bg-gradient-to-br from-[#003b5c] to-[#008b78] px-6 py-7 text-white">
-            <div className="flex items-center gap-3">
-              <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-white/15">
-                <UserCircle2 className="h-6 w-6" />
+        <section style={{ background: "#fff", border: "1px solid #dce5eb", borderRadius: 24, overflow: "hidden", boxShadow: "0 16px 50px rgba(22,50,70,.07)" }}>
+          <header style={{ background: "linear-gradient(135deg, #003b5c, #008b78)", color: "#fff", padding: "28px 24px" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+              <div style={{ width: 44, height: 44, borderRadius: 12, display: "grid", placeItems: "center", background: "rgba(255,255,255,.14)", flex: "0 0 auto" }}>
+                <UserCircle2 size={25} />
               </div>
-              <div className="min-w-0">
-                <h1 className="text-2xl font-semibold">Minha conta</h1>
-                {email && <p className="mt-1 truncate text-sm text-white/75">{email}</p>}
+              <div style={{ minWidth: 0 }}>
+                <h1 style={{ margin: 0, fontSize: 25, lineHeight: 1.2, fontWeight: 700 }}>Minha conta</h1>
+                {email && <p style={{ margin: "6px 0 0", color: "rgba(255,255,255,.76)", fontSize: 14, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{email}</p>}
               </div>
             </div>
-          </div>
+          </header>
 
-          <div className="p-5 sm:p-6">
-            <Link
-              to="/dashboard"
-              className="flex items-center justify-between rounded-2xl bg-[#f3f8fa] px-4 py-4 font-semibold text-[#172033] hover:bg-[#eaf5f7]"
-            >
+          <div style={{ padding: 20 }}>
+            <Link to="/dashboard" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", width: "100%", boxSizing: "border-box", padding: 16, borderRadius: 16, background: "#f3f8fa", color: "#172033", textDecoration: "none", fontSize: 15, fontWeight: 700 }}>
               <span>Minha área e resultados</span>
-              <span className="text-xl text-[#00769f]">›</span>
+              <span style={{ color: "#00769f", fontSize: 22, lineHeight: 1 }}>›</span>
             </Link>
 
-            <Link
-              to="/alterar-senha"
-              className="mt-3 flex items-center gap-3 rounded-2xl border border-[#dce5eb] px-4 py-4 text-sm font-semibold text-[#526174] hover:border-[#9bcfc5] hover:text-[#00769f]"
-            >
-              <KeyRound className="h-4 w-4" />
-              Alterar senha
+            <Link to="/alterar-senha" style={{ display: "flex", alignItems: "center", gap: 10, width: "100%", boxSizing: "border-box", marginTop: 12, padding: "15px 16px", borderRadius: 16, border: "1px solid #dce5eb", color: "#526174", textDecoration: "none", fontSize: 14, fontWeight: 700 }}>
+              <KeyRound size={17} /> Alterar senha
             </Link>
 
-            <button
-              type="button"
-              onClick={() => void logout()}
-              className="mt-5 flex w-full items-center justify-center gap-2 rounded-2xl bg-[#fef5f5] px-4 py-3 text-sm font-semibold text-[#a44b4b] hover:bg-[#fdeaea]"
-            >
-              <LogOut className="h-4 w-4" />
-              Sair da conta
+            <button type="button" onClick={() => void logout()} style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8, width: "100%", boxSizing: "border-box", marginTop: 18, padding: "13px 16px", border: 0, borderRadius: 14, background: "#fef5f5", color: "#a44b4b", font: "inherit", fontSize: 14, fontWeight: 700, cursor: "pointer" }}>
+              <LogOut size={17} /> Sair da conta
             </button>
 
-            <Link to="/" className="mt-4 block text-center text-sm text-[#68788a] hover:text-[#00769f]">
+            <Link to="/" style={{ display: "block", marginTop: 16, color: "#68788a", textDecoration: "none", textAlign: "center", fontSize: 13 }}>
               Voltar ao início
             </Link>
           </div>
