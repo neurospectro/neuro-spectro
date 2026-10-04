@@ -9,12 +9,14 @@ import {
   X,
   BookOpen,
   Compass,
+  Home,
 } from "lucide-react";
 
 const groups = [
   {
     title: "NEUROSPECTRO",
     items: [
+      { label: "Home", to: "/", icon: Home },
       { label: "Nosso propósito", to: "/proposito", icon: Compass },
       { label: "Conteúdos", to: "/conteudos", icon: BookOpen },
       { label: "Comunidade", to: "/comunidade", icon: Users },
