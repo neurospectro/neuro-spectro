@@ -68,7 +68,7 @@ function Avaliacao() {
         setHasSaved(Object.keys(s.answers).length > 0);
       }
     } catch { /* ignore */ }
-  }, []);
+  }, [adminChecked, isAdminSimulation]);
 
   useEffect(() => {
     if (session && adminChecked) localStorage.setItem(isAdminSimulation ? ADMIN_KEY : KEY, JSON.stringify(session));
