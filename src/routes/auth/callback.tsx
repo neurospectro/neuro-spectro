@@ -32,6 +32,13 @@ function AuthCallback() {
         return;
       }
 
+      const { data: access } = await supabase.rpc("has_paid_access");
+      if (!access) {
+        await supabase.auth.signOut();
+        setMessage("Sua conta ainda não possui uma compra confirmada. O acesso é liberado após o pagamento.");
+        return;
+      }
+
       const admin = await supabase
         .from("admin_users")
         .select("user_id")
