@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Brain, Target, MessageCircle, Heart, Infinity as InfinityIcon, Sun, User, Star, ShieldCheck, FileText, Lock, Instagram } from "lucide-react";
 import { TestimonialsCarousel } from "@/components/testimonials-carousel";
-const logoUrl = "/neurospectro-temp.svg";
+const logoUrl = "/neurospectro-image-fallback.svg?v=2";
 
 export const Route = createFileRoute("/")({
   head: () => ({
