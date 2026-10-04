@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { ArrowLeft, ChevronRight, FileText, KeyRound, LogIn, ShieldCheck, UserCircle2 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { supabase } from "@/lib/supabase";
 
 export const Route = createFileRoute("/conta")({
@@ -77,7 +77,7 @@ function Conta() {
   );
 }
 
-function AccountAction({ to, icon, title, description }: { to: "/dashboard" | "/avaliacao" | "/alterar-senha" | "/login"; icon: React.ReactNode; title: string; description: string }) {
+function AccountAction({ to, icon, title, description }: { to: "/dashboard" | "/avaliacao" | "/alterar-senha" | "/login"; icon: ReactNode; title: string; description: string }) {
   return (
     <Link to={to} className="group flex items-center gap-4 bg-white px-4 py-4 transition hover:bg-[#f7fbfc] sm:px-5">
       <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#eef6fa] text-[#00769f] transition group-hover:bg-[#dff3f0] group-hover:text-[#008b78]">
