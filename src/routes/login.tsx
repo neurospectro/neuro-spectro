@@ -24,6 +24,11 @@ function LoginPage() {
     void (async () => {
       const { data } = await supabase.auth.getSession();
       if (!data.session || data.session.user.is_anonymous) return;
+      const { data: admin } = await supabase.rpc("is_admin");
+      if (admin === true) {
+        await navigate({ to: "/admin", replace: true });
+        return;
+      }
       setLoggedIn(true);
       setLoggedEmail(data.session.user.email ?? null);
     })();
