@@ -41,8 +41,9 @@ function Avaliacao() {
     let active = true;
     const checkAdminSimulation = async () => {
       if (!supabase) { setAdminChecked(true); return; }
-      const { data: auth } = await supabase.auth.getUser();
-      if (!auth.user) { if (active) setAdminChecked(true); return; }
+      try {
+        const { data: auth, error: authError } = await supabase.auth.getUser();
+        if (authError || !auth.user) { if (active) setAdminChecked(true); return; }
       const { data } = await supabase
         .from("admin_users")
         .select("user_id")
@@ -51,6 +52,10 @@ function Avaliacao() {
       if (active) {
         setIsAdminSimulation(data?.user_id === auth.user.id);
         setAdminChecked(true);
+      }
+      } catch (error) {
+        console.error("ADMIN_SIMULATION_CHECK_FAILED", error);
+        if (active) setAdminChecked(true);
       }
     };
     void checkAdminSimulation();
