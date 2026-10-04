@@ -69,13 +69,14 @@ function AdminPage() {
     setLoading(true);
     setError("");
 
-    const { data: auth } = await supabase.auth.getUser();
-    if (!auth.user) {
-      await navigate({ to: "/login" });
+    const { data: sessionData } = await supabase.auth.getSession();
+    const session = sessionData.session;
+    if (!session || session.user.is_anonymous) {
+      await navigate({ to: "/login", replace: true });
       return;
     }
 
-    setEmail(auth.user.email ?? "");
+    setEmail(session.user.email ?? "");
 
     const { data: isAdmin, error: adminError } = await supabase.rpc("is_admin");
 
