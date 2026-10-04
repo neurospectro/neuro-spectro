@@ -33,6 +33,25 @@ function Avaliacao() {
   const [marketingConsent, setMarketingConsent] = useState(false);
   const [leadError, setLeadError] = useState("");
   const [leadSaving, setLeadSaving] = useState(false);
+  const [isAdminSimulation, setIsAdminSimulation] = useState(false);
+
+  useEffect(() => {
+    let active = true;
+    const checkAdminSimulation = async () => {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get("admin") !== "1" || !supabase) return;
+      const { data: auth } = await supabase.auth.getUser();
+      if (!auth.user) return;
+      const { data } = await supabase
+        .from("admin_users")
+        .select("user_id")
+        .eq("user_id", auth.user.id)
+        .maybeSingle();
+      if (active && data?.user_id === auth.user.id) setIsAdminSimulation(true);
+    };
+    void checkAdminSimulation();
+    return () => { active = false; };
+  }, []);
 
   useEffect(() => {
     try {
@@ -65,14 +84,16 @@ function Avaliacao() {
 
     setLeadSaving(true);
     try {
-      const { error } = await supabase.from("marketing_leads").insert({
-        email,
-        marketing_consent: marketingConsent,
-        source: "assessment",
-      });
+      if (!isAdminSimulation) {
+        const { error } = await supabase.from("marketing_leads").insert({
+          email,
+          marketing_consent: marketingConsent,
+          source: "assessment",
+        });
 
-      // E-mail já cadastrado é uma entrada válida: não bloqueie o início da avaliação.
-      if (error && error.code !== "23505") throw error;
+        // E-mail já cadastrado é uma entrada válida: não bloqueie o início da avaliação.
+        if (error && error.code !== "23505") throw error;
+      }
 
       if (fresh || !session) {
         setSession({ answers: {}, index: 0, startedAt: new Date().toISOString() });
@@ -235,6 +256,7 @@ function Avaliacao() {
       assessmentVersion: ASSESSMENT.version,
       questions,
       scores: scoreByDimension(completed.answers),
+      isAdminTest: isAdminSimulation,
     }).catch((error) => {
       // Local session stays the source for the anonymous flow; record the failure so it is detectable.
       console.error("ASSESSMENT_PERSIST_FAILED", error);
