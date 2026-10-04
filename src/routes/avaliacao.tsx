@@ -40,7 +40,6 @@ function Avaliacao() {
   useEffect(() => {
     let active = true;
     const checkAdminSimulation = async () => {
-      const params = new URLSearchParams(window.location.search);
       if (!supabase) { setAdminChecked(true); return; }
       const { data: auth } = await supabase.auth.getUser();
       if (!auth.user) { if (active) setAdminChecked(true); return; }
