@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { UserCircle, FileText, ShoppingBag, LogOut } from "lucide-react";
+import { UserCircle, FileText, KeyRound, LogOut } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { useEffect, useState } from "react";
 
@@ -18,7 +18,7 @@ function Conta() {
       <p className="mt-2 text-muted-foreground">{email ? `Conta conectada: ${email}` : "Acesse sua área para consultar seus resultados e produtos."}</p>
       <div className="mt-7 grid gap-3">
         <Link to="/dashboard" className="flex items-center gap-3 rounded-xl border border-border p-4 hover:border-primary/40"><FileText className="h-5 w-5 text-primary"/>Minha área e resultados</Link>
-        <Link to="/avaliacao" className="flex items-center gap-3 rounded-xl border border-border p-4 hover:border-primary/40"><FileText className="h-5 w-5 text-primary"/>Minha avaliação</Link>
+        <Link to="/avaliacao" className="flex items-center gap-3 rounded-xl border border-border p-4 hover:border-primary/40"><FileText className="h-5 w-5 text-primary"/>Minha avaliação</Link>\n        <Link to="/alterar-senha" className="flex items-center gap-3 rounded-xl border border-border p-4 hover:border-primary/40"><KeyRound className="h-5 w-5 text-primary"/>Alterar minha senha</Link>
         <Link to="/login" className="flex items-center gap-3 rounded-xl border border-border p-4 hover:border-primary/40"><LogOut className="h-5 w-5 text-primary"/>Entrar com meu e-mail</Link>
       </div>
     </section>
