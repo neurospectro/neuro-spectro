@@ -22,6 +22,7 @@ export const Route = createFileRoute("/avaliacao")({
 });
 
 const KEY = `ns-session-${ASSESSMENT.assessment_id}-${ASSESSMENT.version}`;
+const ADMIN_KEY = `ns-admin-session-${ASSESSMENT.assessment_id}-${ASSESSMENT.version}`;
 type Session = { answers: Record<string, number>; index: number; startedAt: string; finishedAt?: string | undefined };
 
 function Avaliacao() {
@@ -34,28 +35,33 @@ function Avaliacao() {
   const [leadError, setLeadError] = useState("");
   const [leadSaving, setLeadSaving] = useState(false);
   const [isAdminSimulation, setIsAdminSimulation] = useState(false);
+  const [adminChecked, setAdminChecked] = useState(false);
 
   useEffect(() => {
     let active = true;
     const checkAdminSimulation = async () => {
       const params = new URLSearchParams(window.location.search);
-      if (params.get("admin") !== "1" || !supabase) return;
+      if (!supabase) { setAdminChecked(true); return; }
       const { data: auth } = await supabase.auth.getUser();
-      if (!auth.user) return;
+      if (!auth.user) { if (active) setAdminChecked(true); return; }
       const { data } = await supabase
         .from("admin_users")
         .select("user_id")
         .eq("user_id", auth.user.id)
         .maybeSingle();
-      if (active && data?.user_id === auth.user.id) setIsAdminSimulation(true);
+      if (active) {
+        setIsAdminSimulation(data?.user_id === auth.user.id);
+        setAdminChecked(true);
+      }
     };
     void checkAdminSimulation();
     return () => { active = false; };
   }, []);
 
   useEffect(() => {
+    if (!adminChecked) return;
     try {
-      const raw = localStorage.getItem(KEY);
+      const raw = localStorage.getItem(isAdminSimulation ? ADMIN_KEY : KEY);
       if (raw) {
         const s = JSON.parse(raw) as Session;
         setSession(s);
@@ -65,7 +71,7 @@ function Avaliacao() {
   }, []);
 
   useEffect(() => {
-    if (session) localStorage.setItem(KEY, JSON.stringify(session));
+    if (session && adminChecked) localStorage.setItem(isAdminSimulation ? ADMIN_KEY : KEY, JSON.stringify(session));
   }, [session]);
 
   const begin = async (fresh: boolean) => {
@@ -106,6 +112,10 @@ function Avaliacao() {
       setLeadSaving(false);
     }
   };
+
+  if (!adminChecked) {
+    return <Shell><p className="text-sm text-muted-foreground">Validando acesso administrativo...</p></Shell>;
+  }
 
   if (isAdminSimulation && !started) {
     return (
