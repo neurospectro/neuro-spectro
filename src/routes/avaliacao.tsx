@@ -86,6 +86,23 @@ function Avaliacao() {
     }
   };
 
+  if (isAdminSimulation && !started) {
+    return (
+      <Shell>
+        <img src={mark.url} alt="" className="mx-auto h-16 w-16" />
+        <p className="mt-6 text-xs font-bold uppercase tracking-[0.2em] text-primary">Modo administrativo</p>
+        <h1 className="mt-3 font-display text-3xl font-semibold leading-tight text-ink">Simular avaliação como usuário</h1>
+        <p className="mx-auto mt-4 max-w-md text-base leading-7 text-muted-foreground">Use exatamente o mesmo fluxo da avaliação pública. O resultado será marcado como teste administrativo e não deverá ser tratado como dado real de conversão.</p>
+        <div className="mt-7 rounded-3xl border border-primary/20 bg-primary/5 p-5 text-left text-sm leading-6 text-muted-foreground">
+          <p className="font-semibold text-ink">Teste seguro</p>
+          <p className="mt-1">Nenhum e-mail ou pagamento será criado. A sessão e o resultado ficam identificados como administrativos.</p>
+        </div>
+        <button onClick={() => void begin(true)} className="mt-7 rounded-full bg-primary px-8 py-3 font-semibold text-primary-foreground shadow-soft">Iniciar teste</button>
+        <Link to="/admin" className="mt-4 inline-flex text-sm font-medium text-muted-foreground hover:text-ink">Voltar ao Admin</Link>
+      </Shell>
+    );
+  }
+
   if (!started || !session) {
     const count = session ? Object.keys(session.answers).length : 0;
     return (
