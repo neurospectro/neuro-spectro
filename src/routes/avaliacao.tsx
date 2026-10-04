@@ -72,7 +72,7 @@ function Avaliacao() {
     setLeadError("");
     const email = leadEmail.trim().toLowerCase();
 
-    if (!email || !/^\S+@\S+\.\S+$/.test(email)) {
+    if (!isAdminSimulation && (!email || !/^\S+@\S+\.\S+$/.test(email))) {
       setLeadError("Digite um e-mail válido para continuar.");
       return;
     }
