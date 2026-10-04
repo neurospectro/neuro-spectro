@@ -213,7 +213,15 @@ function Avaliacao() {
     );
   }
 
-  if (session.finishedAt) return <Done session={session} onReview={() => setSession({ ...session, finishedAt: undefined, index: 0 })} />;
+  if (session.finishedAt) {
+    return (
+      <Done
+        session={session}
+        isAdminSimulation={isAdminSimulation}
+        onReview={() => setSession({ ...session, finishedAt: undefined, index: 0 })}
+      />
+    );
+  }
 
   const q = questions[session.index]!;
   const answered = Object.keys(session.answers).length;
@@ -331,7 +339,7 @@ function Avaliacao() {
   );
 }
 
-function Done({ session, onReview }: { session: Session; onReview: () => void }) {
+function Done({ session, isAdminSimulation = false, onReview }: { session: Session; isAdminSimulation?: boolean; onReview: () => void }) {
   const scores = scoreByDimension(session.answers);
   const mins = Math.max(1, Math.round((new Date(session.finishedAt!).getTime() - new Date(session.startedAt).getTime()) / 60000));
   return (
@@ -350,7 +358,19 @@ function Done({ session, onReview }: { session: Session; onReview: () => void })
       </div>
       <p className="mx-auto mt-6 max-w-md text-xs text-muted-foreground">Não é diagnóstico. Pontuações indicam maior ou menor presença de características em cada dimensão, sem pontos de corte clínicos.</p>
 
-      <ReportOffer session={session} />
+      {isAdminSimulation ? (
+        <div className="mx-auto mt-7 max-w-md rounded-3xl border border-primary/20 bg-primary/5 p-5 text-left">
+          <p className="text-xs font-bold uppercase tracking-[0.18em] text-primary">Teste administrativo</p>
+          <p className="mt-2 text-sm leading-6 text-muted-foreground">
+            Resultado completo liberado para validação interna. Esta sessão não gera cobrança, pedido, conversão ou acesso de cliente.
+          </p>
+          <Link to="/admin" className="mt-4 inline-flex rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground">
+            Voltar ao Admin
+          </Link>
+        </div>
+      ) : (
+        <ReportOffer session={session} />
+      )
 
       <button onClick={onReview} className="mt-6 rounded-full border border-border px-6 py-3 text-sm font-medium hover:bg-secondary">Revisar respostas</button>
     </Shell>
