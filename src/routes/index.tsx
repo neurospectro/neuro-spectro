@@ -35,9 +35,9 @@ const dims = [
 const refs = ["AQ-50", "AQ-10", "RAADS-R", "CAT-Q", "AAA"];
 
 const steps = [
-  { n: "01", icon: PenLine, t: "Responda", d: "Uma afirmação por tela, no seu ritmo. Salve e retome quando quiser." },
-  { n: "02", icon: LineChart, t: "Analise", d: "Suas respostas são organizadas em 8 dimensões do seu funcionamento." },
-  { n: "03", icon: Sparkles, t: "Descubra", d: "Veja sua prévia e, se quiser, libere o relatório completo." },
+  { n: "01", icon: PenLine, t: "Responda", d: "48 afirmações simples, no seu ritmo." },
+  { n: "02", icon: LineChart, t: "Analisamos", d: "Suas respostas são organizadas em 8 dimensões." },
+  { n: "03", icon: Sparkles, t: "Descubra", d: "Veja uma prévia e decida se quer o relatório completo." },
 ];
 
 const identification = [
@@ -85,9 +85,15 @@ function Index() {
 
   return (
     <div className="min-h-screen bg-background font-sans text-foreground">
-      <header className="mx-auto flex max-w-6xl items-center justify-between px-5 py-5">
-        <Link to="/" className="flex items-center">
+      <header className="mx-auto flex max-w-6xl items-center justify-between px-5 py-4 md:py-5">
+        <Link to="/" className="flex items-center" aria-label="NeuroSpectro — início">
           <img src={wordmarkUrl} alt="NeuroSpectro" width={894} height={180} className="h-8 w-auto md:h-9" />
+        </Link>
+        <Link
+          to="/avaliacao"
+          className="inline-flex items-center justify-center rounded-full border border-primary/20 bg-primary/5 px-4 py-2 text-sm font-semibold text-primary transition hover:bg-primary/10"
+        >
+          Começar avaliação
         </Link>
       </header>
 
@@ -98,16 +104,16 @@ function Index() {
           <div aria-hidden className="pointer-events-none absolute -left-24 top-40 h-80 w-80 rounded-full bg-spec-mint/50 blur-3xl" />
           <div className="relative mx-auto grid max-w-6xl items-center gap-10 px-5 pb-20 pt-6 md:grid-cols-[1.05fr_1fr] md:pt-16">
             <div className="order-2 md:order-1">
-              <p className="text-xs font-semibold uppercase tracking-[0.3em] text-muted-foreground">Diferentes formas de pensar. Um só universo.</p>
+              <p className="text-xs font-semibold uppercase tracking-[0.3em] text-muted-foreground">Autoconhecimento com mais clareza.</p>
               <h1 className="mt-5 font-display text-4xl font-semibold leading-tight text-ink md:text-6xl">
-                Existe mais sobre você <span className="text-primary">para descobrir.</span>
+                Entenda melhor seu jeito de <span className="text-primary">funcionar.</span>
               </h1>
-              <p className="mt-5 max-w-lg text-lg text-muted-foreground">
-                Um rastreio inicial, acolhedor e com base em referências científicas, para adultos que querem entender melhor características associadas ao espectro autista.
+              <p className="mt-5 max-w-lg text-lg leading-7 text-muted-foreground">
+                Uma avaliação online, acolhedora e estruturada para explorar características associadas ao espectro autista em adultos.
               </p>
               <div className="mt-8 flex flex-col gap-4 sm:flex-row sm:items-center">
                 <Cta />
-                <span className="text-sm text-muted-foreground">Avaliação gratuita · 48 afirmações</span>
+                <span className="text-sm text-muted-foreground">Gratuita para começar · 48 afirmações</span>
               </div>
               <div className="mt-8 h-1 w-40 rounded-full bg-spectrum" />
             </div>
@@ -130,7 +136,7 @@ function Index() {
             </div>
             <div>
               <p className="text-xs font-semibold uppercase tracking-[0.25em] text-primary">Isso parece com você?</p>
-              <h2 className="mt-3 font-display text-2xl font-semibold text-ink md:text-3xl">Cada peça do seu jeito de funcionar faz sentido.</h2>
+              <h2 className="mt-3 font-display text-2xl font-semibold text-ink md:text-3xl">Talvez algumas peças já façam sentido para você.</h2>
               <ul className="mt-6 space-y-3">
                 {identification.map((item) => (
                   <li key={item} className="flex gap-3 text-muted-foreground">
@@ -145,7 +151,7 @@ function Index() {
 
         <section className="mx-auto max-w-6xl px-5 py-16">
           <h2 className="font-display text-3xl font-semibold text-ink">O que você vai explorar</h2>
-          <p className="mt-2 text-muted-foreground">Dimensões do seu funcionamento, observadas com cuidado.</p>
+          <p className="mt-2 max-w-2xl text-muted-foreground">Uma visão organizada de diferentes aspectos que podem aparecer no seu cotidiano.</p>
           <div className="mt-8 grid grid-cols-2 gap-4 md:grid-cols-4">
             {dims.map(({ icon: Icon, label }) => (
               <div key={label} className="rounded-2xl border border-border bg-card p-5 transition-shadow hover:shadow-soft">
@@ -206,7 +212,7 @@ function Index() {
             </div>
             <div>
               <p className="text-xs font-semibold uppercase tracking-[0.25em] text-primary">O que você recebe</p>
-              <h2 className="mt-3 font-display text-3xl font-semibold text-ink">Uma leitura clara do seu perfil, para guardar e revisitar.</h2>
+              <h2 className="mt-3 font-display text-3xl font-semibold text-ink">Um relatório feito para transformar respostas em clareza.</h2>
               <ul className="mt-6 space-y-3">
                 {deliverables.map((item) => (
                   <li key={item} className="flex gap-3 text-muted-foreground">
@@ -260,8 +266,8 @@ function Index() {
         {offer && (
           <section className="mx-auto max-w-3xl px-5 py-20">
             <div className="rounded-[2rem] border border-border bg-card p-8 text-center shadow-soft md:p-12">
-              <p className="text-xs font-semibold uppercase tracking-[0.25em] text-primary">Depois da avaliação gratuita</p>
-              <h2 className="mt-3 font-display text-3xl font-semibold text-ink">{offer.name}</h2>
+              <p className="text-xs font-semibold uppercase tracking-[0.25em] text-primary">Seu próximo passo</p>
+              <h2 className="mt-3 font-display text-3xl font-semibold text-ink">Descubra o que sua avaliação revela.</h2>
               <div className="mt-6 flex items-end justify-center gap-3">
                 {offer.referenceCents && (
                   <span className="pb-1 text-lg text-muted-foreground line-through">{formatBRL(offer.referenceCents)}</span>
@@ -269,7 +275,7 @@ function Index() {
                 <span className="font-display text-5xl font-semibold text-ink">{formatBRL(offer.totalCents)}</span>
               </div>
               <p className="mt-2 text-sm text-muted-foreground">Pagamento único · Pix ou cartão · acesso por tempo indeterminado</p>
-              <Cta className="mt-8" />
+              <Cta className="mt-8 w-full sm:w-auto" />
               <div className="mt-8 grid gap-4 text-left sm:grid-cols-3">
                 {[
                   [ShieldCheck, "Privacidade (LGPD)"],
@@ -317,7 +323,7 @@ function Index() {
             <div className="mx-auto w-40 md:w-52">
               <MarkImage />
             </div>
-            <h2 className="mt-8 font-display text-3xl font-semibold text-ink md:text-4xl">Entenda seu perfil. Descubra novas perspectivas.</h2>
+            <h2 className="mt-8 font-display text-3xl font-semibold text-ink md:text-4xl">Comece a entender seu perfil com mais clareza.</h2>
             <Cta className="mt-8" />
             <p className="mx-auto mt-8 max-w-2xl rounded-2xl bg-muted p-5 text-sm text-muted-foreground">
               <strong className="text-ink">Importante:</strong> a NeuroSpectro oferece um rastreio inicial e não realiza diagnóstico. Apenas profissionais de saúde qualificados podem avaliar e diagnosticar o espectro autista.
