@@ -9,6 +9,7 @@ export async function persistCompletedAssessment(args: {
   assessmentVersion: string;
   questions: Question[];
   scores: Array<{ dimension: Dimension; raw: number; max: number; answered: number; total: number }>;
+  isAdminTest?: boolean;
 }) {
   if (!supabase || !args.session.finishedAt) return null;
 
@@ -34,6 +35,7 @@ export async function persistCompletedAssessment(args: {
       finished_at: args.session.finishedAt,
       status: "completed",
       lead_email: args.leadEmail?.trim().toLowerCase() || null,
+      is_admin_test: args.isAdminTest ?? false,
     })
     .select("id")
     .single();
@@ -69,6 +71,7 @@ export async function persistCompletedAssessment(args: {
     max_raw: maxRaw,
     analysis,
     lead_email: args.leadEmail?.trim().toLowerCase() || null,
+    is_admin_test: args.isAdminTest ?? false,
     scores: args.scores.map((item) => ({
       id: item.dimension.id,
       label: item.dimension.label,
