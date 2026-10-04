@@ -390,7 +390,7 @@ function Done({ session, isAdminSimulation = false, onReview }: { session: Sessi
         </div>
       ) : (
         <ReportOffer session={session} />
-      )
+      )}
 
       <button onClick={onReview} className="mt-6 rounded-full border border-border px-6 py-3 text-sm font-medium hover:bg-secondary">Revisar respostas</button>
     </Shell>
