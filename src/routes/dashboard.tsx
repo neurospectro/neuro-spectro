@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
-import { ArrowRight, ClipboardCheck, FileText, LogOut, ShieldCheck, Sparkles, Users } from "lucide-react";
+import { ArrowRight, ClipboardCheck, FileText, KeyRound, LogOut, ShieldCheck, Sparkles, Users } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { formatBRL } from "@/lib/offers";
 
