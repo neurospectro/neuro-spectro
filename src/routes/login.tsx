@@ -12,6 +12,7 @@ function LoginPage() {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [mode, setMode] = useState<"password" | "magic">("password");
   const [sent, setSent] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -35,7 +36,7 @@ function LoginPage() {
     const { data, error } = await supabase.auth.signInWithPassword({ email: email.trim(), password });
     if (error) {
       setLoading(false);
-      setMessage("E-mail ou senha inválidos. Se for seu primeiro acesso, use o link mágico ou redefina sua senha.");
+      setMessage("E-mail ou senha inválidos. Tente novamente ou redefina sua senha.");
       return;
     }
     const admin = await supabase.from("admin_users").select("user_id").eq("user_id", data.user.id).maybeSingle();
@@ -79,48 +80,114 @@ function LoginPage() {
   }
 
   return (
-    <main className="min-h-screen bg-background px-5 py-12">
-      <div className="mx-auto max-w-md">
-        <Link to="/" className="inline-flex items-center gap-2 text-sm font-medium text-primary"><ArrowLeft className="h-4 w-4" /> NeuroSpectro</Link>
-        <section className="mt-8 rounded-[2rem] border border-border bg-card p-8 shadow-soft">
-          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-secondary text-primary">
-            {mode === "password" ? <KeyRound className="h-6 w-6" /> : <MailCheck className="h-6 w-6" />}
+    <main className="min-h-screen bg-background px-4 py-8 sm:px-6 sm:py-12">
+      <div className="mx-auto flex min-h-[calc(100vh-4rem)] w-full max-w-[440px] flex-col justify-center">
+        <div className="mb-8 text-center">
+          <Link to="/" aria-label="Ir para a página inicial" className="inline-flex items-center justify-center">
+            <img src="/logo.svg" alt="NeuroSpectro" className="h-auto w-[190px] object-contain" />
+          </Link>
+        </div>
+
+        <section className="rounded-2xl border border-border bg-card p-6 shadow-lg sm:p-8">
+          <div className="text-center">
+            <h1 className="text-2xl font-semibold tracking-tight text-ink">Entrar</h1>
+            <p className="mt-2 text-sm leading-6 text-muted-foreground">
+              Acesse sua conta NeuroSpectro para continuar sua jornada.
+            </p>
           </div>
-          <p className="mt-6 text-xs font-semibold uppercase tracking-[0.25em] text-primary">Acesso seguro</p>
-          <h1 className="mt-3 font-display text-3xl font-semibold text-ink">Minha área</h1>
-          <p className="mt-3 text-muted-foreground">Entre com sua senha ou receba um link seguro no e-mail. O mesmo acesso identifica automaticamente contas administrativas.</p>
 
           {!isSupabaseConfigured ? (
-            <div className="mt-7 rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm leading-6 text-amber-900">O Supabase ainda não foi configurado neste ambiente.</div>
+            <div className="mt-6 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm leading-6 text-amber-900">
+              O serviço de acesso ainda não foi configurado neste ambiente.
+            </div>
           ) : sent ? (
-            <div className="mt-7 rounded-2xl border border-primary/20 bg-primary/5 p-5 text-sm leading-6 text-foreground"><strong>Link enviado.</strong> Verifique seu e-mail e toque no link para voltar automaticamente à NeuroSpectro.</div>
+            <div className="mt-6 rounded-xl border border-primary/20 bg-primary/5 p-5 text-sm leading-6 text-foreground">
+              <strong>Link enviado.</strong> Verifique seu e-mail e toque no link para entrar automaticamente na NeuroSpectro.
+            </div>
           ) : (
             <>
-              <div className="mt-7 grid grid-cols-2 rounded-full bg-secondary p-1 text-sm font-semibold">
-                <button type="button" onClick={() => { setMode("password"); setMessage(""); }} className={mode === "password" ? "rounded-full bg-card px-4 py-2 text-ink shadow-sm" : "rounded-full px-4 py-2 text-muted-foreground"}>Senha</button>
-                <button type="button" onClick={() => { setMode("magic"); setMessage(""); }} className={mode === "magic" ? "rounded-full bg-card px-4 py-2 text-ink shadow-sm" : "rounded-full px-4 py-2 text-muted-foreground"}>Link mágico</button>
+              <div className="mt-6 grid grid-cols-2 rounded-lg border border-border bg-muted/60 p-1 text-sm font-medium">
+                <button type="button" onClick={() => { setMode("password"); setMessage(""); }} className={mode === "password" ? "rounded-md bg-card px-3 py-2 text-ink shadow-sm" : "rounded-md px-3 py-2 text-muted-foreground hover:text-foreground"}>
+                  Senha
+                </button>
+                <button type="button" onClick={() => { setMode("magic"); setMessage(""); }} className={mode === "magic" ? "rounded-md bg-card px-3 py-2 text-ink shadow-sm" : "rounded-md px-3 py-2 text-muted-foreground hover:text-foreground"}>
+                  Link por e-mail
+                </button>
               </div>
 
               {mode === "password" ? (
-                <form onSubmit={handlePasswordSubmit} className="mt-6 space-y-5">
-                  <label className="block"><span className="text-sm font-semibold text-ink">E-mail</span><input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required autoComplete="email" placeholder="voce@email.com" className="mt-2 w-full rounded-2xl border border-border bg-background px-4 py-3 outline-none focus:border-primary" /></label>
-                  <label className="block"><span className="text-sm font-semibold text-ink">Senha</span><input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required autoComplete="current-password" placeholder="Sua senha" className="mt-2 w-full rounded-2xl border border-border bg-background px-4 py-3 outline-none focus:border-primary" /></label>
-                  {message && <p className="text-sm text-destructive">{message}</p>}
-                  <button type="submit" disabled={loading || !email.trim() || !password} className="w-full rounded-full bg-primary px-7 py-4 font-semibold text-primary-foreground disabled:cursor-not-allowed disabled:opacity-50">{loading ? "Entrando..." : "Entrar"}</button>
-                  <button type="button" onClick={() => void handleReset()} disabled={loading || !email.trim()} className="w-full text-sm font-medium text-primary hover:underline disabled:opacity-50">Esqueci minha senha</button>
+                <form onSubmit={handlePasswordSubmit} className="mt-6 space-y-4">
+                  <label className="block">
+                    <span className="text-sm font-medium text-ink">E-mail</span>
+                    <input
+                      type="email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      required
+                      autoComplete="email"
+                      placeholder="seu@email.com"
+                      className="mt-2 h-12 w-full rounded-lg border border-border bg-background px-4 text-sm text-foreground outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/15"
+                    />
+                  </label>
+
+                  <label className="block">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm font-medium text-ink">Senha</span>
+                      <button type="button" onClick={() => void handleReset()} disabled={loading || !email.trim()} className="text-xs font-medium text-primary hover:underline disabled:cursor-not-allowed disabled:opacity-50">
+                        Esqueci minha senha
+                      </button>
+                    </div>
+                    <div className="relative mt-2">
+                      <input
+                        type={showPassword ? "text" : "password"}
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        required
+                        autoComplete="current-password"
+                        placeholder="Digite sua senha"
+                        className="h-12 w-full rounded-lg border border-border bg-background px-4 pr-12 text-sm text-foreground outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/15"
+                      />
+                      <button type="button" onClick={() => setShowPassword((value) => !value)} aria-label={showPassword ? "Ocultar senha" : "Mostrar senha"} className="absolute right-3 top-1/2 -translate-y-1/2 p-2 text-muted-foreground hover:text-foreground">
+                        {showPassword ? "Ocultar" : "Mostrar"}
+                      </button>
+                    </div>
+                  </label>
+
+                  {message && <p role="alert" className="text-sm leading-5 text-destructive">{message}</p>}
+
+                  <button type="submit" disabled={loading || !email.trim() || !password} className="h-12 w-full rounded-lg bg-primary px-6 font-semibold text-primary-foreground transition hover:opacity-95 disabled:cursor-not-allowed disabled:opacity-50">
+                    {loading ? "Entrando..." : "Entrar"}
+                  </button>
                 </form>
               ) : (
-                <form onSubmit={handleMagicSubmit} className="mt-6 space-y-5">
-                  <label className="block"><span className="text-sm font-semibold text-ink">Seu e-mail</span><input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required autoComplete="email" placeholder="voce@email.com" className="mt-2 w-full rounded-2xl border border-border bg-background px-4 py-3 outline-none focus:border-primary" /></label>
-                  {message && <p className="text-sm text-destructive">{message}</p>}
-                  <button type="submit" disabled={loading || !email.trim()} className="w-full rounded-full bg-primary px-7 py-4 font-semibold text-primary-foreground disabled:cursor-not-allowed disabled:opacity-50">{loading ? "Enviando..." : "Receber link de acesso"}</button>
+                <form onSubmit={handleMagicSubmit} className="mt-6 space-y-4">
+                  <label className="block">
+                    <span className="text-sm font-medium text-ink">E-mail</span>
+                    <input
+                      type="email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      required
+                      autoComplete="email"
+                      placeholder="seu@email.com"
+                      className="mt-2 h-12 w-full rounded-lg border border-border bg-background px-4 text-sm text-foreground outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/15"
+                    />
+                  </label>
+                  {message && <p role="alert" className="text-sm leading-5 text-destructive">{message}</p>}
+                  <button type="submit" disabled={loading || !email.trim()} className="h-12 w-full rounded-lg bg-primary px-6 font-semibold text-primary-foreground transition hover:opacity-95 disabled:cursor-not-allowed disabled:opacity-50">
+                    {loading ? "Enviando..." : "Receber link de acesso"}
+                  </button>
                 </form>
               )}
             </>
           )}
 
-          <div className="mt-6 text-center"><Link to="/alterar-senha" className="text-sm font-medium text-muted-foreground hover:text-primary">Já estou logado e quero alterar minha senha</Link></div>
+          <div className="mt-6 border-t border-border pt-5 text-center">
+            <Link to="/" className="text-sm font-medium text-muted-foreground hover:text-primary">Voltar para o início</Link>
+          </div>
         </section>
+
+        <p className="mt-6 text-center text-xs text-muted-foreground">Acesso protegido e destinado aos usuários da NeuroSpectro.</p>
       </div>
     </main>
   );
