@@ -1,7 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Brain, Target, MessageCircle, Heart, Infinity as InfinityIcon, Sun, User, Star, ShieldCheck, FileText, Lock, Instagram, Check, PenLine, LineChart, Sparkles } from "lucide-react";
 import { TestimonialsCarousel } from "@/components/testimonials-carousel";
-import { getOffer, formatBRL } from "@/lib/offers";
 
 const wordmarkUrl = "/neurospectro-wordmark.webp?v=2";
 const markUrl = "/neurospectro-mark.webp?v=2";
@@ -81,8 +80,6 @@ function MarkImage({ className = "", eager = false }: { className?: string; eage
 }
 
 function Index() {
-  const offer = getOffer("report-full-2490");
-
   return (
     <div className="min-h-screen bg-background font-sans text-foreground">
       <header className="mx-auto flex max-w-6xl items-center justify-between px-5 py-4 md:py-5">
@@ -261,39 +258,6 @@ function Index() {
             </p>
           </div>
         </section>
-
-        {/* 6. OFERTA */}
-        {offer && (
-          <section className="mx-auto max-w-3xl px-5 py-20">
-            <div className="rounded-[2rem] border border-border bg-card p-8 text-center shadow-soft md:p-12">
-              <p className="text-xs font-semibold uppercase tracking-[0.25em] text-primary">Seu próximo passo</p>
-              <h2 className="mt-3 font-display text-3xl font-semibold text-ink">Descubra o que sua avaliação revela.</h2>
-              <div className="mt-6 flex items-end justify-center gap-3">
-                {offer.referenceCents && (
-                  <span className="pb-1 text-lg text-muted-foreground line-through">{formatBRL(offer.referenceCents)}</span>
-                )}
-                <span className="font-display text-5xl font-semibold text-ink">{formatBRL(offer.totalCents)}</span>
-              </div>
-              <p className="mt-2 text-sm text-muted-foreground">Pagamento único · Pix ou cartão · acesso por tempo indeterminado</p>
-              <Cta className="mt-8 w-full sm:w-auto" />
-              <div className="mt-8 grid gap-4 text-left sm:grid-cols-3">
-                {[
-                  [ShieldCheck, "Privacidade (LGPD)"],
-                  [Lock, "Resultado protegido"],
-                  [FileText, "Relatório para guardar"],
-                ].map(([Icon, t]) => {
-                  const I = Icon as typeof ShieldCheck;
-                  return (
-                    <div key={t as string} className="flex items-center gap-2 text-sm text-muted-foreground">
-                      <I className="h-4 w-4 shrink-0 text-primary" />
-                      <span>{t as string}</span>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          </section>
-        )}
 
         <section className="mx-auto max-w-6xl px-5 py-16">
           <div className="grid gap-6 md:grid-cols-3">
