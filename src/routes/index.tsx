@@ -117,7 +117,7 @@ function Index() {
             <div className="order-1 flex justify-center md:order-2">
               <div className="relative w-full max-w-xs md:max-w-md">
                 <div aria-hidden className="absolute inset-6 rounded-full bg-spectrum opacity-30 blur-3xl" />
-                <MarkImage eager className="relative" />
+                <img src="/illustrations/hero-neuro.svg" alt="Ilustração abstrata sobre diferentes formas de perceber e processar o mundo" width="720" height="560" loading="eager" fetchPriority="high" className="relative h-auto w-full object-contain" />
               </div>
             </div>
           </div>
@@ -127,8 +127,8 @@ function Index() {
         <section className="mx-auto max-w-6xl px-5 py-12 md:py-16">
           <div className="grid items-center gap-8 rounded-[2rem] border border-border bg-card p-6 shadow-soft md:gap-10 md:grid-cols-[1fr_1.4fr] md:p-12">
             <div className="mx-auto w-full max-w-[220px] md:max-w-[300px]">
-              <div className="rounded-[2rem] bg-secondary/60 p-6">
-                <MarkImage />
+              <div className="rounded-[2rem] bg-secondary/60 p-4">
+                <img src="/illustrations/identification.svg" alt="Ilustração de uma pessoa representando autopercepção e identificação" width="640" height="520" loading="lazy" className="h-auto w-full object-contain" />
               </div>
             </div>
             <div>
@@ -147,6 +147,9 @@ function Index() {
         </section>
 
         <section className="mx-auto max-w-6xl px-5 py-12 md:py-16">
+          <div className="mb-7 flex justify-center md:mb-9">
+            <img src="/illustrations/dimensions.svg" alt="Ilustração das diferentes dimensões exploradas pela avaliação" width="720" height="420" loading="lazy" className="h-auto w-full max-w-2xl object-contain" />
+          </div>
           <h2 className="font-display text-3xl font-semibold text-ink">O que você vai explorar</h2>
           <p className="mt-2 max-w-2xl text-muted-foreground">Uma visão organizada de diferentes aspectos que podem aparecer no seu cotidiano.</p>
           <div className="mt-6 grid grid-cols-2 gap-3 md:mt-8 md:grid-cols-4 md:gap-4">
@@ -183,6 +186,7 @@ function Index() {
             <div className="relative mx-auto w-full max-w-md">
               <div aria-hidden className="absolute -inset-4 rounded-[2.5rem] bg-spectrum opacity-20 blur-2xl" />
               <div className="relative rounded-[2rem] border border-border bg-card p-6 shadow-soft">
+                <img src="/illustrations/report.svg" alt="Ilustração de um relatório visual com indicadores de perfil" width="640" height="520" loading="lazy" className="mb-5 h-auto w-full object-contain" />
                 <div className="flex items-center justify-between border-b border-border pb-4">
                   <img src={wordmarkUrl} alt="" aria-hidden width={894} height={180} loading="lazy" className="h-6 w-auto" />
                   <span className="rounded-full bg-secondary px-3 py-1 text-xs font-semibold text-primary">Relatório completo</span>
