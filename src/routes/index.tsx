@@ -75,7 +75,7 @@ function MarkImage({ className = "", eager = false }: { className?: string; eage
       loading={eager ? "eager" : "lazy"}
       fetchPriority={eager ? "high" : "auto"}
       decoding="async"
-      className={`h-auto w-full object-contain ${className}`}
+      className={`h-auto w-full object-contain mix-blend-multiply dark:mix-blend-normal dark:rounded-3xl ${className}`}
     />
   );
 }
@@ -114,7 +114,7 @@ function Index() {
             <div className="order-1 flex justify-center md:order-2">
               <div className="relative w-full max-w-xs md:max-w-md">
                 <div aria-hidden className="absolute inset-6 rounded-full bg-spectrum opacity-30 blur-3xl" />
-                <MarkImage eager className="relative drop-shadow-xl" />
+                <MarkImage eager className="relative" />
               </div>
             </div>
           </div>
