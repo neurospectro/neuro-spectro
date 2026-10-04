@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Eye, EyeOff, Mail, LockKeyhole, ShieldCheck, ArrowLeft, LogOut } from "lucide-react";
+import { Eye, EyeOff, Mail, LockKeyhole, ShieldCheck, ArrowLeft, LogOut, Link2 } from "lucide-react";
 import { isSupabaseConfigured, supabase } from "@/lib/supabase";
 
 export const Route = createFileRoute("/login")({
@@ -52,6 +52,25 @@ function LoginPage() {
     await navigate({ to: admin.data ? "/admin" : "/dashboard", replace: true });
   }
 
+
+  async function handleMagicLink() {
+    if (!supabase || !email.trim()) {
+      setMessage("Digite seu e-mail para receber o link de acesso.");
+      return;
+    }
+    setLoading(true);
+    setMessage("");
+    const { error } = await supabase.auth.signInWithOtp({
+      email: email.trim(),
+      options: { emailRedirectTo: window.location.origin + "/dashboard" },
+    });
+    setLoading(false);
+    if (error) {
+      setMessage(error.message);
+      return;
+    }
+    setMessage("Se o e-mail estiver cadastrado, enviaremos um link de acesso.");
+  }
 
   async function handleReset() {
     if (!supabase || !email.trim()) {
@@ -151,7 +170,9 @@ function LoginPage() {
                           </button>
                         </div>
                       </label>
-                      <div className="flex justify-end gap-3 text-[11px] font-medium text-[#748394]">
+                      <div className="flex flex-wrap justify-end gap-3 text-[11px] font-medium text-[#748394]">
+                        <button type="button" onClick={() => void handleMagicLink()} disabled={loading || !email.trim()} className="inline-flex items-center gap-1 hover:text-[#00769f] hover:underline disabled:opacity-40"><Link2 className="h-3 w-3" /> Entrar por link</button>
+                        <span aria-hidden>·</span>
                         <button type="button" onClick={() => void handleReset()} disabled={loading || !email.trim()} className="hover:text-[#00769f] hover:underline disabled:opacity-40">Esqueci minha senha</button>
                         <span aria-hidden>·</span>
                         <Link to="/alterar-senha" className="hover:text-[#00769f] hover:underline">Alterar senha</Link>
