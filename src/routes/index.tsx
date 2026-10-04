@@ -1,8 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Brain, Target, MessageCircle, Heart, Infinity as InfinityIcon, Sun, User, Star, ShieldCheck, FileText, Lock, Users, Instagram } from "lucide-react";
+import { Brain, Target, MessageCircle, Heart, Infinity as InfinityIcon, Sun, User, Star, ShieldCheck, FileText, Lock, Instagram } from "lucide-react";
 import { TestimonialsCarousel } from "@/components/testimonials-carousel";
-import logo from "@/assets/logo.png.asset.json";
-import mark from "@/assets/mark.png.asset.json";
+const logoUrl = "/neurospectro-temp.svg";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -46,11 +45,8 @@ function Index() {
   return (
     <div className="min-h-screen bg-background font-sans text-foreground">
       <header className="mx-auto flex max-w-6xl items-center justify-between px-5 py-5">
-        <Link to="/" className="flex items-center gap-2">
-          <img src={mark.url} alt="" className="h-9 w-9" />
-          <span className="font-display text-lg font-semibold text-ink">
-            Neuro<span className="text-primary">Spectro</span>
-          </span>
+        <Link to="/" className="flex items-center">
+          <img src={logoUrl} alt="NeuroSpectro" className="h-12 w-auto max-w-[220px] object-contain" />
         </Link>
       </header>
 
@@ -73,7 +69,7 @@ function Index() {
               <div className="mt-8 h-1 w-40 rounded-full bg-spectrum" />
             </div>
             <div className="flex justify-center">
-              <img src={logo.url} alt="Logo NeuroSpectro" className="w-full max-w-md rounded-[2rem] shadow-soft" />
+              <img src={logoUrl} alt="Logo NeuroSpectro" className="w-full max-w-md rounded-[2rem] shadow-soft" />
             </div>
           </div>
         </section>
