@@ -99,7 +99,7 @@ function Index() {
         <section className="relative overflow-hidden">
           <div aria-hidden className="pointer-events-none absolute -right-32 -top-32 h-96 w-96 rounded-full bg-spec-violet/30 blur-3xl" />
           <div aria-hidden className="pointer-events-none absolute -left-24 top-40 h-80 w-80 rounded-full bg-spec-mint/50 blur-3xl" />
-          <div className="relative mx-auto grid max-w-6xl items-center gap-10 px-5 pb-20 pt-6 md:grid-cols-[1.05fr_1fr] md:pt-16">
+          <div className="relative mx-auto grid max-w-6xl items-center gap-10 px-5 pb-14 pt-4 md:grid-cols-[1.05fr_1fr] md:pb-20 md:pt-16">
             <div className="order-2 md:order-1">
               <p className="text-xs font-semibold uppercase tracking-[0.3em] text-muted-foreground">Autoconhecimento com mais clareza.</p>
               <h1 className="mt-5 font-display text-4xl font-semibold leading-tight text-ink md:text-6xl">
@@ -124,8 +124,8 @@ function Index() {
         </section>
 
         {/* 2. IDENTIFICAÇÃO */}
-        <section className="mx-auto max-w-6xl px-5 py-16">
-          <div className="grid items-center gap-10 rounded-[2rem] border border-border bg-card p-7 shadow-soft md:grid-cols-[1fr_1.4fr] md:p-12">
+        <section className="mx-auto max-w-6xl px-5 py-12 md:py-16">
+          <div className="grid items-center gap-8 rounded-[2rem] border border-border bg-card p-6 shadow-soft md:gap-10 md:grid-cols-[1fr_1.4fr] md:p-12">
             <div className="mx-auto w-full max-w-[220px] md:max-w-[300px]">
               <div className="rounded-[2rem] bg-secondary/60 p-6">
                 <MarkImage />
@@ -146,12 +146,12 @@ function Index() {
           </div>
         </section>
 
-        <section className="mx-auto max-w-6xl px-5 py-16">
+        <section className="mx-auto max-w-6xl px-5 py-12 md:py-16">
           <h2 className="font-display text-3xl font-semibold text-ink">O que você vai explorar</h2>
           <p className="mt-2 max-w-2xl text-muted-foreground">Uma visão organizada de diferentes aspectos que podem aparecer no seu cotidiano.</p>
-          <div className="mt-8 grid grid-cols-2 gap-4 md:grid-cols-4">
+          <div className="mt-6 grid grid-cols-2 gap-3 md:mt-8 md:grid-cols-4 md:gap-4">
             {dims.map(({ icon: Icon, label }) => (
-              <div key={label} className="rounded-2xl border border-border bg-card p-5 transition-shadow hover:shadow-soft">
+              <div key={label} className="rounded-2xl border border-border bg-card p-4 transition-shadow hover:shadow-soft sm:p-5">
                 <div className="flex h-11 w-11 items-center justify-center rounded-full bg-secondary text-primary"><Icon className="h-5 w-5" /></div>
                 <p className="mt-4 text-sm font-semibold uppercase tracking-wider text-ink">{label}</p>
               </div>
@@ -162,9 +162,9 @@ function Index() {
         {/* 3. COMO FUNCIONA */}
         <section className="mx-auto max-w-6xl px-5 py-16">
           <h2 className="font-display text-3xl font-semibold text-ink">Como funciona</h2>
-          <div className="mt-8 grid gap-6 md:grid-cols-3">
+          <div className="mt-6 grid gap-4 md:mt-8 md:grid-cols-3 md:gap-6">
             {steps.map(({ n, icon: Icon, t, d }) => (
-              <div key={n} className="rounded-3xl bg-card p-7 shadow-soft">
+              <div key={n} className="rounded-3xl bg-card p-6 shadow-soft sm:p-7">
                 <div className="flex items-center justify-between">
                   <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-secondary text-primary"><Icon className="h-5 w-5" /></div>
                   <span className="font-display text-sm font-semibold text-primary">{n}</span>
@@ -179,7 +179,7 @@ function Index() {
 
         {/* 4. O QUE VOCÊ RECEBE */}
         <section className="mx-auto max-w-6xl px-5 py-16">
-          <div className="grid items-center gap-10 md:grid-cols-2">
+          <div className="grid items-center gap-8 md:gap-10 md:grid-cols-2">
             <div className="relative mx-auto w-full max-w-md">
               <div aria-hidden className="absolute -inset-4 rounded-[2.5rem] bg-spectrum opacity-20 blur-2xl" />
               <div className="relative rounded-[2rem] border border-border bg-card p-6 shadow-soft">
@@ -224,7 +224,7 @@ function Index() {
 
         {/* 5. PROVA SOCIAL */}
         <section className="mx-auto max-w-6xl px-5 py-16">
-          <div className="mb-8 text-center">
+          <div className="mb-6 text-center md:mb-8">
             <p className="text-xs font-semibold uppercase tracking-[0.25em] text-primary">Experiências</p>
             <h2 className="mt-2 font-display text-3xl font-semibold text-ink">O que essa jornada pode ajudar você a organizar</h2>
             <p className="mx-auto mt-2 max-w-2xl text-muted-foreground">Veja exemplos do tipo de descoberta e reflexão que o NeuroSpectro foi desenvolvido para apoiar.</p>
@@ -232,8 +232,8 @@ function Index() {
           <TestimonialsCarousel />
         </section>
 
-        <section className="mx-auto max-w-6xl px-5 py-10">
-          <div className="rounded-[2rem] border border-primary/20 bg-primary/5 p-7 shadow-soft md:p-9">
+        <section className="mx-auto max-w-6xl px-5 py-8 md:py-10">
+          <div className="rounded-[2rem] border border-primary/20 bg-primary/5 p-6 shadow-soft md:p-9">
             <div className="max-w-2xl">
               <p className="text-xs font-semibold uppercase tracking-[0.25em] text-primary">Uma opção para continuar depois da avaliação</p>
               <h2 className="mt-3 font-display text-2xl font-semibold text-ink md:text-3xl">Você não precisa explorar tudo isso sozinho.</h2>
@@ -244,7 +244,7 @@ function Index() {
           </div>
         </section>
 
-        <section className="bg-ink py-20 text-ink-foreground">
+        <section className="bg-ink py-14 text-ink-foreground md:py-20">
           <div className="mx-auto max-w-6xl px-5">
             <p className="text-xs font-semibold uppercase tracking-[0.3em] opacity-70">Referências científicas</p>
             <h2 className="mt-4 max-w-2xl font-display text-3xl font-semibold">Construída sobre dimensões presentes em instrumentos reconhecidos de rastreio em adultos.</h2>
@@ -260,7 +260,7 @@ function Index() {
         </section>
 
         <section className="mx-auto max-w-6xl px-5 py-16">
-          <div className="grid gap-6 md:grid-cols-3">
+          <div className="grid gap-4 md:grid-cols-3 md:gap-6">
             {[
               [ShieldCheck, "Privacidade em primeiro lugar", "Tratamos suas respostas como dados pessoais sensíveis e evitamos expor informações individuais em ferramentas de publicidade."],
               [Lock, "Acesso protegido", "Resultados completos devem ficar vinculados à sua conta e protegidos por controle de acesso no servidor."],
@@ -268,7 +268,7 @@ function Index() {
             ].map(([Icon, t, d]) => {
               const I = Icon as typeof ShieldCheck;
               return (
-                <div key={t as string} className="rounded-3xl border border-border bg-card p-7 shadow-soft">
+                <div key={t as string} className="rounded-3xl border border-border bg-card p-6 shadow-soft sm:p-7">
                   <div className="flex h-11 w-11 items-center justify-center rounded-full bg-secondary text-primary">
                     <I className="h-5 w-5" />
                   </div>
@@ -283,11 +283,11 @@ function Index() {
         {/* 7. CTA FINAL */}
         <section className="relative overflow-hidden">
           <div aria-hidden className="pointer-events-none absolute left-1/2 top-10 h-80 w-80 -translate-x-1/2 rounded-full bg-spec-violet/25 blur-3xl" />
-          <div className="relative mx-auto max-w-4xl px-5 pb-20 pt-10 text-center">
+          <div className="relative mx-auto max-w-4xl px-5 pb-14 pt-8 text-center md:pb-20 md:pt-10">
             <div className="mx-auto w-40 md:w-52">
               <MarkImage />
             </div>
-            <h2 className="mt-8 font-display text-3xl font-semibold text-ink md:text-4xl">Comece a entender seu perfil com mais clareza.</h2>
+            <h2 className="mt-6 font-display text-3xl font-semibold text-ink md:text-4xl">Comece a entender seu perfil com mais clareza.</h2>
             <Cta className="mt-8" />
             <p className="mx-auto mt-8 max-w-2xl rounded-2xl bg-muted p-5 text-sm text-muted-foreground">
               <strong className="text-ink">Importante:</strong> a NeuroSpectro oferece um rastreio inicial e não realiza diagnóstico. Apenas profissionais de saúde qualificados podem avaliar e diagnosticar o espectro autista.
