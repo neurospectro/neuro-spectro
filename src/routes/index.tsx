@@ -2,8 +2,8 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { Brain, Target, MessageCircle, Heart, Infinity as InfinityIcon, Sun, User, Star, ShieldCheck, FileText, Lock, Instagram, Check, PenLine, LineChart, Sparkles } from "lucide-react";
 import { TestimonialsCarousel } from "@/components/testimonials-carousel";
 
-const wordmarkUrl = "/neurospectro-wordmark.webp?v=2";
-const markUrl = "/neurospectro-mark.webp?v=2";
+const wordmarkUrl = "/neurospectro-wordmark-production.svg?v=3";
+const markUrl = "/neurospectro-mark-production.svg?v=3";
 
 export const Route = createFileRoute("/")({
   head: () => ({
