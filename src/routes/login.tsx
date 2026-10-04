@@ -93,7 +93,7 @@ function LoginPage() {
           <ArrowLeft className="h-4 w-4" /> Voltar
         </Link>
         <Link to="/" aria-label="NeuroSpectro" className="inline-flex items-center">
-          <img src="/neurospectro-logo.jpg" alt="NeuroSpectro" className="h-11 w-auto max-w-[210px] rounded-full object-contain bg-white/95 px-2 py-1" />
+          <img src="/neurospectro-temp.svg" alt="NeuroSpectro" className="h-11 w-auto max-w-[210px] rounded-full object-contain bg-white/95 px-2 py-1" />
         </Link>
       </header>
 
