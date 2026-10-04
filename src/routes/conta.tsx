@@ -67,7 +67,11 @@ function Conta() {
               <p className="leading-5"><strong>Ambiente protegido.</strong> Sua senha não é exibida nesta página e a autenticação é feita pelo serviço seguro de acesso.</p>
             </div>
 
-            <button type="button" onClick={async () => { if (!supabase) return; await supabase.auth.signOut(); await navigate({ to: "/login", replace: true }); }} className="mt-3 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-[#fef5f5] px-4 py-3 text-sm font-semibold text-[#a44b4b] transition hover:bg-[#fdeaea]">\n              <LogOut className="h-4 w-4" /> Sair da conta\n            </button>\n\n            <button type="button" onClick={() => void navigate({ to: "/" })} className="mt-5 w-full rounded-xl border border-[#dce5eb] bg-white px-4 py-3 text-sm font-semibold text-[#526174] transition hover:border-[#8bcfc3] hover:bg-[#f5fbfa]">
+            <button type="button" onClick={async () => { if (!supabase) return; await supabase.auth.signOut(); await navigate({ to: "/login", replace: true }); }} className="mt-3 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-[#fef5f5] px-4 py-3 text-sm font-semibold text-[#a44b4b] transition hover:bg-[#fdeaea]">
+              <LogOut className="h-4 w-4" /> Sair da conta
+            </button>
+
+            <button type="button" onClick={() => void navigate({ to: "/" })} className="mt-5 w-full rounded-xl border border-[#dce5eb] bg-white px-4 py-3 text-sm font-semibold text-[#526174] transition hover:border-[#8bcfc3] hover:bg-[#f5fbfa]">
               Voltar para o início
             </button>
           </div>
