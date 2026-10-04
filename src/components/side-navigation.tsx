@@ -5,7 +5,6 @@ import {
   Instagram,
   Menu,
   UserCircle,
-  Users,
   X,
   BookOpen,
   Compass,
@@ -19,14 +18,12 @@ const groups = [
       { label: "Home", to: "/", icon: Home },
       { label: "Nosso propósito", to: "/proposito", icon: Compass },
       { label: "Conteúdos", to: "/conteudos", icon: BookOpen },
-      { label: "Comunidade", to: "/comunidade", icon: Users },
       { label: "Ajuda", to: "/ajuda", icon: HelpCircle },
     ],
   },
   {
     title: "MINHA JORNADA",
     items: [
-      { label: "Minha avaliação", to: "/avaliacao", icon: BookOpen },
       { label: "Minha conta", to: "/conta", icon: UserCircle },
     ],
   },
