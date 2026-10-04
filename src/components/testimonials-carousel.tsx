@@ -108,9 +108,16 @@ export function TestimonialsCarousel() {
         ref={viewportRef}
         className="flex gap-5 overflow-x-auto pb-4 scrollbar-none overscroll-x-contain"
         aria-label="Depoimentos de usuários"
-        onPointerDown={() => setIsPaused(true)}
-        onPointerUp={() => setIsPaused(false)}
-        onPointerCancel={() => setIsPaused(false)}
+        onPointerDown={(event) => {
+          if (event.isPrimary) setIsPaused(true);
+        }}
+        onPointerUp={(event) => {
+          if (event.isPrimary) setIsPaused(false);
+        }}
+        onPointerCancel={(event) => {
+          if (event.isPrimary) setIsPaused(false);
+        }}
+        onPointerLeave={() => setIsPaused(false)}
       >
         {loopItems.map((testimonial, index) => (
           <article
