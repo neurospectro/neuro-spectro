@@ -3,8 +3,8 @@ import { Brain, Target, MessageCircle, Heart, Infinity as InfinityIcon, Sun, Use
 import { TestimonialsCarousel } from "@/components/testimonials-carousel";
 import { getOffer, formatBRL } from "@/lib/offers";
 
-const wordmarkUrl = "/neurospectro-wordmark.webp";
-const markUrl = "/neurospectro-mark.webp";
+const wordmarkUrl = "/neurospectro-wordmark.webp?v=2";
+const markUrl = "/neurospectro-mark.webp?v=2";
 
 export const Route = createFileRoute("/")({
   head: () => ({
