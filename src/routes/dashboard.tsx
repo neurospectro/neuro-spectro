@@ -58,14 +58,15 @@ function Dashboard() {
 
     setEmail(auth.user.email ?? "");
 
-    // After Magic Link authentication, bind any purchases/assessment records
-    // made with the verified email to this authenticated user.
-    const { error: claimError } = await supabase.rpc("claim_identity_records");
-    if (claimError) {
-      console.error("IDENTITY_CLAIM_FAILED", claimError);
-      setError("Não foi possível vincular automaticamente seus dados à conta. Recarregue a página ou tente entrar novamente.");
+    const { data: access } = await supabase.rpc("has_paid_access");
+    if (!access) {
+      await supabase.auth.signOut();
+      await navigate({ to: "/login", replace: true });
+      return;
     }
 
+    // After authentication, load the records belonging to this paid account.
+    // made with the verified email to this authenticated user.
     const [resultQuery, accessQuery, orderQuery] = await Promise.all([
       supabase.from("resultados").select("id,created_at,total_raw,max_raw,scores").order("created_at", { ascending: false }),
       supabase.from("acessos").select("id,status,starts_at,expires_at,produto_id,produtos(slug)").order("created_at", { ascending: false }),
