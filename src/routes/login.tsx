@@ -1,5 +1,4 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { ArrowLeft, KeyRound, MailCheck } from "lucide-react";
 import { useEffect, useState } from "react";
 import { isSupabaseConfigured, supabase } from "@/lib/supabase";
 
@@ -84,7 +83,7 @@ function LoginPage() {
       <div className="mx-auto flex min-h-[calc(100vh-4rem)] w-full max-w-[440px] flex-col justify-center">
         <div className="mb-8 text-center">
           <Link to="/" aria-label="Ir para a página inicial" className="inline-flex items-center justify-center">
-            <img src="/logo.svg" alt="NeuroSpectro" className="h-auto w-[190px] object-contain" />
+            <img src="/neurospectro-logo.jpg" alt="NeuroSpectro" className="h-auto w-[190px] rounded-full object-contain" />
           </Link>
         </div>
 
