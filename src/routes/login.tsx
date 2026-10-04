@@ -51,7 +51,7 @@ function LoginPage() {
     setMessage("");
     const { error } = await supabase.auth.signInWithOtp({
       email: email.trim(),
-      options: { emailRedirectTo: window.location.origin + "/dashboard" },
+      options: { emailRedirectTo: window.location.origin + "/auth/callback" },
     });
     setLoading(false);
     if (error) {
