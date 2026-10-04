@@ -1,5 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { ArrowLeft, KeyRound, LogOut, UserCircle2 } from "lucide-react";
+import { ArrowLeft, LogOut, UserCircle2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 
@@ -47,16 +47,18 @@ function Conta() {
           </header>
 
           <div style={{ padding: 20 }}>
-            <Link to="/dashboard" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", width: "100%", boxSizing: "border-box", padding: 16, borderRadius: 16, background: "#f3f8fa", color: "#172033", textDecoration: "none", fontSize: 15, fontWeight: 700 }}>
-              <span>Minha área e resultados</span>
-              <span style={{ color: "#00769f", fontSize: 22, lineHeight: 1 }}>›</span>
+            <p style={{ margin: "0 0 18px", color: "#526174", fontSize: 14, textAlign: "center" }}>
+              Você já está conectado.
+            </p>
+
+            <Link
+              to="/login"
+              style={{ display: "flex", alignItems: "center", justifyContent: "center", width: "100%", boxSizing: "border-box", padding: "14px 16px", borderRadius: 14, background: "#00769f", color: "#fff", textDecoration: "none", fontSize: 15, fontWeight: 700 }}
+            >
+              Ir para o login
             </Link>
 
-            <Link to="/alterar-senha" style={{ display: "flex", alignItems: "center", gap: 10, width: "100%", boxSizing: "border-box", marginTop: 12, padding: "15px 16px", borderRadius: 16, border: "1px solid #dce5eb", color: "#526174", textDecoration: "none", fontSize: 14, fontWeight: 700 }}>
-              <KeyRound size={17} /> Alterar senha
-            </Link>
-
-            <button type="button" onClick={() => void logout()} style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8, width: "100%", boxSizing: "border-box", marginTop: 18, padding: "13px 16px", border: 0, borderRadius: 14, background: "#fef5f5", color: "#a44b4b", font: "inherit", fontSize: 14, fontWeight: 700, cursor: "pointer" }}>
+            <button type="button" onClick={() => void logout()} style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8, width: "100%", boxSizing: "border-box", marginTop: 12, padding: "13px 16px", border: 0, borderRadius: 14, background: "#fef5f5", color: "#a44b4b", font: "inherit", fontSize: 14, fontWeight: 700, cursor: "pointer" }}>
               <LogOut size={17} /> Sair da conta
             </button>
 
