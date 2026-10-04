@@ -40,6 +40,22 @@ function LoginPage() {
       setMessage("E-mail ou senha inválidos. Tente novamente ou redefina sua senha.");
       return;
     }
+
+    // Admins are not customers: they can access the admin area and the
+    // administrative assessment simulation without a purchase/paywall.
+    const admin = await supabase
+      .from("admin_users")
+      .select("user_id")
+      .eq("user_id", data.user.id)
+      .maybeSingle();
+
+    if (admin.data?.user_id === data.user.id) {
+      setLoading(false);
+      await navigate({ to: "/admin", replace: true });
+      return;
+    }
+
+    // Keep the existing customer gate exactly as before.
     const { data: access } = await supabase.rpc("has_paid_access");
     if (!access) {
       await supabase.auth.signOut();
@@ -47,9 +63,9 @@ function LoginPage() {
       setMessage("Sua conta ainda não possui uma compra confirmada. O acesso é liberado após o pagamento.");
       return;
     }
-    const admin = await supabase.from("admin_users").select("user_id").eq("user_id", data.user.id).maybeSingle();
+
     setLoading(false);
-    await navigate({ to: admin.data ? "/admin" : "/dashboard", replace: true });
+    await navigate({ to: "/dashboard", replace: true });
   }
 
 
