@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AjudaRouteImport } from './routes/ajuda'
+import { Route as AlterarSenhaRouteImport } from './routes/alterar-senha'
 import { Route as AvaliacaoRouteImport } from './routes/avaliacao'
 import { Route as ComunidadeRouteImport } from './routes/comunidade'
 import { Route as ContaRouteImport } from './routes/conta'
@@ -26,6 +27,7 @@ import { Route as PropositoRouteImport } from './routes/proposito'
 import { Route as RelatorioOnlineRouteImport } from './routes/relatorio-online'
 import { Route as RelatorioPdfRouteImport } from './routes/relatorio-pdf'
 import { Route as SobreRouteImport } from './routes/sobre'
+import { Route as AuthCallbackRouteImport } from './routes/auth/callback'
 import { Route as CheckoutOfferIdRouteImport } from './routes/checkout.$offerId'
 
 const IndexRoute = IndexRouteImport.update({
@@ -41,6 +43,11 @@ const AdminRoute = AdminRouteImport.update({
 const AjudaRoute = AjudaRouteImport.update({
   id: '/ajuda',
   path: '/ajuda',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AlterarSenhaRoute = AlterarSenhaRouteImport.update({
+  id: '/alterar-senha',
+  path: '/alterar-senha',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AvaliacaoRoute = AvaliacaoRouteImport.update({
@@ -113,6 +120,11 @@ const SobreRoute = SobreRouteImport.update({
   path: '/sobre',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthCallbackRoute = AuthCallbackRouteImport.update({
+  id: '/auth/callback',
+  path: '/auth/callback',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const CheckoutOfferIdRoute = CheckoutOfferIdRouteImport.update({
   id: '/checkout/$offerId',
   path: '/checkout/$offerId',
@@ -123,6 +135,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
   '/ajuda': typeof AjudaRoute
+  '/alterar-senha': typeof AlterarSenhaRoute
   '/avaliacao': typeof AvaliacaoRoute
   '/comunidade': typeof ComunidadeRoute
   '/conta': typeof ContaRoute
@@ -137,12 +150,14 @@ export interface FileRoutesByFullPath {
   '/relatorio-online': typeof RelatorioOnlineRoute
   '/relatorio-pdf': typeof RelatorioPdfRoute
   '/sobre': typeof SobreRoute
+  '/auth/callback': typeof AuthCallbackRoute
   '/checkout/$offerId': typeof CheckoutOfferIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
   '/ajuda': typeof AjudaRoute
+  '/alterar-senha': typeof AlterarSenhaRoute
   '/avaliacao': typeof AvaliacaoRoute
   '/comunidade': typeof ComunidadeRoute
   '/conta': typeof ContaRoute
@@ -157,6 +172,7 @@ export interface FileRoutesByTo {
   '/relatorio-online': typeof RelatorioOnlineRoute
   '/relatorio-pdf': typeof RelatorioPdfRoute
   '/sobre': typeof SobreRoute
+  '/auth/callback': typeof AuthCallbackRoute
   '/checkout/$offerId': typeof CheckoutOfferIdRoute
 }
 export interface FileRoutesById {
@@ -164,6 +180,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
   '/ajuda': typeof AjudaRoute
+  '/alterar-senha': typeof AlterarSenhaRoute
   '/avaliacao': typeof AvaliacaoRoute
   '/comunidade': typeof ComunidadeRoute
   '/conta': typeof ContaRoute
@@ -178,6 +195,7 @@ export interface FileRoutesById {
   '/relatorio-online': typeof RelatorioOnlineRoute
   '/relatorio-pdf': typeof RelatorioPdfRoute
   '/sobre': typeof SobreRoute
+  '/auth/callback': typeof AuthCallbackRoute
   '/checkout/$offerId': typeof CheckoutOfferIdRoute
 }
 export interface FileRouteTypes {
@@ -186,6 +204,7 @@ export interface FileRouteTypes {
     | '/'
     | '/admin'
     | '/ajuda'
+    | '/alterar-senha'
     | '/avaliacao'
     | '/comunidade'
     | '/conta'
@@ -200,12 +219,14 @@ export interface FileRouteTypes {
     | '/relatorio-online'
     | '/relatorio-pdf'
     | '/sobre'
+    | '/auth/callback'
     | '/checkout/$offerId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/admin'
     | '/ajuda'
+    | '/alterar-senha'
     | '/avaliacao'
     | '/comunidade'
     | '/conta'
@@ -220,12 +241,14 @@ export interface FileRouteTypes {
     | '/relatorio-online'
     | '/relatorio-pdf'
     | '/sobre'
+    | '/auth/callback'
     | '/checkout/$offerId'
   id:
     | '__root__'
     | '/'
     | '/admin'
     | '/ajuda'
+    | '/alterar-senha'
     | '/avaliacao'
     | '/comunidade'
     | '/conta'
@@ -240,6 +263,7 @@ export interface FileRouteTypes {
     | '/relatorio-online'
     | '/relatorio-pdf'
     | '/sobre'
+    | '/auth/callback'
     | '/checkout/$offerId'
   fileRoutesById: FileRoutesById
 }
@@ -247,6 +271,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AdminRoute: typeof AdminRoute
   AjudaRoute: typeof AjudaRoute
+  AlterarSenhaRoute: typeof AlterarSenhaRoute
   AvaliacaoRoute: typeof AvaliacaoRoute
   ComunidadeRoute: typeof ComunidadeRoute
   ContaRoute: typeof ContaRoute
@@ -261,6 +286,7 @@ export interface RootRouteChildren {
   RelatorioOnlineRoute: typeof RelatorioOnlineRoute
   RelatorioPdfRoute: typeof RelatorioPdfRoute
   SobreRoute: typeof SobreRoute
+  AuthCallbackRoute: typeof AuthCallbackRoute
   CheckoutOfferIdRoute: typeof CheckoutOfferIdRoute
 }
 
@@ -285,6 +311,13 @@ declare module '@tanstack/react-router' {
       path: '/ajuda'
       fullPath: '/ajuda'
       preLoaderRoute: typeof AjudaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/alterar-senha': {
+      id: '/alterar-senha'
+      path: '/alterar-senha'
+      fullPath: '/alterar-senha'
+      preLoaderRoute: typeof AlterarSenhaRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/avaliacao': {
@@ -385,6 +418,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SobreRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/auth/callback': {
+      id: '/auth/callback'
+      path: '/auth/callback'
+      fullPath: '/auth/callback'
+      preLoaderRoute: typeof AuthCallbackRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/checkout/$offerId': {
       id: '/checkout/$offerId'
       path: '/checkout/$offerId'
@@ -399,6 +439,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AdminRoute: AdminRoute,
   AjudaRoute: AjudaRoute,
+  AlterarSenhaRoute: AlterarSenhaRoute,
   AvaliacaoRoute: AvaliacaoRoute,
   ComunidadeRoute: ComunidadeRoute,
   ContaRoute: ContaRoute,
@@ -413,6 +454,7 @@ const rootRouteChildren: RootRouteChildren = {
   RelatorioOnlineRoute: RelatorioOnlineRoute,
   RelatorioPdfRoute: RelatorioPdfRoute,
   SobreRoute: SobreRoute,
+  AuthCallbackRoute: AuthCallbackRoute,
   CheckoutOfferIdRoute: CheckoutOfferIdRoute,
 }
 export const routeTree = rootRouteImport
