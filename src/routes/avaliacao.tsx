@@ -379,21 +379,95 @@ function Done({ session, isAdminSimulation = false, onReview }: { session: Sessi
       <p className="mx-auto mt-6 max-w-md text-xs text-muted-foreground">Não é diagnóstico. Pontuações indicam maior ou menor presença de características em cada dimensão, sem pontos de corte clínicos.</p>
 
       {isAdminSimulation ? (
-        <div className="mx-auto mt-7 max-w-md rounded-3xl border border-primary/20 bg-primary/5 p-5 text-left">
-          <p className="text-xs font-bold uppercase tracking-[0.18em] text-primary">Teste administrativo</p>
-          <p className="mt-2 text-sm leading-6 text-muted-foreground">
-            Resultado completo liberado para validação interna. Esta sessão não gera cobrança, pedido, conversão ou acesso de cliente.
-          </p>
-          <Link to="/admin" className="mt-4 inline-flex rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground">
-            Voltar ao Admin
-          </Link>
-        </div>
+        <AdminFullReport scores={scores} session={session} />
       ) : (
         <ReportOffer session={session} />
       )}
 
       <button onClick={onReview} className="mt-6 rounded-full border border-border px-6 py-3 text-sm font-medium hover:bg-secondary">Revisar respostas</button>
     </Shell>
+  );
+}
+
+function AdminFullReport({ scores, session }: { scores: ReturnType<typeof scoreByDimension>; session: Session }) {
+  const totalRaw = scores.reduce((sum, item) => sum + item.raw, 0);
+  const totalMax = scores.reduce((sum, item) => sum + item.max, 0);
+  const totalPct = totalMax ? Math.round((totalRaw / totalMax) * 100) : 0;
+
+  return (
+    <div className="mx-auto mt-8 max-w-xl space-y-5 text-left">
+      <section className="rounded-3xl border border-primary/20 bg-card p-6 shadow-soft">
+        <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-primary">Relatório completo · teste administrativo</p>
+        <h2 className="mt-2 font-display text-2xl font-semibold text-ink">Leitura geral das suas respostas</h2>
+        <p className="mt-3 text-sm leading-6 text-muted-foreground">
+          Este relatório apresenta uma leitura organizada das 48 respostas, distribuída pelas dimensões avaliadas pelo NeuroSpectro.
+          Ele é uma ferramenta de autoconhecimento e não estabelece diagnóstico clínico.
+        </p>
+        <div className="mt-5 rounded-2xl bg-primary/5 p-4">
+          <div className="flex items-end justify-between">
+            <span className="text-sm font-medium text-ink">Índice geral de respostas</span>
+            <span className="font-display text-3xl font-bold text-primary">{totalPct}%</span>
+          </div>
+          <div className="mt-2 h-2 overflow-hidden rounded-full bg-secondary">
+            <div className="h-full rounded-full bg-primary" style={{ width: `${totalPct}%` }} />
+          </div>
+          <p className="mt-2 text-xs text-muted-foreground">{totalRaw} de {totalMax} pontos possíveis nas dimensões avaliadas.</p>
+        </div>
+      </section>
+
+      <section className="rounded-3xl border border-border bg-card p-6">
+        <h3 className="font-display text-xl font-semibold text-ink">Suas 8 dimensões</h3>
+        <div className="mt-5 space-y-5">
+          {scores.map((item) => {
+            const pct = item.max ? Math.round((item.raw / item.max) * 100) : 0;
+            const level = pct >= 67 ? "Maior presença de características" : pct >= 34 ? "Presença intermediária de características" : "Menor presença de características";
+            return (
+              <div key={item.dimension.id}>
+                <div className="flex items-center justify-between gap-3">
+                  <span className="font-semibold text-ink">{item.dimension.label}</span>
+                  <span className="text-sm font-medium text-muted-foreground">{item.raw}/{item.max}</span>
+                </div>
+                <div className="mt-2 h-2 rounded-full bg-secondary">
+                  <div className="h-full rounded-full bg-primary" style={{ width: `${pct}%` }} />
+                </div>
+                <p className="mt-2 text-xs leading-5 text-muted-foreground">{level}. Explore como essa característica aparece no seu cotidiano, considerando contexto e frequência.</p>
+              </div>
+            );
+          })}
+        </div>
+      </section>
+
+      <section className="rounded-3xl border border-border bg-card p-6">
+        <h3 className="font-display text-xl font-semibold text-ink">Como interpretar seu perfil</h3>
+        <div className="mt-4 space-y-3 text-sm leading-6 text-muted-foreground">
+          <p><strong className="text-ink">Padrões mais altos:</strong> indicam dimensões nas quais suas respostas apresentaram maior presença de características exploradas pelo instrumento.</p>
+          <p><strong className="text-ink">Padrões intermediários:</strong> podem aparecer de forma contextual, variando conforme ambiente, demandas sociais, rotina e período da vida.</p>
+          <p><strong className="text-ink">Padrões mais baixos:</strong> indicam menor frequência relativa das características investigadas nessa dimensão.</p>
+          <p>O resultado deve ser lido como um conjunto. Uma única dimensão não determina identidade, diagnóstico ou necessidade de suporte.</p>
+        </div>
+      </section>
+
+      <section className="rounded-3xl border border-border bg-card p-6">
+        <h3 className="font-display text-xl font-semibold text-ink">Pontos para aprofundar</h3>
+        <ul className="mt-4 space-y-3 text-sm leading-6 text-muted-foreground">
+          <li>• Observe quais situações do cotidiano exigem mais esforço de adaptação ou recuperação.</li>
+          <li>• Compare suas respostas com experiências recorrentes ao longo da vida, e não apenas com o momento atual.</li>
+          <li>• Anote exemplos concretos que ajudem a contextualizar as dimensões com maior pontuação.</li>
+          <li>• Se quiser investigar a possibilidade de uma condição do neurodesenvolvimento, leve este resultado a um profissional qualificado.</li>
+        </ul>
+      </section>
+
+      <section className="rounded-3xl border border-amber-200 bg-amber-50 p-6">
+        <h3 className="font-display text-xl font-semibold text-amber-950">Importante</h3>
+        <p className="mt-3 text-sm leading-6 text-amber-900">
+          O NeuroSpectro é uma autoavaliação informativa. Pontuações mais altas ou mais baixas não possuem, por si só, valor diagnóstico e não substituem entrevista clínica, histórico de desenvolvimento ou avaliação profissional.
+        </p>
+      </section>
+
+      <div className="flex justify-center">
+        <Link to="/admin" className="rounded-full bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground shadow-soft">Voltar ao Admin</Link>
+      </div>
+    </div>
   );
 }
 
