@@ -39,6 +39,13 @@ function LoginPage() {
       setMessage("E-mail ou senha inválidos. Tente novamente ou redefina sua senha.");
       return;
     }
+    const { data: access } = await supabase.rpc("has_paid_access");
+    if (!access) {
+      await supabase.auth.signOut();
+      setLoading(false);
+      setMessage("Sua conta ainda não possui uma compra confirmada. O acesso é liberado após o pagamento.");
+      return;
+    }
     const admin = await supabase.from("admin_users").select("user_id").eq("user_id", data.user.id).maybeSingle();
     setLoading(false);
     await navigate({ to: admin.data ? "/admin" : "/dashboard", replace: true });
@@ -51,7 +58,7 @@ function LoginPage() {
     setMessage("");
     const { error } = await supabase.auth.signInWithOtp({
       email: email.trim(),
-      options: { emailRedirectTo: window.location.origin + "/auth/callback" },
+      options: { emailRedirectTo: window.location.origin + "/auth/callback", shouldCreateUser: false },
     });
     setLoading(false);
     if (error) {
