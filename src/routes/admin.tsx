@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
-import { ArrowLeft, Download, LogOut, RefreshCw, ShieldCheck, ShoppingBag, Users, WalletCards, Webhook } from "lucide-react";
+import { ArrowLeft, ClipboardCheck, Download, LogOut, RefreshCw, ShieldCheck, ShoppingBag, Users, WalletCards, Webhook } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { IntegrationsCenter } from "@/components/integrations-center";
 
@@ -195,7 +195,7 @@ function AdminPage() {
             <p className="mt-1 text-xs text-muted-foreground">{email}</p>
           </div>
           <div className="flex items-center gap-2">
-            <button onClick={() => void load()} className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-4 py-2 text-sm font-medium text-ink"><RefreshCw className="h-4 w-4" /> Atualizar</button>
+            <a href="/avaliacao?admin=1" className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/5 px-4 py-2 text-sm font-semibold text-primary"><ClipboardCheck className="h-4 w-4" /> Simular teste</a>\n            <button onClick={() => void load()} className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-4 py-2 text-sm font-medium text-ink"><RefreshCw className="h-4 w-4" /> Atualizar</button>
             <button onClick={exportCsv} className="inline-flex items-center gap-2 rounded-full bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground"><Download className="h-4 w-4" /> Exportar CSV</button>
             <button onClick={signOut} className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-4 py-2 text-sm font-medium text-ink"><LogOut className="h-4 w-4" /> Sair</button>
           </div>
