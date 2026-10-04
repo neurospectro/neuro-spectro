@@ -75,7 +75,7 @@ function MarkImage({ className = "", eager = false }: { className?: string; eage
       loading={eager ? "eager" : "lazy"}
       fetchPriority={eager ? "high" : "auto"}
       decoding="async"
-      className={`h-auto w-full object-contain mix-blend-multiply dark:mix-blend-normal dark:rounded-3xl ${className}`}
+      className={`h-auto w-full object-contain ${className}`}
     />
   );
 }
