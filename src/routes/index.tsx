@@ -1,7 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Brain, Target, MessageCircle, Heart, Infinity as InfinityIcon, Sun, User, Star, ShieldCheck, FileText, Lock, Instagram } from "lucide-react";
+import { Brain, Target, MessageCircle, Heart, Infinity as InfinityIcon, Sun, User, Star, ShieldCheck, FileText, Lock, Instagram, Check, PenLine, LineChart, Sparkles } from "lucide-react";
 import { TestimonialsCarousel } from "@/components/testimonials-carousel";
-const logoUrl = "/neurospectro-logo.jpg";
+import { getOffer, formatBRL } from "@/lib/offers";
+
+const wordmarkUrl = "/neurospectro-wordmark.webp";
+const markUrl = "/neurospectro-mark.webp";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -13,6 +16,7 @@ export const Route = createFileRoute("/")({
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
+    links: [{ rel: "preload", as: "image", href: markUrl, type: "image/webp" }],
   }),
   component: Index,
 });
@@ -30,6 +34,26 @@ const dims = [
 
 const refs = ["AQ-50", "AQ-10", "RAADS-R", "CAT-Q", "AAA"];
 
+const steps = [
+  { n: "01", icon: PenLine, t: "Responda", d: "Uma afirmação por tela, no seu ritmo. Salve e retome quando quiser." },
+  { n: "02", icon: LineChart, t: "Analise", d: "Suas respostas são organizadas em 8 dimensões do seu funcionamento." },
+  { n: "03", icon: Sparkles, t: "Descubra", d: "Veja sua prévia e, se quiser, libere o relatório completo." },
+];
+
+const identification = [
+  "Você sente que pensa ou percebe o mundo de um jeito diferente.",
+  "Situações sociais exigem mais energia do que parecem exigir dos outros.",
+  "Sons, luzes ou mudanças de rotina afetam você mais do que o esperado.",
+  "Você quer organizar essas percepções antes de conversar com um profissional.",
+];
+
+const deliverables = [
+  "Leitura detalhada das 8 dimensões avaliadas",
+  "Pontos de destaque do seu perfil, em linguagem acolhedora",
+  "Material para levar a uma conversa com um profissional",
+  "Acesso protegido, vinculado à sua conta",
+];
+
 function Cta({ className = "" }: { className?: string }) {
   return (
     <Link
@@ -41,21 +65,39 @@ function Cta({ className = "" }: { className?: string }) {
   );
 }
 
+function MarkImage({ className = "", eager = false }: { className?: string; eager?: boolean }) {
+  return (
+    <img
+      src={markUrl}
+      alt="Cérebro formado por peças de quebra-cabeça em cores suaves, símbolo da NeuroSpectro"
+      width={500}
+      height={480}
+      loading={eager ? "eager" : "lazy"}
+      fetchPriority={eager ? "high" : "auto"}
+      decoding="async"
+      className={`h-auto w-full object-contain ${className}`}
+    />
+  );
+}
+
 function Index() {
+  const offer = getOffer("report-full-2490");
+
   return (
     <div className="min-h-screen bg-background font-sans text-foreground">
       <header className="mx-auto flex max-w-6xl items-center justify-between px-5 py-5">
         <Link to="/" className="flex items-center">
-          <img src={logoUrl} alt="NeuroSpectro" className="h-12 w-auto max-w-[220px] object-contain" />
+          <img src={wordmarkUrl} alt="NeuroSpectro" width={894} height={180} className="h-8 w-auto md:h-9" />
         </Link>
       </header>
 
       <main>
+        {/* 1. HERO */}
         <section className="relative overflow-hidden">
           <div aria-hidden className="pointer-events-none absolute -right-32 -top-32 h-96 w-96 rounded-full bg-spec-violet/30 blur-3xl" />
           <div aria-hidden className="pointer-events-none absolute -left-24 top-40 h-80 w-80 rounded-full bg-spec-mint/50 blur-3xl" />
-          <div className="relative mx-auto grid max-w-6xl items-center gap-10 px-5 pb-20 pt-10 md:grid-cols-2 md:pt-20">
-            <div>
+          <div className="relative mx-auto grid max-w-6xl items-center gap-10 px-5 pb-20 pt-6 md:grid-cols-[1.05fr_1fr] md:pt-16">
+            <div className="order-2 md:order-1">
               <p className="text-xs font-semibold uppercase tracking-[0.3em] text-muted-foreground">Diferentes formas de pensar. Um só universo.</p>
               <h1 className="mt-5 font-display text-4xl font-semibold leading-tight text-ink md:text-6xl">
                 Existe mais sobre você <span className="text-primary">para descobrir.</span>
@@ -65,45 +107,40 @@ function Index() {
               </p>
               <div className="mt-8 flex flex-col gap-4 sm:flex-row sm:items-center">
                 <Cta />
+                <span className="text-sm text-muted-foreground">Avaliação gratuita · 48 afirmações</span>
               </div>
               <div className="mt-8 h-1 w-40 rounded-full bg-spectrum" />
             </div>
-            <div className="flex justify-center">
-              <img src={logoUrl} alt="Logo NeuroSpectro" className="w-full max-w-md rounded-[2rem] shadow-soft" />
-            </div>
-          </div>
-        </section>
-
-        <section className="mx-auto max-w-6xl px-5 py-10">
-          <div className="rounded-[2rem] border border-primary/20 bg-primary/5 p-7 shadow-soft md:p-9">
-            <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
-              <div className="max-w-2xl">
-                <p className="text-xs font-semibold uppercase tracking-[0.25em] text-primary">Uma opção para continuar depois da avaliação</p>
-                <h2 className="mt-3 font-display text-2xl font-semibold text-ink md:text-3xl">Você não precisa explorar tudo isso sozinho.</h2>
-                <p className="mt-3 text-muted-foreground">
-                  Um espaço para continuar essa jornada com troca de experiências, conteúdos exclusivos e apoio sobre neurodiversidade.
-                </p>
-              </div>
-              <div className="flex shrink-0 items-center gap-3 rounded-2xl border border-primary/20 bg-card px-5 py-4 shadow-soft">
-                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-soft">
-                  <span className="text-lg" aria-hidden>🧠🧩</span>
-                </div>
-                <div>
-                  <span className="text-[13px] font-semibold leading-5 tracking-tight text-ink">🧠🧩 Comunidade de Apoio</span>
-                  <p className="mt-1.5 text-[11px] font-normal leading-4 text-muted-foreground">Troca de experiências e apoio para continuar essa jornada.</p>
-                </div>
+            <div className="order-1 flex justify-center md:order-2">
+              <div className="relative w-full max-w-xs md:max-w-md">
+                <div aria-hidden className="absolute inset-6 rounded-full bg-spectrum opacity-30 blur-3xl" />
+                <MarkImage eager className="relative drop-shadow-xl" />
               </div>
             </div>
           </div>
         </section>
 
+        {/* 2. IDENTIFICAÇÃO */}
         <section className="mx-auto max-w-6xl px-5 py-16">
-          <div className="mb-8 text-center">
-            <p className="text-xs font-semibold uppercase tracking-[0.25em] text-primary">Experiências</p>
-            <h2 className="mt-2 font-display text-3xl font-semibold text-ink">O que essa jornada pode ajudar você a organizar</h2>
-            <p className="mx-auto mt-2 max-w-2xl text-muted-foreground">Veja exemplos do tipo de descoberta e reflexão que o NeuroSpectro foi desenvolvido para apoiar.</p>
+          <div className="grid items-center gap-10 rounded-[2rem] border border-border bg-card p-7 shadow-soft md:grid-cols-[1fr_1.4fr] md:p-12">
+            <div className="mx-auto w-full max-w-[220px] md:max-w-[300px]">
+              <div className="rounded-[2rem] bg-secondary/60 p-6">
+                <MarkImage />
+              </div>
+            </div>
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-[0.25em] text-primary">Isso parece com você?</p>
+              <h2 className="mt-3 font-display text-2xl font-semibold text-ink md:text-3xl">Cada peça do seu jeito de funcionar faz sentido.</h2>
+              <ul className="mt-6 space-y-3">
+                {identification.map((item) => (
+                  <li key={item} className="flex gap-3 text-muted-foreground">
+                    <Check className="mt-0.5 h-5 w-5 shrink-0 text-primary" />
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
           </div>
-          <TestimonialsCarousel />
         </section>
 
         <section className="mx-auto max-w-6xl px-5 py-16">
@@ -119,20 +156,88 @@ function Index() {
           </div>
         </section>
 
+        {/* 3. COMO FUNCIONA */}
         <section className="mx-auto max-w-6xl px-5 py-16">
           <h2 className="font-display text-3xl font-semibold text-ink">Como funciona</h2>
           <div className="mt-8 grid gap-6 md:grid-cols-3">
-            {[
-              ["01", "Responda com calma", "Uma pergunta por tela. Salve e retome quando quiser."],
-              ["02", "Veja sua prévia", "Receba uma primeira leitura do seu perfil ao final."],
-              ["03", "Aprofunde", "Libere o relatório completo e, se quiser, adicione a comunidade como uma experiência complementar."],
-            ].map(([n, t, d]) => (
+            {steps.map(({ n, icon: Icon, t, d }) => (
               <div key={n} className="rounded-3xl bg-card p-7 shadow-soft">
-                <span className="font-display text-sm font-semibold text-primary">{n}</span>
-                <h3 className="mt-3 font-display text-xl font-semibold text-ink">{t}</h3>
+                <div className="flex items-center justify-between">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-secondary text-primary"><Icon className="h-5 w-5" /></div>
+                  <span className="font-display text-sm font-semibold text-primary">{n}</span>
+                </div>
+                <h3 className="mt-5 font-display text-xl font-semibold text-ink">{t}</h3>
                 <p className="mt-2 text-muted-foreground">{d}</p>
+                <div className="mt-6 h-1 w-16 rounded-full bg-spectrum" />
               </div>
             ))}
+          </div>
+        </section>
+
+        {/* 4. O QUE VOCÊ RECEBE */}
+        <section className="mx-auto max-w-6xl px-5 py-16">
+          <div className="grid items-center gap-10 md:grid-cols-2">
+            <div className="relative mx-auto w-full max-w-md">
+              <div aria-hidden className="absolute -inset-4 rounded-[2.5rem] bg-spectrum opacity-20 blur-2xl" />
+              <div className="relative rounded-[2rem] border border-border bg-card p-6 shadow-soft">
+                <div className="flex items-center justify-between border-b border-border pb-4">
+                  <img src={wordmarkUrl} alt="" aria-hidden width={894} height={180} loading="lazy" className="h-6 w-auto" />
+                  <span className="rounded-full bg-secondary px-3 py-1 text-xs font-semibold text-primary">Relatório completo</span>
+                </div>
+                <div className="grid grid-cols-[96px_1fr] items-center gap-5 pt-5">
+                  <MarkImage />
+                  <div className="space-y-2.5">
+                    {[80, 62, 90, 54].map((w, i) => (
+                      <div key={i} className="h-2 rounded-full bg-muted">
+                        <div className="h-2 rounded-full bg-spectrum" style={{ width: `${w}%` }} />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                <div className="mt-5 grid grid-cols-4 gap-2">
+                  {dims.slice(0, 8).map(({ icon: Icon, label }) => (
+                    <div key={label} className="flex h-10 items-center justify-center rounded-xl bg-secondary/70 text-primary" title={label}>
+                      <Icon className="h-4 w-4" />
+                    </div>
+                  ))}
+                </div>
+                <p className="mt-4 text-center text-[11px] text-muted-foreground">Ilustração do formato do relatório</p>
+              </div>
+            </div>
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-[0.25em] text-primary">O que você recebe</p>
+              <h2 className="mt-3 font-display text-3xl font-semibold text-ink">Uma leitura clara do seu perfil, para guardar e revisitar.</h2>
+              <ul className="mt-6 space-y-3">
+                {deliverables.map((item) => (
+                  <li key={item} className="flex gap-3 text-muted-foreground">
+                    <Check className="mt-0.5 h-5 w-5 shrink-0 text-primary" />
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        {/* 5. PROVA SOCIAL */}
+        <section className="mx-auto max-w-6xl px-5 py-16">
+          <div className="mb-8 text-center">
+            <p className="text-xs font-semibold uppercase tracking-[0.25em] text-primary">Experiências</p>
+            <h2 className="mt-2 font-display text-3xl font-semibold text-ink">O que essa jornada pode ajudar você a organizar</h2>
+            <p className="mx-auto mt-2 max-w-2xl text-muted-foreground">Veja exemplos do tipo de descoberta e reflexão que o NeuroSpectro foi desenvolvido para apoiar.</p>
+          </div>
+          <TestimonialsCarousel />
+        </section>
+
+        <section className="mx-auto max-w-6xl px-5 py-10">
+          <div className="rounded-[2rem] border border-primary/20 bg-primary/5 p-7 shadow-soft md:p-9">
+            <div className="max-w-2xl">
+              <p className="text-xs font-semibold uppercase tracking-[0.25em] text-primary">Uma opção para continuar depois da avaliação</p>
+              <h2 className="mt-3 font-display text-2xl font-semibold text-ink md:text-3xl">Você não precisa explorar tudo isso sozinho.</h2>
+              <p className="mt-3 text-muted-foreground">
+                Um espaço para continuar essa jornada com troca de experiências, conteúdos exclusivos e apoio sobre neurodiversidade.
+              </p>
+            </div>
           </div>
         </section>
 
@@ -151,24 +256,38 @@ function Index() {
           </div>
         </section>
 
-        <section className="mx-auto grid max-w-6xl gap-6 px-5 py-16 md:grid-cols-3">
-          {[
-            [ShieldCheck, "Privacidade (LGPD)", "Suas respostas são protegidas e você controla seus dados."],
-            [Lock, "Resultado protegido", "Só você acessa seu relatório."],
-            [FileText, "Relatório em PDF", "Leve o resultado para conversar com um profissional."],
-          ].map(([Icon, t, d]) => {
-            const I = Icon as typeof ShieldCheck;
-            return (
-              <div key={t as string} className="flex gap-4">
-                <I className="h-6 w-6 shrink-0 text-primary" />
-                <div>
-                  <h3 className="font-display font-semibold text-ink">{t as string}</h3>
-                  <p className="text-sm text-muted-foreground">{d as string}</p>
-                </div>
+        {/* 6. OFERTA */}
+        {offer && (
+          <section className="mx-auto max-w-3xl px-5 py-20">
+            <div className="rounded-[2rem] border border-border bg-card p-8 text-center shadow-soft md:p-12">
+              <p className="text-xs font-semibold uppercase tracking-[0.25em] text-primary">Depois da avaliação gratuita</p>
+              <h2 className="mt-3 font-display text-3xl font-semibold text-ink">{offer.name}</h2>
+              <div className="mt-6 flex items-end justify-center gap-3">
+                {offer.referenceCents && (
+                  <span className="pb-1 text-lg text-muted-foreground line-through">{formatBRL(offer.referenceCents)}</span>
+                )}
+                <span className="font-display text-5xl font-semibold text-ink">{formatBRL(offer.totalCents)}</span>
               </div>
-            );
-          })}
-        </section>
+              <p className="mt-2 text-sm text-muted-foreground">Pagamento único · Pix ou cartão · acesso por tempo indeterminado</p>
+              <Cta className="mt-8" />
+              <div className="mt-8 grid gap-4 text-left sm:grid-cols-3">
+                {[
+                  [ShieldCheck, "Privacidade (LGPD)"],
+                  [Lock, "Resultado protegido"],
+                  [FileText, "Relatório para guardar"],
+                ].map(([Icon, t]) => {
+                  const I = Icon as typeof ShieldCheck;
+                  return (
+                    <div key={t as string} className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <I className="h-4 w-4 shrink-0 text-primary" />
+                      <span>{t as string}</span>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </section>
+        )}
 
         <section className="mx-auto max-w-6xl px-5 py-16">
           <div className="grid gap-6 md:grid-cols-3">
@@ -191,12 +310,19 @@ function Index() {
           </div>
         </section>
 
-        <section className="mx-auto max-w-4xl px-5 pb-20 text-center">
-          <h2 className="font-display text-3xl font-semibold text-ink md:text-4xl">Entenda seu perfil. Descubra novas perspectivas.</h2>
-          <Cta className="mt-8" />
-          <p className="mx-auto mt-8 max-w-2xl rounded-2xl bg-muted p-5 text-sm text-muted-foreground">
-            <strong className="text-ink">Importante:</strong> a NeuroSpectro oferece um rastreio inicial e não realiza diagnóstico. Apenas profissionais de saúde qualificados podem avaliar e diagnosticar o espectro autista.
-          </p>
+        {/* 7. CTA FINAL */}
+        <section className="relative overflow-hidden">
+          <div aria-hidden className="pointer-events-none absolute left-1/2 top-10 h-80 w-80 -translate-x-1/2 rounded-full bg-spec-violet/25 blur-3xl" />
+          <div className="relative mx-auto max-w-4xl px-5 pb-20 pt-10 text-center">
+            <div className="mx-auto w-40 md:w-52">
+              <MarkImage />
+            </div>
+            <h2 className="mt-8 font-display text-3xl font-semibold text-ink md:text-4xl">Entenda seu perfil. Descubra novas perspectivas.</h2>
+            <Cta className="mt-8" />
+            <p className="mx-auto mt-8 max-w-2xl rounded-2xl bg-muted p-5 text-sm text-muted-foreground">
+              <strong className="text-ink">Importante:</strong> a NeuroSpectro oferece um rastreio inicial e não realiza diagnóstico. Apenas profissionais de saúde qualificados podem avaliar e diagnosticar o espectro autista.
+            </p>
+          </div>
         </section>
       </main>
 
