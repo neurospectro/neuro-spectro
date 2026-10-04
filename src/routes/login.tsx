@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Eye, EyeOff, Mail, LockKeyhole, ShieldCheck, ArrowLeft, Sparkles } from "lucide-react";
+import { Eye, EyeOff, Mail, LockKeyhole, ShieldCheck, ArrowLeft, LogOut } from "lucide-react";
 import { isSupabaseConfigured, supabase } from "@/lib/supabase";
 
 export const Route = createFileRoute("/login")({
@@ -13,20 +13,21 @@ function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [mode, setMode] = useState<"password" | "magic">("password");
-  const [sent, setSent] = useState(false);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
+
+  const [loggedIn, setLoggedIn] = useState(false);
+  const [loggedEmail, setLoggedEmail] = useState<string | null>(null);
 
   useEffect(() => {
     if (!supabase) return;
     void (async () => {
       const { data } = await supabase.auth.getSession();
       if (!data.session || data.session.user.is_anonymous) return;
-      const admin = await supabase.from("admin_users").select("user_id").eq("user_id", data.session.user.id).maybeSingle();
-      await navigate({ to: admin.data ? "/admin" : "/dashboard", replace: true });
+      setLoggedIn(true);
+      setLoggedEmail(data.session.user.email ?? null);
     })();
-  }, [navigate]);
+  }, []);
 
   async function handlePasswordSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -51,40 +52,6 @@ function LoginPage() {
     await navigate({ to: admin.data ? "/admin" : "/dashboard", replace: true });
   }
 
-  async function handleMagicSubmit(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    if (!supabase || !email.trim()) return;
-    setLoading(true);
-    setMessage("");
-    const { error } = await supabase.auth.signInWithOtp({
-      email: email.trim(),
-      options: { emailRedirectTo: window.location.origin + "/auth/callback", shouldCreateUser: false },
-    });
-    setLoading(false);
-    if (error) {
-      setMessage(error.message);
-      return;
-    }
-    setSent(true);
-  }
-
-  async function handleReset() {
-    if (!supabase || !email.trim()) {
-      setMessage("Digite seu e-mail para receber o link de redefinição.");
-      return;
-    }
-    setLoading(true);
-    setMessage("");
-    const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), {
-      redirectTo: window.location.origin + "/alterar-senha",
-    });
-    setLoading(false);
-    if (error) {
-      setMessage(error.message);
-      return;
-    }
-    setMessage("Se existir uma conta para este e-mail, enviaremos um link para redefinir a senha.");
-  }
 
   return (
     <main className="min-h-screen bg-[#f5f8fa] font-sans text-[#172033]">
@@ -134,22 +101,18 @@ function LoginPage() {
                 <div className="mt-7 rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm leading-6 text-amber-900">
                   O serviço de acesso ainda não foi configurado neste ambiente.
                 </div>
-              ) : sent ? (
-                <div className="mt-7 rounded-2xl border border-[#9bd9cf] bg-[#eef8f6] p-5 text-sm leading-6 text-[#285e56]">
-                  <div className="flex items-start gap-3">
-                    <Mail className="mt-0.5 h-5 w-5 shrink-0 text-[#008b78]" />
-                    <div><strong>Link enviado.</strong><br />Verifique seu e-mail e toque no link para entrar automaticamente.</div>
+              ) : loggedIn ? (
+                <div className="mt-7 rounded-2xl border border-[#dce5eb] bg-[#f7fafb] p-5">
+                  <p className="text-sm font-semibold text-[#172033]">Você já está conectado.</p>
+                  {loggedEmail && <p className="mt-1 truncate text-xs text-[#68788a]">{loggedEmail}</p>}
+                  <div className="mt-4 flex flex-col gap-2 sm:flex-row">
+                    <Link to="/dashboard" className="inline-flex flex-1 items-center justify-center rounded-xl bg-[#00769f] px-4 py-3 text-sm font-semibold text-white">Minha área</Link>
+                    <button type="button" onClick={async () => { if (!supabase) return; await supabase.auth.signOut(); setLoggedIn(false); setLoggedEmail(null); setEmail(""); setPassword(""); setMessage(""); }} className="inline-flex items-center justify-center gap-2 rounded-xl border border-[#d4e0e6] bg-white px-4 py-3 text-sm font-semibold text-[#526174] hover:border-[#008b78] hover:text-[#008b78]"><LogOut className="h-4 w-4" /> Sair</button>
                   </div>
                 </div>
               ) : (
                 <>
-                  <div className="mt-7 grid grid-cols-2 rounded-xl bg-[#edf3f6] p-1">
-                    <button type="button" onClick={() => { setMode("password"); setMessage(""); }} className={mode === "password" ? "rounded-lg bg-white px-3 py-2.5 text-sm font-semibold text-[#172033] shadow-sm" : "rounded-lg px-3 py-2.5 text-sm font-medium text-[#68788a] hover:text-[#172033]"}>Senha</button>
-                    <button type="button" onClick={() => { setMode("magic"); setMessage(""); }} className={mode === "magic" ? "rounded-lg bg-white px-3 py-2.5 text-sm font-semibold text-[#172033] shadow-sm" : "rounded-lg px-3 py-2.5 text-sm font-medium text-[#68788a] hover:text-[#172033]"}>Link por e-mail</button>
-                  </div>
-
-                  {mode === "password" ? (
-                    <form onSubmit={handlePasswordSubmit} className="mt-6 space-y-5">
+                  <form onSubmit={handlePasswordSubmit} className="mt-7 space-y-5">
                       <label className="block">
                         <span className="text-sm font-semibold text-[#263447]">E-mail</span>
                         <div className="relative mt-2">
@@ -160,7 +123,7 @@ function LoginPage() {
                       <label className="block">
                         <div className="flex items-center justify-between">
                           <span className="text-sm font-semibold text-[#263447]">Senha</span>
-                          <button type="button" onClick={() => void handleReset()} disabled={loading || !email.trim()} className="text-xs font-semibold text-[#00769f] hover:underline disabled:opacity-40">Esqueci minha senha</button>
+                          
                         </div>
                         <div className="relative mt-2">
                           <LockKeyhole className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-[#8795a5]" />
@@ -170,26 +133,17 @@ function LoginPage() {
                           </button>
                         </div>
                       </label>
+                      <div className="flex justify-end gap-3 text-[11px] font-medium text-[#748394]">
+                        <button type="button" onClick={() => void handleReset()} disabled={loading || !email.trim()} className="hover:text-[#00769f] hover:underline disabled:opacity-40">Esqueci minha senha</button>
+                        <span aria-hidden>·</span>
+                        <Link to="/alterar-senha" className="hover:text-[#00769f] hover:underline">Alterar senha</Link>
+                      </div>
                       {message && <p role="alert" className="rounded-xl bg-red-50 px-4 py-3 text-sm leading-5 text-red-700">{message}</p>}
                       <button type="submit" disabled={loading || !email.trim() || !password} className="h-13 w-full rounded-xl bg-[#00769f] px-6 font-semibold text-white shadow-[0_10px_24px_rgba(0,118,159,.2)] transition hover:bg-[#006786] disabled:cursor-not-allowed disabled:opacity-50">
                         {loading ? "Entrando..." : "Entrar"}
                       </button>
                     </form>
-                  ) : (
-                    <form onSubmit={handleMagicSubmit} className="mt-6 space-y-5">
-                      <label className="block">
-                        <span className="text-sm font-semibold text-[#263447]">E-mail</span>
-                        <div className="relative mt-2">
-                          <Mail className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-[#8795a5]" />
-                          <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required autoComplete="email" placeholder="seu@email.com" className="h-13 w-full rounded-xl border border-[#d4e0e6] bg-white pl-12 pr-4 text-sm outline-none transition placeholder:text-[#9aa7b4] focus:border-[#008b78] focus:ring-4 focus:ring-[#008b78]/10" />
-                        </div>
-                      </label>
-                      {message && <p role="alert" className="rounded-xl bg-red-50 px-4 py-3 text-sm leading-5 text-red-700">{message}</p>}
-                      <button type="submit" disabled={loading || !email.trim()} className="h-13 w-full rounded-xl bg-[#00769f] px-6 font-semibold text-white shadow-[0_10px_24px_rgba(0,118,159,.2)] transition hover:bg-[#006786] disabled:cursor-not-allowed disabled:opacity-50">
-                        {loading ? "Enviando..." : "Receber link de acesso"}
-                      </button>
-                    </form>
-                  )}
+
 
                   <div className="mt-6 flex items-start gap-3 rounded-xl bg-[#f3f8f7] p-3.5 text-xs leading-5 text-[#607080]">
                     <ShieldCheck className="h-5 w-5 shrink-0 text-[#008b78]" />
