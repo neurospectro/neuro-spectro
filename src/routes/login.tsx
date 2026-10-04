@@ -53,6 +53,24 @@ function LoginPage() {
   }
 
 
+  async function handleReset() {
+    if (!supabase || !email.trim()) {
+      setMessage("Digite seu e-mail para receber o link de redefinição.");
+      return;
+    }
+    setLoading(true);
+    setMessage("");
+    const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), {
+      redirectTo: window.location.origin + "/alterar-senha",
+    });
+    setLoading(false);
+    if (error) {
+      setMessage(error.message);
+      return;
+    }
+    setMessage("Se existir uma conta para este e-mail, enviaremos um link para redefinir a senha.");
+  }
+
   return (
     <main className="min-h-screen bg-[#f5f8fa] font-sans text-[#172033]">
       <div className="mx-auto flex min-h-screen w-full max-w-7xl">
