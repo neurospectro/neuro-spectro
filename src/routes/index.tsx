@@ -9,6 +9,8 @@ export const Route = createFileRoute("/")({
       { name: "description", content: "Uma jornada acolhedora para adultos que querem compreender melhor seu jeito de perceber, sentir e viver. Rastreio inicial relacionado ao autismo, não diagnóstico." },
       { property: "og:title", content: "NeuroSpectro — Um universo. Muitas formas de ver o mundo." },
       { property: "og:url", content: "https://neurospectro.com.br/" },
+      { property: "og:image", content: "https://neurospectro.com.br/social/og-image.png" },
+      { name: "twitter:image", content: "https://neurospectro.com.br/social/og-image.png" },
       { property: "og:image:alt", content: "NeuroSpectro — rastreio inicial e autoconhecimento" },
       { property: "og:description", content: "Uma experiência acolhedora para transformar percepções em clareza e ajudar você a organizar o que sente, pensa e vive." },
       { property: "og:type", content: "website" },
@@ -53,6 +55,19 @@ const deliverables = [
   "Acesso protegido, vinculado à sua conta",
 ];
 
+function MarkImage({ eager = false }: { eager?: boolean }) {
+  return (
+    <img
+      src="/brand/mark.png"
+      alt="Símbolo NeuroSpectro: cérebro formado por peças de quebra-cabeça"
+      width={500}
+      height={480}
+      loading={eager ? "eager" : "lazy"}
+      className="h-auto w-full object-contain mix-blend-multiply"
+    />
+  );
+}
+
 function Cta({ className = "" }: { className?: string }) {
   return (
     <Link
@@ -67,13 +82,13 @@ function Cta({ className = "" }: { className?: string }) {
 function Index() {
   return (
     <div className="min-h-screen bg-background font-sans text-foreground">
-      <header className="mx-auto flex max-w-6xl items-center justify-between px-5 py-4 md:py-5">
-        <Link to="/" className="flex items-center" aria-label="NeuroSpectro — início">
-          <span className="font-display text-lg font-semibold text-ink md:text-xl">NeuroSpectro</span>
+      <header className="mx-auto grid max-w-6xl grid-cols-[minmax(0,1fr)_auto] items-center gap-3 px-5 py-4 md:py-5">
+        <Link to="/" className="flex min-w-0 items-center" aria-label="NeuroSpectro — início">
+          <img src="/brand/logo-horizontal.png" alt="NeuroSpectro" width={1200} height={453} className="h-9 w-auto max-w-full object-contain md:h-11" />
         </Link>
         <Link
           to="/avaliacao"
-          className="inline-flex items-center justify-center rounded-full border border-primary/20 bg-primary/5 px-4 py-2 text-sm font-semibold text-primary transition hover:bg-primary/10"
+          className="inline-flex shrink-0 items-center justify-center rounded-full border border-primary/20 bg-primary/5 px-4 py-2 text-sm font-semibold text-primary transition hover:bg-primary/10"
         >
           Fazer avaliação
         </Link>
@@ -84,17 +99,20 @@ function Index() {
         <section className="relative overflow-hidden">
           <div aria-hidden className="pointer-events-none absolute -right-32 -top-32 h-96 w-96 rounded-full bg-spec-violet/30 blur-3xl" />
           <div aria-hidden className="pointer-events-none absolute -left-24 top-40 h-80 w-80 rounded-full bg-spec-mint/50 blur-3xl" />
-          <div className="relative mx-auto grid max-w-6xl items-center gap-10 px-5 pb-14 pt-4 md:grid-cols-[1.05fr_1fr] md:pb-20 md:pt-16">
-            <div className="order-2 md:order-1">
+          <div className="relative mx-auto grid max-w-6xl items-center gap-6 px-5 pb-12 pt-2 md:grid-cols-[1.1fr_1fr] md:gap-10 md:pb-20 md:pt-12">
+            <div className="mx-auto w-44 sm:w-56 md:order-2 md:w-full md:max-w-md">
+              <MarkImage eager />
+            </div>
+            <div className="text-center md:order-1 md:text-left">
               <p className="text-sm font-medium text-primary">Um universo. Muitas formas de ver o mundo.</p>
-              <h1 className="mt-4 max-w-2xl font-display text-4xl font-semibold leading-[1.08] text-ink md:text-6xl">
+              <h1 className="mx-auto mt-3 max-w-2xl font-display text-[2rem] font-semibold leading-[1.1] text-ink sm:text-4xl md:mx-0 md:mt-4 md:text-6xl">
                 Você pode <span className="text-primary">perceber o mundo de um jeito diferente.</span>
               </h1>
-              <p className="mt-5 max-w-xl text-base leading-7 text-muted-foreground md:text-lg">
+              <p className="mx-auto mt-4 max-w-xl text-base leading-7 text-muted-foreground md:mx-0 md:mt-5 md:text-lg">
                 Aquilo que você sempre chamou de “seu jeito” merece ser compreendido com mais atenção.
               </p>
-              <div className="mt-7 flex flex-col items-start gap-3">
-                <Cta className="min-h-14 px-9 text-base shadow-lg ring-4 ring-primary/10 hover:scale-[1.02]" />
+              <div className="mt-7 flex flex-col items-stretch gap-3 sm:items-center md:items-start">
+                <Cta className="min-h-14 w-full px-9 text-base shadow-lg ring-4 ring-primary/10 hover:scale-[1.02] sm:w-auto" />
                 <span className="text-xs text-muted-foreground">48 afirmações · no seu ritmo · sem julgamento</span>
               </div>
             </div>
@@ -250,7 +268,7 @@ function Index() {
         <section className="relative overflow-hidden">
           <div aria-hidden className="pointer-events-none absolute left-1/2 top-10 h-80 w-80 -translate-x-1/2 rounded-full bg-spec-violet/25 blur-3xl" />
           <div className="relative mx-auto max-w-4xl px-5 pb-14 pt-8 text-center md:pb-20 md:pt-10">
-            <div className="mx-auto w-40 md:w-52">
+            <div className="mx-auto w-28 md:w-36">
               <MarkImage />
             </div>
             <h2 className="mt-6 font-display text-3xl font-semibold leading-tight text-ink md:text-4xl">É hora de olhar para você com mais gentileza.</h2>
