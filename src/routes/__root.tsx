@@ -81,9 +81,11 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       { title: "NeuroSpectro — Entenda seu perfil" },
-      { name: "description", content: "Autoavaliações com base científica para adultos explorarem características associadas ao espectro autista." },
+      { name: "description", content: "NeuroSpectro: rastreio inicial e acolhedor para adultos que suspeitam de autismo e querem compreender melhor seu perfil. Não é diagnóstico." },
       { property: "og:site_name", content: "NeuroSpectro" },
       { property: "og:type", content: "website" },
+      { property: "og:locale", content: "pt_BR" },
+      { property: "og:image", content: "https://neurospectro.com.br/neurospectro-logo.jpg" },
       { name: "twitter:card", content: "summary_large_image" },
       { name: "theme-color", content: "#0f766e" },
     ],
@@ -98,6 +100,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
       { rel: "stylesheet", href: "https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Sora:wght@400;500;600;700&display=swap" },
       { rel: "icon", href: "/favicon.ico", type: "image/x-icon" },
+      { rel: "apple-touch-icon", href: "/neurospectro-mark.webp" },
       { rel: "canonical", href: "https://neurospectro.com.br/" },
     ],
   }),
@@ -112,6 +115,27 @@ function RootShell({ children }: { children: ReactNode }) {
     <html lang="pt-BR">
       <head>
         <HeadContent />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({
+          "@context": "https://schema.org",
+          "@graph": [
+            {
+              "@type": "Organization",
+              "@id": "https://neurospectro.com.br/#organization",
+              "name": "NeuroSpectro",
+              "url": "https://neurospectro.com.br/",
+              "logo": "https://neurospectro.com.br/neurospectro-logo.jpg",
+              "sameAs": ["https://www.instagram.com/neurospectro"]
+            },
+            {
+              "@type": "WebSite",
+              "@id": "https://neurospectro.com.br/#website",
+              "url": "https://neurospectro.com.br/",
+              "name": "NeuroSpectro",
+              "inLanguage": "pt-BR",
+              "publisher": { "@id": "https://neurospectro.com.br/#organization" }
+            }
+          ]
+        }) }} />
       </head>
       <body>
         {children}
