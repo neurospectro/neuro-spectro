@@ -14,6 +14,7 @@ import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { SensoryMode } from "../components/sensory-mode";
 import { SideNavigation } from "../components/side-navigation";
+import { Analytics } from "../components/analytics";
 
 function NotFoundComponent() {
   return (
@@ -151,6 +152,7 @@ function RootComponent() {
       <Outlet />
       <SensoryMode />
       <SideNavigation />
+      <Analytics />
     </QueryClientProvider>
   );
 }
