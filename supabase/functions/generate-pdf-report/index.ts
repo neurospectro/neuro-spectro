@@ -1,12 +1,13 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { PDFDocument, StandardFonts, rgb } from "https://esm.sh/pdf-lib@1.17.1";
 
-const origins = new Set(["https://neurospectro.com.br","https://www.neurospectro.com.br","https://hello-world-maker-6497.lovable.app"]);
+const origins = new Set(["https://neurospectro.com.br","https://www.neurospectro.com.br","https://hello-world-maker-6497.lovable.app","http://localhost:5173","http://localhost:3000"]);
 const DISCLAIMER = "Este material é informativo e foi elaborado a partir das respostas fornecidas na avaliação NeuroSpectro. Não constitui diagnóstico, laudo, consulta ou avaliação psicológica e não substitui uma avaliação realizada por profissional habilitado.";
 
 function cors(req: Request) {
   const origin = req.headers.get("Origin")?.trim() ?? "";
-  return {"Access-Control-Allow-Origin": origins.has(origin) ? origin : "https://neurospectro.com.br","Access-Control-Allow-Headers":"authorization, x-client-info, apikey, content-type","Access-Control-Allow-Methods":"POST, OPTIONS","Vary":"Origin"};
+  const allowed = origins.has(origin) || /^https:\/\/([a-z0-9-]+\.)*lovable\.app$/i.test(origin);
+  return {"Access-Control-Allow-Origin": allowed ? origin : "https://neurospectro.com.br","Access-Control-Allow-Headers":"authorization, x-client-info, apikey, content-type","Access-Control-Allow-Methods":"POST, OPTIONS","Vary":"Origin"};
 }
 function json(req: Request, body: unknown, status=200) {
   return new Response(JSON.stringify(body),{status,headers:{...cors(req),"Content-Type":"application/json"}});
@@ -47,7 +48,11 @@ async function makePdf(input:{name:string,email:string,resultId:string,createdAt
   const para=(s:string,size=10,gap=8)=>{const lines=wrap(s,regular,size,MW);ensure(lines.length*(size+4)+gap);for(const line of lines){page.drawText(line,{x:M,y,size,font:regular,color:rgb(.22,.25,.31)});y-=size+4;}y-=gap;};
   const bullets=(items:string[])=>{for(const item of items){const lines=wrap("• "+item,regular,10,MW-8);ensure(lines.length*14+5);for(const line of lines){page.drawText(line,{x:M+4,y,size:10,font:regular,color:rgb(.22,.25,.31)});y-=14;}y-=4;}};
 
-  page.drawText("NEUROSPECTRO",{x:M,y,size:10,font:bold,color:rgb(.06,.46,.43)});y-=28;
+  page.drawRectangle({x:0,y:H-10,width:W,height:10,color:rgb(.06,.46,.43)});
+  page.drawRectangle({x:W-150,y:H-10,width:150,height:10,color:rgb(.38,.28,.65)});
+  page.drawText("NEUROSPECTRO",{x:M,y,size:11,font:bold,color:rgb(.06,.46,.43)});
+  page.drawText("RELATÓRIO INDIVIDUAL",{x:W-M-118,y,size:7,font:bold,color:rgb(.35,.38,.43)});
+  y-=30;
   heading("Relatório Individual",26);
   para("Uma leitura aprofundada e organizada das respostas da sua autoavaliação.",13,16);
   para("Titular: "+(input.name||"Conta NeuroSpectro"));
@@ -74,6 +79,12 @@ async function makePdf(input:{name:string,email:string,resultId:string,createdAt
   heading("Fechamento"); para(clean(input.editorial.closing)||"Use este material como ponto de partida para autoconhecimento e para organizar perguntas sobre suas experiências.");
   heading("Limites e uso responsável"); para(DISCLAIMER); para("As pontuações não são diagnóstico e não devem ser tratadas como ponto de corte clínico. O conteúdo editorial é gerado a partir dos dados fornecidos e não substitui avaliação profissional.",9.5);
 
+  const pages=pdf.getPages();
+  pages.forEach((p,i)=>{
+    p.drawLine({start:{x:M,y:28},end:{x:W-M,y:28},thickness:.6,color:rgb(.84,.85,.88)});
+    p.drawText("NeuroSpectro  •  Rastreio inicial e autoconhecimento",{x:M,y:16,size:7,font:regular,color:rgb(.45,.47,.52)});
+    p.drawText(`Página ${i+1} de ${pages.length}`,{x:W-M-55,y:16,size:7,font:regular,color:rgb(.45,.47,.52)});
+  });
   return await pdf.save();
 }
 
