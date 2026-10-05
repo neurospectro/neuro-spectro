@@ -51,29 +51,45 @@ function loadMetaPixel() {
 function loadTikTokPixel() {
   if (!TIKTOK_PIXEL_ID || window.ttq) return;
 
-  const ttq = window.ttq = window.ttq ?? {};
-  const methods = ["page", "track", "identify", "instances", "debug", "on", "off", "once", "ready", "alias", "group", "enableCookie", "disableCookie", "holdConsent", "revokeConsent", "grantConsent"];
+  window.TiktokAnalyticsObject = "ttq";
+  const ttq = (window.ttq = window.ttq ?? []);
+  const methods = ["page", "track", "identify", "instances", "debug", "on", "off", "once", "ready", "alias", "group", "enableCookie", "disableCookie"];
 
-  ttq._i = ttq._i ?? {};
-  ttq._t = ttq._t ?? {};
-  ttq._o = ttq._o ?? {};
   ttq.methods = methods;
-  ttq.setAndDefer = (fn, name) => {
-    (ttq as unknown as Record<string, unknown>)[name] = (...args: unknown[]) => {
-      const instance = ttq._i?.[TIKTOK_PIXEL_ID];
-      if (Array.isArray(instance)) instance.push([name, ...args]);
+  ttq.setAndDefer = (target: any, name: string) => {
+    target[name] = (...args: unknown[]) => {
+      target.push([name, ...args]);
     };
   };
 
-  methods.forEach((name) => ttq.setAndDefer?.(() => {}, name));
+  methods.forEach((name) => ttq.setAndDefer?.(ttq, name));
+  ttq.instance = (id: string) => {
+    const instance = ttq._i?.[id] ?? [];
+    ttq._i = ttq._i ?? {};
+    ttq._i[id] = instance;
+    methods.forEach((name) => ttq.setAndDefer?.(instance, name));
+    return instance;
+  };
+  ttq.load = (id: string, options?: unknown) => {
+    const src = "https://analytics.tiktok.com/i18n/pixel/events.js";
+    ttq._i = ttq._i ?? {};
+    ttq._i[id] = [];
+    (ttq._i[id] as any)._u = src;
+    ttq._t = ttq._t ?? {};
+    ttq._t[id] = +new Date();
+    ttq._o = ttq._o ?? {};
+    ttq._o[id] = options ?? {};
 
-  const script = document.createElement("script");
-  script.async = true;
-  script.src = "https://analytics.tiktok.com/i18n/pixel/events.js?sdkid=" + encodeURIComponent(TIKTOK_PIXEL_ID) + "&lib=ttq";
-  script.dataset["neuroSpectro"] = "tiktok-pixel";
-  document.head.appendChild(script);
+    const script = document.createElement("script");
+    script.async = true;
+    script.src = src + "?sdkid=" + encodeURIComponent(id) + "&lib=ttq";
+    script.dataset["neuroSpectro"] = "tiktok-pixel";
+    const firstScript = document.getElementsByTagName("script")[0];
+    firstScript?.parentNode?.insertBefore(script, firstScript);
+  };
 
-  window.ttq.page?.();
+  ttq.load(TIKTOK_PIXEL_ID);
+  ttq.page();
 }
 
 function loadGoogleAnalytics() {
