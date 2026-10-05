@@ -9,16 +9,8 @@ declare global {
   interface Window {
     fbq?: ((...args: unknown[]) => void) & { callMethod?: (...args: unknown[]) => void; queue?: unknown[]; loaded?: boolean; version?: string };
     _fbq?: Window["fbq"];
-    ttq?: {
-      methods?: string[];
-      setAndDefer?: (fn: (...args: unknown[]) => void, name: string) => void;
-      _i?: Record<string, unknown>;
-      _t?: Record<string, unknown>;
-      _o?: Record<string, unknown>;
-      load?: (id: string) => void;
-      page?: () => void;
-      track?: (event: string, params?: Record<string, unknown>) => void;
-    };
+    TiktokAnalyticsObject?: string;
+    ttq?: any;
     dataLayer?: unknown[];
     gtag?: (...args: unknown[]) => void;
   }
