@@ -98,7 +98,7 @@ function LoginPage() {
             <Link to="/" className="inline-flex items-center gap-2 text-sm font-semibold text-white/75 hover:text-white">
               <ArrowLeft className="h-4 w-4" /> Voltar ao início
             </Link>
-            <img src="/neurospectro-temp.svg" alt="NeuroSpectro" className="mt-14 h-16 w-auto max-w-[280px] rounded-xl bg-white p-1" />
+            <div className="mt-14 font-display text-2xl font-semibold text-ink">NeuroSpectro</div>
             <div className="mt-16 max-w-lg">
               <p className="text-xs font-bold uppercase tracking-[0.22em] text-[#8dd9c5]">Sua jornada começa aqui</p>
               <h1 className="mt-4 font-display text-5xl font-semibold leading-[1.06] tracking-tight xl:text-6xl">
@@ -122,7 +122,7 @@ function LoginPage() {
               <Link to="/" className="inline-flex items-center gap-2 text-sm font-semibold text-[#526174]">
                 <ArrowLeft className="h-4 w-4" /> Voltar
               </Link>
-              <img src="/neurospectro-temp.svg" alt="NeuroSpectro" className="mt-7 h-14 w-auto max-w-[230px] rounded-xl bg-white p-1 shadow-sm" />
+              <div className="mt-7 font-display text-xl font-semibold text-ink">NeuroSpectro</div>
             </div>
 
             <div className="rounded-[1.75rem] border border-[#dce5eb] bg-white p-6 shadow-[0_20px_60px_rgba(22,50,70,.08)] sm:p-9">
