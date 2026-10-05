@@ -11,7 +11,7 @@ export const Route = createFileRoute("/")({
     meta: [
       { title: "NeuroSpectro — Um universo. Muitas formas de ver o mundo." },
       { name: "description", content: "Uma jornada acolhedora para adultos que querem compreender melhor seu jeito de perceber, sentir e viver. Rastreio inicial relacionado ao autismo, não diagnóstico." },
-      { property: "og:title", content: "NeuroSpectro — Talvez você finalmente encontre palavras para o que sente" },
+      { property: "og:title", content: "NeuroSpectro — Um universo. Muitas formas de ver o mundo." },
       { property: "og:url", content: "https://neurospectro.com.br/" },
       { property: "og:image", content: "https://neurospectro.com.br/neurospectro-logo.jpg" },
       { property: "og:image:alt", content: "NeuroSpectro — rastreio inicial e autoconhecimento" },
@@ -50,7 +50,7 @@ const identification = [
   "Você percebe coisas que outras pessoas parecem não notar.",
   "Algumas situações sociais consomem mais energia do que deixam transparecer.",
   "Sons, luzes ou mudanças podem afetar você de forma intensa.",
-  "Você quer entender esses padrões antes de buscar respostas.",
+  "Você quer entender esses padrões e encontrar respostas para perguntas que carrega há algum tempo.",
 ];
 
 const deliverables = [
@@ -66,7 +66,7 @@ function Cta({ className = "" }: { className?: string }) {
       to="/avaliacao"
       className={`inline-flex items-center justify-center rounded-full bg-primary px-8 py-4 font-display text-base font-semibold text-primary-foreground shadow-soft transition-transform hover:-translate-y-0.5 ${className}`}
     >
-      Quero começar a me entender
+      Fazer avaliação
     </Link>
   );
 }
@@ -97,7 +97,7 @@ function Index() {
           to="/avaliacao"
           className="inline-flex items-center justify-center rounded-full border border-primary/20 bg-primary/5 px-4 py-2 text-sm font-semibold text-primary transition hover:bg-primary/10"
         >
-          Começar avaliação
+          Fazer avaliação
         </Link>
       </header>
 
@@ -110,14 +110,14 @@ function Index() {
             <div className="order-2 md:order-1">
               <p className="text-sm font-medium text-primary">Um universo. Muitas formas de ver o mundo.</p>
               <h1 className="mt-4 max-w-2xl font-display text-4xl font-semibold leading-[1.08] text-ink md:text-6xl">
-                Talvez você apenas <span className="text-primary">veja o mundo de um jeito diferente.</span>
+                Você pode <span className="text-primary">perceber o mundo de um jeito diferente.</span>
               </h1>
               <p className="mt-5 max-w-xl text-base leading-7 text-muted-foreground md:text-lg">
-                E talvez aquilo que você sempre chamou de “seu jeito” mereça ser compreendido com mais atenção.
+                Aquilo que você sempre chamou de “seu jeito” merece ser compreendido com mais atenção.
               </p>
               <div className="mt-7 flex flex-col items-start gap-3">
                 <Cta className="min-h-14 px-9 text-base shadow-lg ring-4 ring-primary/10 hover:scale-[1.02]" />
-                <span className="text-xs text-muted-foreground">Comece gratuitamente · 48 afirmações · no seu ritmo</span>
+                <span className="text-xs text-muted-foreground">48 afirmações · no seu ritmo · sem julgamento</span>
               </div>
             </div>
             <div className="order-1 flex justify-center md:order-2">
@@ -139,8 +139,8 @@ function Index() {
             </div>
             <div>
               <p className="text-xs font-semibold uppercase tracking-[0.25em] text-primary">Você se reconhece aqui?</p>
-              <h2 className="mt-3 font-display text-2xl font-semibold leading-tight text-ink md:text-3xl">Talvez você tenha aprendido a se adaptar tanto que passou a duvidar do que sente.</h2>
-              <p className="mt-3 text-muted-foreground">Olhar para esses padrões pode ser o começo de uma nova compreensão.</p>
+              <h2 className="mt-3 font-display text-2xl font-semibold leading-tight text-ink md:text-3xl">Você aprendeu a se adaptar. E, com o tempo, pode ter começado a duvidar do que sente.</h2>
+              <p className="mt-3 text-muted-foreground">Reconhecer esses padrões pode ser o começo de uma nova compreensão.</p>
               <ul className="mt-6 space-y-3">
                 {identification.map((item) => (
                   <li key={item} className="flex gap-3 text-muted-foreground">
@@ -157,7 +157,7 @@ function Index() {
           <div className="mb-7 flex justify-center md:mb-9">
             <img src="/illustrations/dimensions.svg" alt="Ilustração das diferentes dimensões exploradas pela avaliação" width="720" height="420" loading="lazy" className="h-auto w-full max-w-2xl object-contain" />
           </div>
-          <h2 className="font-display text-3xl font-semibold leading-tight text-ink">Talvez exista mais para compreender.</h2>
+          <h2 className="font-display text-3xl font-semibold leading-tight text-ink">Existe mais para compreender.</h2>
           <p className="mt-2 max-w-2xl text-muted-foreground">Explore diferentes dimensões de como você percebe, sente e vive o cotidiano.</p>
           <div className="mt-6 grid grid-cols-2 gap-3 md:mt-8 md:grid-cols-4 md:gap-4">
             {dims.map(({ icon: Icon, label }) => (
@@ -237,8 +237,8 @@ function Index() {
         <section className="mx-auto max-w-6xl px-5 py-16">
           <div className="mb-6 text-center md:mb-8">
             <p className="text-xs font-semibold uppercase tracking-[0.25em] text-primary">Experiências</p>
-            <h2 className="mt-2 font-display text-3xl font-semibold leading-tight text-ink">Talvez você não esteja exagerando.</h2>
-            <p className="mx-auto mt-2 max-w-2xl text-muted-foreground">Talvez você só tenha passado tempo demais tentando se adaptar.</p>
+            <h2 className="mt-2 font-display text-3xl font-semibold leading-tight text-ink">Você não está exagerando.</h2>
+            <p className="mx-auto mt-2 max-w-2xl text-muted-foreground">Você pode ter passado tempo demais tentando se adaptar.</p>
           </div>
           <TestimonialsCarousel />
         </section>
@@ -293,7 +293,7 @@ function Index() {
 
         <section className="mx-auto max-w-4xl px-5 py-16" aria-labelledby="faq-title">
           <p className="text-xs font-semibold uppercase tracking-[0.25em] text-primary">Antes de começar</p>
-          <h2 id="faq-title" className="mt-3 font-display text-3xl font-semibold text-ink">Talvez você também esteja se perguntando</h2>
+          <h2 id="faq-title" className="mt-3 font-display text-3xl font-semibold text-ink">Antes de começar, algumas respostas</h2>
           <div className="mt-8 space-y-4">
             {[
               ["O NeuroSpectro diagnostica autismo?", "Não. O NeuroSpectro oferece um rastreio inicial e uma leitura organizada de características relacionadas ao espectro autista em adultos. O resultado não é diagnóstico e não substitui uma avaliação feita por profissional qualificado."],
@@ -317,7 +317,7 @@ function Index() {
             <div className="mx-auto w-40 md:w-52">
               <MarkImage />
             </div>
-            <h2 className="mt-6 font-display text-3xl font-semibold leading-tight text-ink md:text-4xl">Talvez seja hora de olhar para você com mais gentileza.</h2>
+            <h2 className="mt-6 font-display text-3xl font-semibold leading-tight text-ink md:text-4xl">É hora de olhar para você com mais gentileza.</h2>
             <Cta className="mt-8" />
             <p className="mx-auto mt-8 max-w-2xl rounded-2xl bg-muted p-5 text-sm text-muted-foreground">
               <strong className="text-ink">Importante:</strong> a NeuroSpectro oferece um rastreio inicial e não realiza diagnóstico. Apenas profissionais de saúde qualificados podem avaliar e diagnosticar o espectro autista.
