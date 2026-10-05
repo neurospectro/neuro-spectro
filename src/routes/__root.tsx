@@ -85,7 +85,6 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { property: "og:site_name", content: "NeuroSpectro" },
       { property: "og:type", content: "website" },
       { property: "og:locale", content: "pt_BR" },
-      { property: "og:image", content: "https://neurospectro.com.br/neurospectro-logo.jpg" },
       { name: "twitter:card", content: "summary_large_image" },
       { name: "theme-color", content: "#0f766e" },
     ],
@@ -99,8 +98,6 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
       { rel: "stylesheet", href: "https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Sora:wght@400;500;600;700&display=swap" },
-      { rel: "icon", href: "/favicon.ico", type: "image/x-icon" },
-      { rel: "apple-touch-icon", href: "/neurospectro-mark.webp" },
       { rel: "canonical", href: "https://neurospectro.com.br/" },
     ],
   }),
@@ -123,7 +120,6 @@ function RootShell({ children }: { children: ReactNode }) {
               "@id": "https://neurospectro.com.br/#organization",
               "name": "NeuroSpectro",
               "url": "https://neurospectro.com.br/",
-              "logo": "https://neurospectro.com.br/neurospectro-logo.jpg",
               "sameAs": ["https://www.instagram.com/neurospectro"]
             },
             {
