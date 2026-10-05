@@ -82,7 +82,7 @@ function Cta({ className = "" }: { className?: string }) {
 function Index() {
   return (
     <div className="min-h-screen bg-background font-sans text-foreground">
-      <header className="mx-auto grid max-w-6xl grid-cols-[minmax(0,1fr)_auto] items-center gap-3 px-5 py-4 md:py-5">
+      <header className="mx-auto grid max-w-6xl grid-cols-[minmax(0,1fr)_auto] items-center gap-3 py-4 pl-5 pr-[4.5rem] md:py-5 lg:pr-60">
         <Link to="/" className="flex min-w-0 items-center gap-2" aria-label="NeuroSpectro — início">
           <img src="/brand/mark.png" alt="" width={463} height={445} className="h-8 w-auto shrink-0 md:h-10" />
           <span className="truncate font-display text-lg font-semibold md:text-xl"><span className="text-ink">Neuro</span><span className="text-primary">Spectro</span></span>
