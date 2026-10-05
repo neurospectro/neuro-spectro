@@ -146,7 +146,7 @@ function Avaliacao() {
     const count = session ? Object.keys(session.answers).length : 0;
     return (
       <Shell>
-        <img src={mark.url} alt="" className="mx-auto h-16 w-16" />
+        <img src="/brand/mark.png" alt="" className="mx-auto h-16 w-16 object-contain" />
         <h1 className="mt-6 font-display text-3xl font-semibold leading-tight text-ink md:text-4xl">Talvez exista uma parte de você que ainda não conseguiu colocar em palavras.</h1>
         <p className="mx-auto mt-4 max-w-md text-base leading-7 text-muted-foreground">
           Esta avaliação foi criada para ajudar você a olhar para alguns padrões do seu jeito de pensar, sentir e viver com mais clareza — sem pressa e sem respostas certas ou erradas.
