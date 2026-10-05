@@ -2,7 +2,6 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { CheckCircle2, HeartHandshake, LockKeyhole, Users } from "lucide-react";
-import mark from "@/assets/mark.png.asset.json";
 import { COMMUNITY, COMMUNITY_CONTENT } from "@/lib/community";
 
 export const Route = createFileRoute("/comunidade")({
@@ -59,7 +58,6 @@ function Comunidade() {
     <main className="min-h-screen bg-background px-5 py-12 font-sans">
       <div className="mx-auto max-w-2xl">
         <Link to="/" className="flex items-center gap-2 text-sm text-muted-foreground">
-          <img src={mark.url} alt="" className="h-8 w-8" />
           NeuroSpectro
         </Link>
 
