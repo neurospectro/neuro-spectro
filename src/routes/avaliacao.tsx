@@ -1,7 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { ArrowLeft, ArrowRight, Check, RotateCcw, Users, FileText, Clock, Zap, Mail } from "lucide-react";
-import mark from "@/assets/mark.png.asset.json";
 import { ASSESSMENT, DIMENSIONS, SCALE, getVisibleQuestions, scoreByDimension } from "@/lib/assessment/questions";
 import { persistCompletedAssessment } from "@/lib/assessment/persistence";
 import { getOffer, formatBRL } from "@/lib/offers";
@@ -130,7 +129,6 @@ function Avaliacao() {
   if (isAdminSimulation && !started) {
     return (
       <Shell>
-        <img src={mark.url} alt="" className="mx-auto h-16 w-16" />
         <p className="mt-6 text-xs font-bold uppercase tracking-[0.2em] text-primary">Modo administrativo</p>
         <h1 className="mt-3 font-display text-3xl font-semibold leading-tight text-ink">Simular avaliação como usuário</h1>
         <p className="mx-auto mt-4 max-w-md text-base leading-7 text-muted-foreground">Use exatamente o mesmo fluxo da avaliação pública. O resultado será marcado como teste administrativo e não deverá ser tratado como dado real de conversão.</p>
@@ -300,7 +298,7 @@ function Avaliacao() {
     <div className="flex min-h-screen flex-col bg-background font-sans">
       <header className="mx-auto w-full max-w-2xl px-5 pt-16 sm:pt-6">
         <div className="flex items-center justify-between text-sm text-muted-foreground">
-          <Link to="/" className="flex items-center gap-2"><img src={mark.url} alt="NeuroSpectro" className="h-7 w-7" /></Link>
+          <Link to="/" className="font-display text-sm font-semibold text-ink">NeuroSpectro</Link>
           <span>{session.index + 1} de {questions.length}</span>
         </div>
         <div className="mt-4 h-2 overflow-hidden rounded-full bg-secondary" role="progressbar" aria-valuenow={answered} aria-valuemax={questions.length} aria-label="Progresso">
