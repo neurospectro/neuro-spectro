@@ -82,9 +82,9 @@ function Cta({ className = "" }: { className?: string }) {
 function Index() {
   return (
     <div className="min-h-screen bg-background font-sans text-foreground">
-      <header className="mx-auto grid max-w-6xl grid-cols-[minmax(0,1fr)_auto] items-center gap-3 py-4 pl-5 pr-[4.5rem] md:py-5 lg:pr-60">
+      <header className="mx-auto grid max-w-6xl grid-cols-[minmax(0,1fr)_auto] items-center gap-3 py-4 pl-5 pr-[4.5rem] md:py-5 lg:max-w-none lg:pl-[max(1.25rem,calc((100vw-72rem)/2+1.25rem))] lg:pr-64">
         <Link to="/" className="flex min-w-0 items-center gap-2" aria-label="NeuroSpectro — início">
-          <img src="/brand/mark.png" alt="" width={463} height={445} className="h-8 w-auto shrink-0 md:h-10" />
+          <img src="/brand/mark.png" alt="" width={500} height={480} className="h-8 w-auto shrink-0 md:h-10" />
           <span className="truncate font-display text-lg font-semibold md:text-xl"><span className="text-ink">Neuro</span><span className="text-primary">Spectro</span></span>
         </Link>
         <Link
@@ -101,7 +101,7 @@ function Index() {
           <div aria-hidden className="pointer-events-none absolute -right-32 -top-32 h-96 w-96 rounded-full bg-spec-violet/30 blur-3xl" />
           <div aria-hidden className="pointer-events-none absolute -left-24 top-40 h-80 w-80 rounded-full bg-spec-mint/50 blur-3xl" />
           <div className="relative mx-auto grid max-w-6xl items-center gap-6 px-5 pb-12 pt-2 md:grid-cols-[1.1fr_1fr] md:gap-10 md:pb-20 md:pt-12">
-            <div className="mx-auto w-44 sm:w-56 md:order-2 md:w-full md:max-w-md">
+            <div className="mx-auto w-44 overflow-hidden rounded-[2rem] bg-background sm:w-56 md:order-2 md:w-full md:max-w-md">
               <MarkImage eager />
             </div>
             <div className="text-center md:order-1 md:text-left">
