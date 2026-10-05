@@ -83,8 +83,9 @@ function Index() {
   return (
     <div className="min-h-screen bg-background font-sans text-foreground">
       <header className="mx-auto grid max-w-6xl grid-cols-[minmax(0,1fr)_auto] items-center gap-3 px-5 py-4 md:py-5">
-        <Link to="/" className="flex min-w-0 items-center" aria-label="NeuroSpectro — início">
-          <img src="/brand/logo-horizontal.png" alt="NeuroSpectro" width={1200} height={453} className="h-9 w-auto max-w-full object-contain md:h-11" />
+        <Link to="/" className="flex min-w-0 items-center gap-2" aria-label="NeuroSpectro — início">
+          <img src="/brand/mark.png" alt="" width={463} height={445} className="h-8 w-auto shrink-0 md:h-10" />
+          <span className="truncate font-display text-lg font-semibold md:text-xl"><span className="text-ink">Neuro</span><span className="text-primary">Spectro</span></span>
         </Link>
         <Link
           to="/avaliacao"
