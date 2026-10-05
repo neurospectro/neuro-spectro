@@ -4,6 +4,7 @@ import { TestimonialsCarousel } from "@/components/testimonials-carousel";
 
 const wordmarkUrl = "/neurospectro-wordmark-production.svg?v=3";
 const markUrl = "/neurospectro-mark-production.svg?v=3";
+const heroIllustrationUrl = "/illustrations/hero-neuro.svg";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -15,7 +16,10 @@ export const Route = createFileRoute("/")({
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
-    links: [{ rel: "preload", as: "image", href: markUrl, type: "image/svg+xml" }],
+    links: [
+        { rel: "preload", as: "image", href: markUrl, type: "image/svg+xml" },
+        { rel: "preload", as: "image", href: heroIllustrationUrl, type: "image/svg+xml" },
+      ],
   }),
   component: Index,
 });
@@ -117,7 +121,7 @@ function Index() {
             <div className="order-1 flex justify-center md:order-2">
               <div className="relative w-full max-w-xs md:max-w-md">
                 <div aria-hidden className="absolute inset-6 rounded-full bg-spectrum opacity-30 blur-3xl" />
-                <img src="/illustrations/hero-neuro.svg" alt="Ilustração abstrata sobre diferentes formas de perceber e processar o mundo" width="720" height="560" loading="eager" fetchPriority="high" className="relative h-auto w-full object-contain" />
+                <img src={heroIllustrationUrl} alt="Ilustração abstrata sobre diferentes formas de perceber e processar o mundo" width="720" height="560" loading="eager" fetchPriority="high" className="relative h-auto w-full object-contain" />
               </div>
             </div>
           </div>
