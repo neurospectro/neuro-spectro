@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 
-export const Route = createFileRoute("/auth/callback")({
+export const Route = createFileRoute("/auth/callback")({\n  head: () => ({\n    meta: [{ name: "robots", content: "noindex,nofollow,noarchive" }],\n  }),
   component: AuthCallback,
 });
 
