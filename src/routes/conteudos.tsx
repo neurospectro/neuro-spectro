@@ -8,6 +8,7 @@ export const Route = createFileRoute("/conteudos")({
       { name: "description", content: "Artigos, notícias, textos e referências selecionadas sobre neurodivergência, autoconhecimento e inclusão." },
     ],
   }),
+  links: [{ rel: "canonical", href: "https://neurospectro.com.br/conteudos" }],
   component: Conteudos,
 });
 
