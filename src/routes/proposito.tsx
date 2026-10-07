@@ -21,6 +21,7 @@ export const Route = createFileRoute("/proposito")({
       },
     ],
   }),
+  links: [{ rel: "canonical", href: "https://neurospectro.com.br/proposito" }],
   component: Proposito,
 });
 
