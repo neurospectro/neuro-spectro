@@ -17,6 +17,7 @@ export const Route = createFileRoute("/avaliacao")({
       { name: "twitter:card", content: "summary" },
     ],
   }),
+  links: [{ rel: "canonical", href: "https://neurospectro.com.br/avaliacao" }],
   component: Avaliacao,
 });
 
