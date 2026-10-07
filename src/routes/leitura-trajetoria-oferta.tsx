@@ -1,7 +1,16 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowLeft, ArrowRight, CheckCircle2, Mail, ShieldCheck, Sparkles } from "lucide-react";
 
-export const Route = createFileRoute("/leitura-trajetoria-oferta")({ component: TrajectoryOffer });
+export const Route = createFileRoute("/leitura-trajetoria-oferta")({
+  head: () => ({
+    meta: [
+      { title: "Leitura de Trajetória — NeuroSpectro" },
+      { name: "description", content: "Conheça a Leitura de Trajetória da NeuroSpectro: uma experiência para organizar sua história e refletir sobre sua trajetória pessoal." },
+    ],
+    links: [{ rel: "canonical", href: "https://neurospectro.com.br/leitura-trajetoria-oferta" }],
+  }),
+  component: TrajectoryOffer,
+});
 
 function TrajectoryOffer() {
   return (
