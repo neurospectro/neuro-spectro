@@ -12,6 +12,7 @@ export const Route = createFileRoute("/ajuda")({
       },
     ],
   }),
+  links: [{ rel: "canonical", href: "https://neurospectro.com.br/ajuda" }],
   component: Ajuda,
 });
 
