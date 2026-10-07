@@ -7,7 +7,7 @@ import type { AssessmentAnalysis } from "@/lib/assessment/analysis";
 type Score = { id: string; label: string; raw: number; max: number };
 type Result = { id: string; created_at: string; total_raw: number; max_raw: number; scores: Score[]; analysis: AssessmentAnalysis | null };
 
-export const Route = createFileRoute("/relatorio-online")({ component: OnlineReport });
+export const Route = createFileRoute("/relatorio-online")({\n  head: () => ({\n    meta: [{ name: "robots", content: "noindex,nofollow,noarchive" }],\n  }),\n  component: OnlineReport,\n});
 
 function OnlineReport() {
   const [result, setResult] = useState<Result | null>(null);
