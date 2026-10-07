@@ -8,7 +8,6 @@ Disallow: /pos-compra
 Disallow: /relatorio-online
 Disallow: /relatorio-pdf
 Disallow: /leitura-trajetoria
-Disallow: /comunidade
 Disallow: /depoimento
 
 Sitemap: https://neurospectro.com.br/sitemap.xml
