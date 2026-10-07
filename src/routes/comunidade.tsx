@@ -13,6 +13,7 @@ export const Route = createFileRoute("/comunidade")({
         content:
           "Conheça o Comunidade de Apoio - NeuroSpectro, uma comunidade acolhedora sobre neurodiversidade, autoconhecimento e troca de experiências.",
       },
+      { name: "robots", content: "noindex,nofollow,noarchive" },
     ],
   }),
   component: Comunidade,
