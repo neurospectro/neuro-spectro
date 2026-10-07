@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { useRouterState } from "@tanstack/react-router";
 
 const META_PIXEL_ID = import.meta.env["VITE_META_PIXEL_ID"]?.trim();
-const GA_ID = import.meta.env["VITE_GA_MEASUREMENT_ID"]?.trim();
+const GA_ID = import.meta.env["VITE_GA_MEASUREMENT_ID"]?.trim() || "G-7NXK1MCX2D";
 const TIKTOK_PIXEL_ID = import.meta.env["VITE_TIKTOK_PIXEL_ID"]?.trim();
 
 declare global {
